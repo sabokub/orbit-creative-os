@@ -13,6 +13,7 @@ The repository is the knowledge base. This folder provides the practical prompts
 - Start a new client or personal project
 - Route requests to the right ORBIT module
 - Keep outputs structured and consistent
+- Create a brand kit with `Use_Case_Brand_Kit.md`
 
 ## Recommended Flow
 
@@ -22,13 +23,17 @@ The repository is the knowledge base. This folder provides the practical prompts
 4. Use commands from `Runtime_Commands.md`.
 5. Review outputs with `Runtime_Quality_Gate.md`.
 
+## Brand Kit Workflow
+
+Open `Use_Case_Brand_Kit.md` to create a complete brand kit with ORBIT.
+
 ## Visual User Manual
 
 Open `Mode_Emploi_Visuel.md` to view the visual guide.
 
 Image path:
 
-`13_ChatGPT_Runtime/assets/mode_emploi_orbit_chatgpt.png`
+`13_ChatGPT_Runtime/assets/mode_emploi_orbit_chatgpt.svg`
 
 ## Important Rule
 
