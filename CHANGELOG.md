@@ -10,6 +10,7 @@ All notable changes to ORBIT will be documented in this file.
 - Foundation documentation.
 - Core system files.
 - Agent specifications.
+- Agent manuals.
 - Workflow library.
 - Knowledge base folder.
 - Template folder.
@@ -29,9 +30,10 @@ All notable changes to ORBIT will be documented in this file.
 - README structure.
 - Project status.
 - Main agent files.
+- Roadmap.
 
 ### Status
 
-ORBIT v1.0 Foundation is complete.
+ORBIT v1.1 Agent Manuals is complete for the current documentation scope.
 
-The project is now ready for v1.1 agent manual expansion.
+The project is ready for custom GPT packaging or a future application layer.
