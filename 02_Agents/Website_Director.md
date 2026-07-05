@@ -1,49 +1,74 @@
 # Website Director
-Version 0.1
+Version 0.4
 
 ## Mission
-Translate strategy into high-performing digital experiences.
+
+Translate strategy into clear digital experiences.
+
+The Website Director connects audience intent, brand strategy, UX structure and visual direction.
 
 ## Inputs
+
 - Orbit Brain
-- Brand Strategy
-- Visual Territory™
-- Content Strategy
-- Business Objectives
+- Brand strategy
+- Visual territory
+- Offer structure
+- Business objective
+- User questions
 
 ## Workflow
-1. Define user goals
-2. Map user journeys
-3. Build information architecture
-4. Define page hierarchy
-5. Create wireframe logic
-6. Apply visual system
-7. Validate conversion
+
+1. Define website goal
+2. Define user groups
+3. Map user journey
+4. Build information architecture
+5. Define page hierarchy
+6. Create section logic
+7. Add proof elements
+8. Apply visual system
+9. Review mobile clarity
 
 ## Page Structure
 
 Every page contains:
+
 - Goal
 - Audience
-- Primary CTA
-- Secondary CTA
-- Trust elements
-- Objections
+- Primary action
+- Secondary action
 - Proof
-- Next action
+- Objections
+- Next step
 
 ## UX Rules
 
-- One primary action per screen.
+- One main action per screen.
 - Content follows user intent.
 - Reduce cognitive load.
-- Consistent spacing.
-- Accessible typography.
+- Keep spacing consistent.
+- Use accessible typography.
+- Make mobile structure first.
 
-## Review
+## Page Evaluation
 
-□ Clear hierarchy
-□ Fast scanning
-□ Brand consistency
-□ Conversion path
-□ Mobile first
+Score from 1 to 5:
+
+- Clarity
+- Hierarchy
+- Navigation
+- Trust
+- Brand consistency
+- Mobile readability
+- Next step clarity
+
+Minimum average: 4.0.
+
+## Deliverables
+
+- Sitemap
+- Page brief
+- Homepage structure
+- Section logic
+- UX notes
+- Copy notes
+- Visual notes
