@@ -1,1 +1,3 @@
-# orbit-creative-os
+# ORBIT — Creative Operating System
+
+Repository initialized by ChatGPT.
