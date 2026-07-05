@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500" role="img" aria-labelledby="title desc">
+  <title id="title">ORBIT — Mode d'emploi sur ChatGPT</title>
+  <desc id="desc">Guide visuel pour utiliser ORBIT dans ChatGPT.</desc>
+  <defs>
+    <style>
+      .bg{fill:#fbfaf7}.ink{fill:#07101f}.muted{fill:#3f4652}.blue{fill:#062a5f}.green{fill:#2f6b3b}.line{stroke:#07101f;stroke-width:1.4;opacity:.35}.box{fill:#fffdf8;stroke:#07101f;stroke-width:1.4;rx:18}.calloutBlue{fill:#f1f6ff;stroke:#062a5f;stroke-width:1.5}.calloutGreen{fill:#f2f8f2;stroke:#2f6b3b;stroke-width:1.5}.serif{font-family:Georgia, 'Times New Roman', serif;font-weight:700}.sans{font-family:Inter, Arial, sans-serif}.small{font-size:22px}.body{font-size:25px}.h{font-size:40px}.chip{fill:#062a5f;rx:8}.chipText{fill:white;font-size:21px;font-weight:700}.accentBlue{stroke:#062a5f;stroke-width:4}.accentGreen{stroke:#2f6b3b;stroke-width:4}.dash{stroke:#c7c7c7;stroke-dasharray:4 6}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1200" height="1500"/>
+
+  <!-- Header logo -->
+  <g transform="translate(58 45)">
+    <circle cx="65" cy="65" r="54" fill="none" stroke="#07101f" stroke-width="6"/>
+    <ellipse cx="65" cy="82" rx="92" ry="20" fill="none" stroke="#2f6b3b" stroke-width="2" stroke-dasharray="8 8" transform="rotate(-15 65 82)"/>
+    <circle cx="32" cy="96" r="11" fill="#062a5f"/>
+    <path d="M137 24l8 16 16 8-16 8-8 16-8-16-16-8 16-8z" fill="#2f6b3b"/>
+  </g>
+  <text class="ink serif" x="250" y="105" font-size="62">ORBIT — Mode d'emploi sur ChatGPT</text>
+  <line x1="255" y1="145" x2="390" y2="145" class="accentGreen"/>
+  <circle cx="410" cy="145" r="4" fill="#2f6b3b"/>
+  <text class="ink sans" x="250" y="188" font-size="24">Comment l'utiliser rapidement dans une conversation ou un GPT personnalisé</text>
+
+  <!-- Boxes -->
+  <g transform="translate(28 230)">
+    <rect class="box" x="0" y="0" width="566" height="320"/>
+    <circle cx="75" cy="86" r="52" class="blue"/>
+    <text x="75" y="103" fill="white" font-size="55" text-anchor="middle">🚀</text>
+    <text class="ink serif h" x="180" y="75">1. Lance ORBIT</text>
+    <line x1="180" y1="98" x2="235" y2="98" class="accentBlue"/>
+    <text class="ink sans body" x="180" y="145">Copie le prompt de démarrage</text>
+    <text class="ink sans body" x="180" y="180">dans une nouvelle conversation</text>
+    <text class="ink sans body" x="180" y="215">ChatGPT.</text>
+    <rect class="calloutBlue" x="28" y="250" width="510" height="60" rx="10"/>
+    <text class="blue sans" x="70" y="288" font-size="21" font-weight="700">Fichier utile :</text>
+    <text class="ink sans" x="220" y="288" font-size="20">13_ChatGPT_Runtime/Start_Here.md</text>
+  </g>
+
+  <g transform="translate(606 230)">
+    <rect class="box" x="0" y="0" width="566" height="320"/>
+    <circle cx="75" cy="86" r="52" class="green"/>
+    <text x="75" y="103" fill="white" font-size="55" text-anchor="middle">✓</text>
+    <text class="ink serif h" x="180" y="75">2. Remplis le brief</text>
+    <line x1="180" y1="98" x2="235" y2="98" class="accentGreen"/>
+    <text class="ink sans body" x="180" y="145">Ajoute le contexte du projet :</text>
+    <text class="ink sans body" x="180" y="180">nom, objectif, audience, état actuel,</text>
+    <text class="ink sans body" x="180" y="215">contraintes, résultat attendu.</text>
+    <rect class="calloutGreen" x="28" y="250" width="510" height="60" rx="10"/>
+    <text class="green sans" x="70" y="288" font-size="21" font-weight="700">Fichier utile :</text>
+    <text class="ink sans" x="220" y="288" font-size="19">13_ChatGPT_Runtime/Orbit_Project_Intake.md</text>
+  </g>
+
+  <g transform="translate(28 575)">
+    <rect class="box" x="0" y="0" width="566" height="360"/>
+    <circle cx="75" cy="86" r="52" class="blue"/>
+    <text x="75" y="103" fill="white" font-size="48" text-anchor="middle">▣</text>
+    <text class="ink serif h" x="160" y="65">3. Choisis le bon module</text>
+    <line x1="160" y1="88" x2="215" y2="88" class="accentBlue"/>
+    <g class="sans" transform="translate(150 118)">
+      <rect class="chip" x="0" y="0" width="105" height="30"/><text class="chipText" x="52" y="22" text-anchor="middle">/brand</text><text class="ink" x="135" y="23" font-size="21">Stratégie de marque</text><line class="dash" x1="135" y1="38" x2="395" y2="38"/>
+      <rect class="chip" x="0" y="40" width="105" height="30"/><text class="chipText" x="52" y="62" text-anchor="middle">/creative</text><text class="ink" x="135" y="63" font-size="21">Direction créative</text><line class="dash" x1="135" y1="78" x2="395" y2="78"/>
+      <rect class="chip" x="0" y="80" width="105" height="30"/><text class="chipText" x="52" y="102" text-anchor="middle">/interior</text><text class="ink" x="135" y="103" font-size="21">Concept intérieur</text><line class="dash" x1="135" y1="118" x2="395" y2="118"/>
+      <rect class="chip" x="0" y="120" width="105" height="30"/><text class="chipText" x="52" y="142" text-anchor="middle">/image</text><text class="ink" x="135" y="143" font-size="21">Brief et prompts image</text><line class="dash" x1="135" y1="158" x2="395" y2="158"/>
+      <rect class="chip" x="0" y="160" width="105" height="30"/><text class="chipText" x="52" y="182" text-anchor="middle">/website</text><text class="ink" x="135" y="183" font-size="21">Structure de site</text><line class="dash" x1="135" y1="198" x2="395" y2="198"/>
+      <rect class="chip" x="0" y="200" width="105" height="30"/><text class="chipText" x="52" y="222" text-anchor="middle">/content</text><text class="ink" x="135" y="223" font-size="21">Système de contenu</text><line class="dash" x1="135" y1="238" x2="395" y2="238"/>
+      <rect class="chip" x="0" y="240" width="105" height="30"/><text class="chipText" x="52" y="262" text-anchor="middle">/critic</text><text class="ink" x="135" y="263" font-size="21">Review critique</text>
+    </g>
+  </g>
+
+  <g transform="translate(606 575)">
+    <rect class="box" x="0" y="0" width="566" height="360"/>
+    <circle cx="75" cy="86" r="52" class="green"/>
+    <text x="75" y="103" fill="white" font-size="52" text-anchor="middle">◎</text>
+    <text class="ink serif h" x="160" y="65">4. Demande un livrable clair</text>
+    <line x1="160" y1="88" x2="215" y2="88" class="accentGreen"/>
+    <g class="sans body" transform="translate(180 120)">
+      <text class="green" x="0" y="0">•</text><text class="ink" x="28" y="0">Positionnement</text>
+      <text class="green" x="0" y="42">•</text><text class="ink" x="28" y="42">Territoire visuel</text>
+      <text class="green" x="0" y="84">•</text><text class="ink" x="28" y="84">Concept intérieur</text>
+      <text class="green" x="0" y="126">•</text><text class="ink" x="28" y="126">Prompt image</text>
+      <text class="green" x="0" y="168">•</text><text class="ink" x="28" y="168">Homepage</text>
+      <text class="green" x="0" y="210">•</text><text class="ink" x="28" y="210">Plan de contenu</text>
+    </g>
+  </g>
+
+  <g transform="translate(28 955)">
+    <rect class="box" x="0" y="0" width="566" height="300"/>
+    <circle cx="75" cy="78" r="52" class="blue"/>
+    <text x="75" y="96" fill="white" font-size="55" text-anchor="middle">⌕</text>
+    <text class="ink serif h" x="160" y="65">5. Passe par la review</text>
+    <line x1="160" y1="88" x2="215" y2="88" class="accentBlue"/>
+    <text class="ink sans body" x="160" y="135">Utilise Orbit Critic pour vérifier :</text>
+    <text class="ink sans body" x="160" y="170">clarté, cohérence, utilité, risques,</text>
+    <text class="ink sans body" x="160" y="205">prochaine action.</text>
+    <rect class="calloutBlue" x="28" y="230" width="510" height="55" rx="10"/>
+    <text class="blue sans" x="65" y="265" font-size="23" font-weight="700">Commande utile : /orbit-review</text>
+  </g>
+
+  <g transform="translate(606 955)">
+    <rect class="box" x="0" y="0" width="566" height="300"/>
+    <circle cx="75" cy="78" r="52" class="green"/>
+    <text x="75" y="96" fill="white" font-size="50" text-anchor="middle">▤</text>
+    <text class="ink serif h" x="160" y="65">6. Format de réponse attendu</text>
+    <line x1="160" y1="88" x2="215" y2="88" class="accentGreen"/>
+    <g class="sans" font-size="25" transform="translate(160 130)">
+      <text class="green" x="0" y="0">1.</text><text class="ink" x="45" y="0">Module utilisé</text>
+      <text class="green" x="0" y="38">2.</text><text class="ink" x="45" y="38">Contexte compris</text>
+      <text class="green" x="0" y="76">3.</text><text class="ink" x="45" y="76">Output</text>
+      <text class="green" x="0" y="114">4.</text><text class="ink" x="45" y="114">Risques ou limites</text>
+      <text class="green" x="0" y="152">5.</text><text class="ink" x="45" y="152">Next step</text>
+    </g>
+  </g>
+
+  <rect x="28" y="1285" width="1144" height="170" rx="18" fill="#fffdf8" stroke="#062a5f" stroke-width="4"/>
+  <text class="ink serif" x="600" y="1340" font-size="42" text-anchor="middle">Workflow express</text>
+  <g class="sans" font-size="20" text-anchor="middle" transform="translate(110 1385)">
+    <text x="0" y="0" font-size="34">🚀</text><text class="ink" x="0" y="45">Start</text><text class="blue" x="105" y="15" font-size="32">→</text>
+    <text x="210" y="0" font-size="34">✓</text><text class="ink" x="210" y="45">Brief</text><text class="blue" x="315" y="15" font-size="32">→</text>
+    <text x="420" y="0" font-size="34">▣</text><text class="ink" x="420" y="45">Module</text><text class="blue" x="525" y="15" font-size="32">→</text>
+    <text x="630" y="0" font-size="34">◎</text><text class="ink" x="630" y="45">Livrable</text><text class="blue" x="735" y="15" font-size="32">→</text>
+    <text x="840" y="0" font-size="34">⌕</text><text class="ink" x="840" y="45">Review</text><text class="blue" x="945" y="15" font-size="32">→</text>
+    <text x="1050" y="0" font-size="34">⚑</text><text class="ink" x="1050" y="45">Next step</text>
+  </g>
+</svg>
