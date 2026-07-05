@@ -38,6 +38,7 @@ It is not a prompt pack. It is a modular framework built around shared memory, s
 - 13_ChatGPT_Runtime
 - 14_Automation_Layer
 - 15_ORBIT_Automation_Hub
+- 16_ORBIT_App
 
 ## ChatGPT Runtime
 
@@ -74,6 +75,12 @@ Recommended first workflows:
 A practical layer for running the full brief-to-site-to-content-to-review flow, using the ORBIT modules above.
 
 `15_ORBIT_Automation_Hub/README.md`
+
+## App
+
+A deployable Next.js interface for the Automation Hub — usable on desktop, tablet and mobile.
+
+`16_ORBIT_App/README.md`
 
 ## Current State
 

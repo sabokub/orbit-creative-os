@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: rgb(23 23 23);
+  background: rgb(250 250 250);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: rgb(237 237 237);
+    background: rgb(10 10 10);
+  }
+}
