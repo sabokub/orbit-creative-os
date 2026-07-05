@@ -1,6 +1,6 @@
 # ORBIT — Creative Operating System
 
-Version: v1.0 Foundation
+Version: v1.2 Runtime Expansion
 
 ## Purpose
 
@@ -28,7 +28,12 @@ It is not a prompt pack. It is a modular framework built around shared memory, s
 - 05_Templates
 - 06_Frameworks
 - 07_GPT_Build
+- 07_Custom_GPTs
 - 08_Implementation
+- 08_Test_Cases
+- 09_Framework_Examples
+- 10_Prompt_Library
+- 11_Automated_Workflows
 - 13_ChatGPT_Runtime
 
 ## ChatGPT Runtime
@@ -41,11 +46,17 @@ Visual user manual:
 
 `13_ChatGPT_Runtime/Mode_Emploi_Visuel.md`
 
+## Ready-to-use additions
+
+- Custom GPT configs: `07_Custom_GPTs/`
+- Real test cases: `08_Test_Cases/`
+- Framework examples: `09_Framework_Examples/`
+- Prompt library: `10_Prompt_Library/`
+- Workflow specs: `11_Automated_Workflows/`
+
 ## Current State
 
-This repository is in v1 foundation stage.
-
-It can be used as a structured knowledge base and starting point for custom GPTs. It is not yet a finished commercial application.
+This repository is now usable as a structured knowledge base, runtime prompt system and custom GPT preparation kit.
 
 ## Recommended Next Step
 
