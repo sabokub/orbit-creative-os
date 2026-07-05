@@ -10,4 +10,9 @@ Ready-to-use prompts for running ORBIT inside ChatGPT or a custom GPT.
 - Image prompts
 - Website prompts
 - Content prompts
-- Critic prompts
+- Review prompts
+- Hero image review prompt
+
+## Specific Prompts
+
+- `Hero_Image_Review_Prompt.md` for rating a website hero image with ORBIT.
