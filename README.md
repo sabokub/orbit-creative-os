@@ -29,6 +29,17 @@ It is not a prompt pack. It is a modular framework built around shared memory, s
 - 06_Frameworks
 - 07_GPT_Build
 - 08_Implementation
+- 13_ChatGPT_Runtime
+
+## ChatGPT Runtime
+
+To use ORBIT directly in ChatGPT, start here:
+
+`13_ChatGPT_Runtime/Start_Here.md`
+
+Visual user manual:
+
+`13_ChatGPT_Runtime/Mode_Emploi_Visuel.md`
 
 ## Current State
 
@@ -38,4 +49,4 @@ It can be used as a structured knowledge base and starting point for custom GPTs
 
 ## Recommended Next Step
 
-Use `07_GPT_Build/File_Map.md` to package the first custom GPTs.
+Use `13_ChatGPT_Runtime/Start_Here.md` to activate ORBIT inside ChatGPT.
