@@ -1,12 +1,12 @@
 # ORBIT — Creative Operating System
 
-Version: v1.2 Runtime Expansion
+Version: v1.3 Automation Scope
 
 ## Purpose
 
 ORBIT is a creative operating system for building brands, interiors, websites, images and content systems through structured reasoning.
 
-It is not a prompt pack. It is a modular framework built around shared memory, specialist agents, reusable frameworks and quality gates.
+It is not a prompt pack. It is a modular framework built around shared memory, specialist agents, reusable frameworks, quality gates and automation-ready workflows.
 
 ## Core Principles
 
@@ -17,6 +17,7 @@ It is not a prompt pack. It is a modular framework built around shared memory, s
 5. Consistency over speed.
 6. Frameworks over isolated prompts.
 7. Critique before delivery.
+8. Automate repeated thinking, not creative judgment.
 
 ## Repository Structure
 
@@ -35,6 +36,7 @@ It is not a prompt pack. It is a modular framework built around shared memory, s
 - 10_Prompt_Library
 - 11_Automated_Workflows
 - 13_ChatGPT_Runtime
+- 14_Automation_Layer
 
 ## ChatGPT Runtime
 
@@ -46,6 +48,17 @@ Visual user manual:
 
 `13_ChatGPT_Runtime/Mode_Emploi_Visuel.md`
 
+## Automation Layer
+
+To reduce manual work and prepare ORBIT for a more complete v1, start here:
+
+`14_Automation_Layer/README.md`
+
+Recommended first workflows:
+
+- Brand Kit Generator
+- Hero Image Review
+
 ## Ready-to-use additions
 
 - Custom GPT configs: `07_Custom_GPTs/`
@@ -53,11 +66,12 @@ Visual user manual:
 - Framework examples: `09_Framework_Examples/`
 - Prompt library: `10_Prompt_Library/`
 - Workflow specs: `11_Automated_Workflows/`
+- Automation layer: `14_Automation_Layer/`
 
 ## Current State
 
-This repository is now usable as a structured knowledge base, runtime prompt system and custom GPT preparation kit.
+This repository is now usable as a structured knowledge base, runtime prompt system, custom GPT preparation kit and automation blueprint.
 
 ## Recommended Next Step
 
-Use `13_ChatGPT_Runtime/Start_Here.md` to activate ORBIT inside ChatGPT.
+Use `14_Automation_Layer/Brand_Kit_Automation.md` to build the first semi-automated ORBIT workflow.
