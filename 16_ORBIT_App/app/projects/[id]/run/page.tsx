@@ -18,13 +18,16 @@ function RunnerContent() {
   const [reviewTarget, setReviewTarget] = useState<WorkflowStep>("website");
   const [pasted, setPasted] = useState("");
   const [error, setError] = useState("");
+  const [genError, setGenError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     getProject(params.id)
       .then(setProject)
       .catch((err) => setError((err as Error).message));
     setPasted("");
+    setGenError("");
   }, [params.id, step]);
 
   if (error) {
@@ -54,6 +57,30 @@ function RunnerContent() {
     step === "review"
       ? buildPrompt("review", brand, project.name, project.brief, priorOutputs, reviewTarget)
       : buildPrompt(step, brand, project.name, project.brief, priorOutputs);
+
+  async function generateAuto() {
+    if (!project) return;
+    setGenerating(true);
+    setGenError("");
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: project.id,
+          step,
+          reviewTarget: step === "review" ? reviewTarget : undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Requête échouée (${res.status})`);
+      setPasted(data.output);
+    } catch (err) {
+      setGenError((err as Error).message);
+    } finally {
+      setGenerating(false);
+    }
+  }
 
   async function saveResult() {
     if (!project || !pasted.trim()) return;
@@ -97,7 +124,7 @@ function RunnerContent() {
           {STEP_LABELS[step]} — {project.name}
         </h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          Copie le prompt, génère la réponse dans ChatGPT/Claude, colle le résultat ci-dessous.
+          Génère automatiquement via OpenAI, ou copie le prompt dans ChatGPT/Claude et colle la réponse ci-dessous.
         </p>
       </div>
 
@@ -138,9 +165,28 @@ function RunnerContent() {
 
       <PromptPreview prompt={prompt} />
 
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <button
+          onClick={generateAuto}
+          disabled={generating}
+          className="rounded-lg border border-neutral-900 px-4 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-100 disabled:opacity-50 dark:border-white dark:text-white dark:hover:bg-neutral-800"
+        >
+          {generating ? "Génération en cours..." : "Générer automatiquement (OpenAI)"}
+        </button>
+        <span className="text-xs text-neutral-400">
+          Appelle l&apos;API OpenAI côté serveur et remplit la zone ci-dessous. Nécessite OPENAI_API_KEY configurée.
+        </span>
+      </div>
+
+      {genError && (
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+          {genError}
+        </p>
+      )}
+
       <div className="space-y-2">
         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-          Coller la réponse générée
+          Réponse générée (auto ou collée manuellement)
         </label>
         <textarea
           value={pasted}
