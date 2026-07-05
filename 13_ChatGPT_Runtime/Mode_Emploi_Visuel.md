@@ -6,11 +6,11 @@ Ce visuel sert de fiche rapide pour utiliser ORBIT dans ChatGPT.
 
 ## Fichier image
 
-`13_ChatGPT_Runtime/assets/mode_emploi_orbit_chatgpt.png`
+`13_ChatGPT_Runtime/assets/mode_emploi_orbit_chatgpt.svg`
 
 ## Prévisualisation
 
-![Mode d'emploi ORBIT sur ChatGPT](assets/mode_emploi_orbit_chatgpt.png)
+![Mode d'emploi ORBIT sur ChatGPT](assets/mode_emploi_orbit_chatgpt.svg)
 
 ## Usage recommandé
 
