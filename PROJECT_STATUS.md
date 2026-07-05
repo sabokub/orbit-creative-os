@@ -2,11 +2,15 @@
 
 ## Current Version
 
-**v1.0 Foundation**
+v1.0 Foundation
+
+## Release State
+
+Foundation complete.
 
 ## Repository State
 
-The repository currently contains the first functional skeleton of ORBIT:
+The repository now contains a usable foundation for ORBIT:
 
 - foundations
 - core system
@@ -15,13 +19,18 @@ The repository currently contains the first functional skeleton of ORBIT:
 - knowledge base
 - templates
 - shared frameworks
+- GPT build kit
+- implementation notes
+- examples
+- packages
+- tests
+- release notes
 
 ## Status Legend
 
 | Status | Meaning |
 |--------|---------|
 | Draft | Initial structure exists |
-| Active | Currently being developed |
 | Stable | Usable as a reference |
 | Complete | Ready for implementation |
 
@@ -29,23 +38,17 @@ The repository currently contains the first functional skeleton of ORBIT:
 
 | Module | Status | Notes |
 |--------|--------|-------|
-| Foundations | Draft | Architecture, principles and scoring exist |
-| Core | Draft | Orchestrator, memory, workflow and quality engine exist |
-| Agents | Draft | First agent specifications exist |
-| Frameworks | Draft | Shared frameworks are being defined |
-| Workflows | Draft | Branding and interior workflows exist |
-| Templates | Draft | First creative brief template exists |
+| Foundations | Stable | Architecture, principles and decision logic exist |
+| Core | Stable | Orchestrator, memory, workflow and quality logic exist |
+| Agents | Stable | Main agent specifications exist |
+| Frameworks | Stable | Shared frameworks exist and can be reused |
+| Workflows | Stable | Main workflows exist |
+| Templates | Stable | Core templates exist |
+| GPT Build | Stable | Packaging logic exists |
+| Tests | Stable | Test prompts and quality rubric exist |
 
 ## Next Milestone
 
-**v1.1 — Agent Expansion**
+v1.1 Agent Manual Expansion
 
-The next release will expand the following agents:
-
-1. Brand Strategist
-2. Creative Director
-3. Interior Director
-4. Image Director
-5. Critic
-
-Each agent should evolve from a short specification into an actionable operating manual.
+The next release should turn the most important agent files into deeper manuals with examples, edge cases and richer test scenarios.
