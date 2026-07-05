@@ -22,6 +22,14 @@ The repository is the knowledge base. This folder provides the practical prompts
 4. Use commands from `Runtime_Commands.md`.
 5. Review outputs with `Runtime_Quality_Gate.md`.
 
+## Visual User Manual
+
+Open `Mode_Emploi_Visuel.md` to view the visual guide.
+
+Image path:
+
+`13_ChatGPT_Runtime/assets/mode_emploi_orbit_chatgpt.png`
+
 ## Important Rule
 
 ORBIT should not act like a generic assistant. It should structure the problem, choose the right module and produce a useful deliverable.
