@@ -2,19 +2,20 @@
 
 ## Current Version
 
-v1.0 Foundation
+v1.1 Agent Manuals
 
 ## Release State
 
-Foundation complete.
+Complete for the current documentation scope.
 
 ## Repository State
 
-The repository now contains a usable foundation for ORBIT:
+The repository contains a usable ORBIT system:
 
 - foundations
 - core system
 - specialist agents
+- agent manuals
 - workflows
 - knowledge base
 - templates
@@ -30,7 +31,6 @@ The repository now contains a usable foundation for ORBIT:
 
 | Status | Meaning |
 |--------|---------|
-| Draft | Initial structure exists |
 | Stable | Usable as a reference |
 | Complete | Ready for implementation |
 
@@ -38,17 +38,19 @@ The repository now contains a usable foundation for ORBIT:
 
 | Module | Status | Notes |
 |--------|--------|-------|
-| Foundations | Stable | Architecture, principles and decision logic exist |
-| Core | Stable | Orchestrator, memory, workflow and quality logic exist |
-| Agents | Stable | Main agent specifications exist |
-| Frameworks | Stable | Shared frameworks exist and can be reused |
-| Workflows | Stable | Main workflows exist |
-| Templates | Stable | Core templates exist |
-| GPT Build | Stable | Packaging logic exists |
-| Tests | Stable | Test prompts and quality rubric exist |
+| Foundations | Complete | Architecture, principles and decision logic exist |
+| Core | Complete | Orchestrator, memory, workflow and quality logic exist |
+| Agents | Complete | Main agent specifications exist |
+| Agent Manuals | Complete | Core manuals exist for the main agents |
+| Frameworks | Complete | Shared frameworks exist and can be reused |
+| Workflows | Complete | Main workflows exist |
+| Templates | Complete | Core templates exist |
+| GPT Build | Complete | Packaging logic exists |
+| Packages | Complete | Package maps exist for the main modules |
+| Tests | Complete | Test prompts and quality rubric exist |
 
-## Next Milestone
+## Next Possible Milestone
 
-v1.1 Agent Manual Expansion
+v2.0 Application Layer
 
-The next release should turn the most important agent files into deeper manuals with examples, edge cases and richer test scenarios.
+This would move ORBIT from documentation into software, interface design or automated workflows.
