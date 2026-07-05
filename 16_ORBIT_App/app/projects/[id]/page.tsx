@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { Project, WorkflowStep } from "@/lib/types";
 import { getProject, saveProject } from "@/lib/storage";
 import { STEP_LABELS, STEP_ORDER } from "@/lib/prompts";
+import { DEFAULT_BRAND_PROFILE, WORKFLOW_TYPE_LABELS } from "@/lib/brandProfile";
 import WorkflowSelector from "@/components/WorkflowSelector";
 import OutputPanel from "@/components/OutputPanel";
 import ReviewScoreCard from "@/components/ReviewScoreCard";
@@ -60,7 +61,9 @@ export default function ProjectWorkspace() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">{project.name}</h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">{project.brief.activity}</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            {WORKFLOW_TYPE_LABELS[project.brief.workflowType]} · Brand Profile : {DEFAULT_BRAND_PROFILE.name}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={project.reviews[project.reviews.length - 1]?.status || "Not reviewed"} />
@@ -74,14 +77,19 @@ export default function ProjectWorkspace() {
       </div>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-500">Brief</h2>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">Project Brief</h2>
+          <Link href="/brand-profile" className="text-xs font-medium text-neutral-500 underline underline-offset-2 hover:text-neutral-800 dark:hover:text-neutral-200">
+            Brand DNA héritée de {DEFAULT_BRAND_PROFILE.name}
+          </Link>
+        </div>
         <div className="grid grid-cols-1 gap-3 rounded-xl border border-neutral-200 p-4 text-sm sm:grid-cols-2 dark:border-neutral-800">
-          <p><span className="text-neutral-500">Audience :</span> {project.brief.audience || "—"}</p>
-          <p><span className="text-neutral-500">Offre :</span> {project.brief.offer || "—"}</p>
-          <p><span className="text-neutral-500">Style :</span> {project.brief.style_keywords || "—"}</p>
-          <p><span className="text-neutral-500">À éviter :</span> {project.brief.avoid_keywords || "—"}</p>
+          <p><span className="text-neutral-500">Objectif :</span> {project.brief.projectGoal || "—"}</p>
+          <p><span className="text-neutral-500">Livrable attendu :</span> {project.brief.deliverableType || "—"}</p>
+          <p className="sm:col-span-2"><span className="text-neutral-500">Contexte spécifique :</span> {project.brief.specificContext || "—"}</p>
           <p><span className="text-neutral-500">Canaux :</span> {project.brief.channels || "—"}</p>
-          <p><span className="text-neutral-500">Critère de succès :</span> {project.brief.success_criteria || "—"}</p>
+          <p><span className="text-neutral-500">Format :</span> {project.brief.format || "—"}</p>
+          <p className="sm:col-span-2"><span className="text-neutral-500">Critère de succès :</span> {project.brief.successCriteria || "—"}</p>
         </div>
       </section>
 

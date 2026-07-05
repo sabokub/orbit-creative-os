@@ -17,6 +17,9 @@ export default function NavBar() {
           <Link href="/" className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white">
             Dashboard
           </Link>
+          <Link href="/brand-profile" className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white">
+            Brand Profile
+          </Link>
           <Link
             href="/projects/new"
             className="rounded-lg bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
@@ -40,6 +43,9 @@ export default function NavBar() {
         <div className="flex flex-col gap-2 border-t border-neutral-200 px-4 py-3 sm:hidden dark:border-neutral-800">
           <Link href="/" onClick={() => setOpen(false)} className="text-sm text-neutral-700 dark:text-neutral-200">
             Dashboard
+          </Link>
+          <Link href="/brand-profile" onClick={() => setOpen(false)} className="text-sm text-neutral-700 dark:text-neutral-200">
+            Brand Profile
           </Link>
           <Link
             href="/projects/new"
