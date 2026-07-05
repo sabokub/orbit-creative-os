@@ -4,16 +4,19 @@ Version: v1.0 Foundation
 
 ## Purpose
 
-ORBIT is a creative operating system designed to help build brands, products,
-spaces and creative businesses through structured reasoning rather than isolated prompts.
+ORBIT is a creative operating system for building brands, interiors, websites, images and content systems through structured reasoning.
+
+It is not a prompt pack. It is a modular framework built around shared memory, specialist agents, reusable frameworks and quality gates.
 
 ## Core Principles
 
 1. Strategy before execution.
-2. One source of truth (Orbit Brain).
+2. One source of truth: Orbit Brain.
 3. Every decision is justified.
 4. Every output is reviewed.
 5. Consistency over speed.
+6. Frameworks over isolated prompts.
+7. Critique before delivery.
 
 ## Repository Structure
 
@@ -23,10 +26,16 @@ spaces and creative businesses through structured reasoning rather than isolated
 - 03_Workflows
 - 04_Knowledge
 - 05_Templates
+- 06_Frameworks
+- 07_GPT_Build
+- 08_Implementation
 
-This repository is intended to grow incrementally.
+## Current State
 
+This repository is in v1 foundation stage.
 
-## Framework Library
+It can be used as a structured knowledge base and starting point for custom GPTs. It is not yet a finished commercial application.
 
-Shared frameworks live in `/06_Frameworks` and are referenced by all specialist agents.
+## Recommended Next Step
+
+Use `07_GPT_Build/File_Map.md` to package the first custom GPTs.
