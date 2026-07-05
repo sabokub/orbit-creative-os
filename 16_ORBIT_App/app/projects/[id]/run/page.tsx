@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Project, WorkflowStep } from "@/lib/types";
 import { getProject, saveProject } from "@/lib/storage";
 import { buildPrompt, detectReviewStatus, STEP_LABELS, STEP_ORDER } from "@/lib/prompts";
@@ -10,18 +10,29 @@ import PromptPreview from "@/components/PromptPreview";
 
 function RunnerContent() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const step = (searchParams.get("step") as WorkflowStep) || "strategy";
 
   const [project, setProject] = useState<Project | null | undefined>(undefined);
   const [reviewTarget, setReviewTarget] = useState<WorkflowStep>("website");
   const [pasted, setPasted] = useState("");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setProject(getProject(params.id));
+    getProject(params.id)
+      .then(setProject)
+      .catch((err) => setError((err as Error).message));
     setPasted("");
   }, [params.id, step]);
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-900/20 dark:text-red-300">
+        {error}
+      </div>
+    );
+  }
 
   if (project === undefined) return null;
   if (project === null) {
@@ -42,34 +53,39 @@ function RunnerContent() {
       ? buildPrompt("review", project.brief, priorOutputs, reviewTarget)
       : buildPrompt(step, project.brief, priorOutputs);
 
-  function saveResult() {
+  async function saveResult() {
     if (!project || !pasted.trim()) return;
-
-    if (step === "review") {
-      const status = detectReviewStatus(pasted);
-      const next: Project = {
-        ...project,
-        reviews: [
-          ...project.reviews,
-          { target: reviewTarget, content: pasted, status, created_at: new Date().toISOString() },
-        ],
-        stage: "review",
-      };
-      saveProject(next);
-      setProject(next);
-    } else {
-      const next: Project = {
-        ...project,
-        outputs: {
-          ...project.outputs,
-          [step]: { step, content: pasted, created_at: new Date().toISOString() },
-        },
-        stage: step,
-      };
-      saveProject(next);
-      setProject(next);
+    setSaving(true);
+    try {
+      let next: Project;
+      if (step === "review") {
+        const status = detectReviewStatus(pasted);
+        next = {
+          ...project,
+          reviews: [
+            ...project.reviews,
+            { target: reviewTarget, content: pasted, status, created_at: new Date().toISOString() },
+          ],
+          stage: "review",
+        };
+      } else {
+        next = {
+          ...project,
+          outputs: {
+            ...project.outputs,
+            [step]: { step, content: pasted, created_at: new Date().toISOString() },
+          },
+          stage: step,
+        };
+      }
+      const saved = await saveProject(next);
+      setProject(saved);
+      setPasted("");
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setSaving(false);
     }
-    setPasted("");
   }
 
   return (
@@ -134,10 +150,10 @@ function RunnerContent() {
         <div className="flex flex-col gap-2 sm:flex-row">
           <button
             onClick={saveResult}
-            disabled={!pasted.trim()}
+            disabled={!pasted.trim() || saving}
             className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-40 dark:bg-white dark:text-neutral-900"
           >
-            Enregistrer dans le projet
+            {saving ? "Enregistrement..." : "Enregistrer dans le projet"}
           </button>
           <Link
             href={`/projects/${project.id}`}

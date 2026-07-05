@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Project, WorkflowStep } from "@/lib/types";
 import { getProject, saveProject } from "@/lib/storage";
 import { STEP_LABELS, STEP_ORDER } from "@/lib/prompts";
@@ -14,18 +14,28 @@ import StatusBadge from "@/components/StatusBadge";
 
 export default function ProjectWorkspace() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const [project, setProject] = useState<Project | null | undefined>(undefined);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setProject(getProject(params.id));
+    getProject(params.id)
+      .then(setProject)
+      .catch((err) => setError((err as Error).message));
   }, [params.id]);
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-900/20 dark:text-red-300">
+        {error}
+      </div>
+    );
+  }
 
   if (project === undefined) return null;
   if (project === null) {
     return (
       <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
-        <p className="text-sm text-neutral-500">Projet introuvable dans ce navigateur.</p>
+        <p className="text-sm text-neutral-500">Projet introuvable.</p>
         <Link href="/" className="mt-3 inline-block text-sm underline">
           Retour au dashboard
         </Link>
@@ -38,11 +48,11 @@ export default function ProjectWorkspace() {
     completed[s] = Boolean(project.outputs[s]);
   });
 
-  function update(patch: Partial<Project>) {
+  async function update(patch: Partial<Project>) {
     if (!project) return;
     const next = { ...project, ...patch };
-    saveProject(next);
-    setProject(next);
+    const saved = await saveProject(next);
+    setProject(saved);
   }
 
   return (

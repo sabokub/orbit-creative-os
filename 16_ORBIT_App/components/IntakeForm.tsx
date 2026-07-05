@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Brief, emptyBrief, Project } from "@/lib/types";
-import { saveProject, slugify } from "@/lib/storage";
+import { Brief, emptyBrief } from "@/lib/types";
+import { createProject } from "@/lib/storage";
 
 const FIELDS: { key: keyof Brief; label: string; textarea?: boolean; placeholder?: string }[] = [
   { key: "project_name", label: "Nom du projet" },
@@ -28,32 +28,26 @@ export default function IntakeForm() {
   const router = useRouter();
   const [brief, setBrief] = useState<Brief>(emptyBrief());
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function update(key: keyof Brief, value: string) {
     setBrief((prev) => ({ ...prev, [key]: value }));
   }
 
-  function submit() {
+  async function submit() {
     if (!brief.project_name.trim()) {
       setError("Le nom du projet est obligatoire.");
       return;
     }
-    const id = slugify(brief.project_name);
-    const now = new Date().toISOString();
-    const project: Project = {
-      id,
-      name: brief.project_name,
-      type: brief.activity.slice(0, 60),
-      stage: "brief",
-      created_at: now,
-      updated_at: now,
-      brief,
-      outputs: {},
-      reviews: [],
-      exports: [],
-    };
-    saveProject(project);
-    router.push(`/projects/${id}`);
+    setError("");
+    setSubmitting(true);
+    try {
+      const project = await createProject(brief);
+      router.push(`/projects/${project.id}`);
+    } catch (err) {
+      setError((err as Error).message);
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -82,13 +76,18 @@ export default function IntakeForm() {
         ))}
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && (
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+          {error}
+        </p>
+      )}
 
       <button
         onClick={submit}
-        className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-700 sm:w-auto dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+        disabled={submitting}
+        className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50 sm:w-auto dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
       >
-        Créer le projet
+        {submitting ? "Création..." : "Créer le projet"}
       </button>
     </div>
   );

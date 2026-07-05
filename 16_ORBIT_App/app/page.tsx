@@ -10,10 +10,18 @@ import { STEP_LABELS, STEP_ORDER } from "@/lib/prompts";
 export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setProjects(listProjects());
-    setLoaded(true);
+    listProjects()
+      .then((p) => {
+        setProjects(p);
+        setLoaded(true);
+      })
+      .catch((err) => {
+        setError((err as Error).message);
+        setLoaded(true);
+      });
   }, []);
 
   return (
@@ -33,7 +41,13 @@ export default function Dashboard() {
         </Link>
       </div>
 
-      {loaded && projects.length === 0 && (
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-900/20 dark:text-red-300">
+          {error}
+        </div>
+      )}
+
+      {loaded && !error && projects.length === 0 && (
         <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Aucun projet pour l&apos;instant. Crée ton premier projet pour lancer le flow ORBIT.

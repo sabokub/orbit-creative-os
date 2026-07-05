@@ -12,10 +12,21 @@ export default function OutputLibraryPage() {
   const params = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null | undefined>(undefined);
   const [filter, setFilter] = useState<string>("all");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setProject(getProject(params.id));
+    getProject(params.id)
+      .then(setProject)
+      .catch((err) => setError((err as Error).message));
   }, [params.id]);
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-900/20 dark:text-red-300">
+        {error}
+      </div>
+    );
+  }
 
   if (project === undefined) return null;
   if (project === null) {
