@@ -4,6 +4,8 @@
 
 Goal: establish the repository structure and core concepts.
 
+Status: complete
+
 Deliverables:
 
 - Repository architecture
@@ -19,57 +21,33 @@ Deliverables:
 - Tests
 - Release notes
 
-Status: complete
-
 ## v1.1 Agent Manual Expansion
 
-Goal: turn each agent into a deeper expert manual.
+Goal: turn each main agent into a deeper operating manual.
 
-Priority agents:
-
-1. Brand Strategist
-2. Creative Director
-3. Interior Director
-4. Image Director
-5. Website Director
-6. Critic
+Status: complete
 
 Deliverables:
 
-- Detailed workflows
-- Decision rules
-- Advanced checklists
-- Failure patterns
-- Examples
-- Test cases
-- Output templates
+- Brand Strategist Manual
+- Creative Director Manual
+- Interior Director Manual
+- Image Director Manual
+- Website Director Manual
+- Content Director Manual
+- Critic Manual
+- Module packages
 
-Status: next
+## v2.0 Application Layer
 
-## v1.2 Framework Expansion
+Goal: move ORBIT from documentation into a usable interface or automated workflow.
 
-Goal: make shared frameworks detailed enough to support complex projects.
+Possible directions:
 
-Priority frameworks:
+- Custom GPT suite
+- Studio operating dashboard
+- Client-facing intake system
+- Prompt and brief generator
+- Workflow automation
 
-- Visual Territory
-- Visual DNA
-- Spatial Narrative
-- Material Language
-- Prompt Architecture
-- Conversion Ladder
-- Brand Coherence Index
-
-## v2.0 Interior Intelligence
-
-Goal: create the first specialized professional vertical.
-
-Focus:
-
-- Interior design
-- Decoration
-- Spatial storytelling
-- Materials
-- Lighting
-- Image briefs
-- Client deliverables
+Status: future
