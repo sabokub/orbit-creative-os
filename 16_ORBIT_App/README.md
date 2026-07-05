@@ -6,7 +6,7 @@ Mini-interface Next.js pour piloter le flow ORBIT (brief → stratégie → cré
 
 - App Next.js 14 (App Router) + TypeScript + Tailwind.
 - Stockage partagé via une base Redis (Upstash), accessible depuis n'importe quel appareil connecté au même déploiement — PC, tablette, mobile.
-- Génération en mode "copier-coller assisté" : l'app remplit les master prompts avec les données du projet, tu les copies dans ChatGPT/Claude, tu colles la réponse, l'app la range dans le projet.
+- Génération : bouton "Générer automatiquement (OpenAI)" qui appelle l'API OpenAI côté serveur, ou mode "copier-coller assisté" (copier le prompt dans ChatGPT/Claude, coller la réponse) si aucune clé n'est configurée.
 - 100% responsive.
 
 ## Architecture
@@ -14,7 +14,17 @@ Mini-interface Next.js pour piloter le flow ORBIT (brief → stratégie → cré
 - `app/api/projects/` — routes API (GET/POST liste, GET/PUT/DELETE par projet).
 - `lib/db.ts` — accès Redis (server-only, jamais exposé au navigateur).
 - `lib/storage.ts` — client léger qui appelle ces routes API depuis les pages.
-- Aucune clé API IA n'est stockée côté serveur : la génération reste manuelle (copier/coller).
+- `lib/openai.ts` + `app/api/generate/route.ts` — appel serveur à l'API OpenAI (clé jamais exposée au navigateur). Si `OPENAI_API_KEY` n'est pas configurée, le bouton "Générer automatiquement" renvoie une erreur claire et le mode copier-coller reste disponible.
+
+## Génération automatique — OpenAI
+
+1. Récupère une clé API sur [platform.openai.com](https://platform.openai.com/api-keys).
+2. Dans Vercel : **Settings → Environment Variables** → ajoute `OPENAI_API_KEY` (Production + Preview + Development).
+3. Optionnel : `OPENAI_MODEL` (défaut `gpt-4o-mini`) pour changer de modèle.
+4. Redéploie.
+5. Dans le Workflow Runner, clique **Générer automatiquement (OpenAI)** : la réponse remplit la zone de texte, à relire avant "Enregistrer dans le projet" (rien n'est sauvegardé automatiquement sans validation).
+
+Sans cette clé, l'app fonctionne normalement en mode copier-coller (bouton Copier sur le prompt).
 
 ## Base de données — Redis (Upstash)
 
@@ -65,5 +75,5 @@ npx vercel --prod
 ## Limites de cette v1
 
 - Un seul espace de données partagé (pas de comptes utilisateurs séparés) : adapté à un usage interne mono-opérateur, pas à plusieurs clients isolés.
-- Pas d'appel direct à une API IA : la génération reste manuelle. Voir `../15_ORBIT_Automation_Hub/SETUP.md` pour brancher une clé API plus tard.
+- La génération automatique appelle OpenAI à chaque clic (pas de cache, pas de limite de coût intégrée) — surveille ta consommation sur platform.openai.com.
 - L'export Google Doc / PDF n'est pas automatisé : le bouton "Exporter" télécharge un `.md`, à coller dans Google Docs ou convertir en PDF (voir `../15_ORBIT_Automation_Hub/EXPORT_FORMATS.md`).
