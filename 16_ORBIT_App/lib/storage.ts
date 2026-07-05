@@ -1,6 +1,8 @@
 "use client";
 
-import { Brief, Project } from "./types";
+import { Project, ProjectBrief } from "./types";
+
+export type CreateProjectInput = Omit<ProjectBrief, "brandProfileId"> & { name: string };
 
 async function parse<T>(res: Response): Promise<T> {
   if (!res.ok) {
@@ -21,11 +23,11 @@ export async function getProject(id: string): Promise<Project | null> {
   return parse<Project>(res);
 }
 
-export async function createProject(brief: Brief): Promise<Project> {
+export async function createProject(input: CreateProjectInput): Promise<Project> {
   const res = await fetch("/api/projects", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(brief),
+    body: JSON.stringify(input),
   });
   return parse<Project>(res);
 }

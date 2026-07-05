@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Project, WorkflowStep } from "@/lib/types";
 import { getProject, saveProject } from "@/lib/storage";
 import { buildPrompt, detectReviewStatus, STEP_LABELS, STEP_ORDER } from "@/lib/prompts";
+import { getBrandProfile } from "@/lib/brandProfile";
 import PromptPreview from "@/components/PromptPreview";
 
 function RunnerContent() {
@@ -48,10 +49,11 @@ function RunnerContent() {
     Object.entries(project.outputs).map(([k, v]) => [k, v?.content || ""])
   ) as Partial<Record<WorkflowStep, string>>;
 
+  const brand = getBrandProfile(project.brief.brandProfileId);
   const prompt =
     step === "review"
-      ? buildPrompt("review", project.brief, priorOutputs, reviewTarget)
-      : buildPrompt(step, project.brief, priorOutputs);
+      ? buildPrompt("review", brand, project.name, project.brief, priorOutputs, reviewTarget)
+      : buildPrompt(step, brand, project.name, project.brief, priorOutputs);
 
   async function saveResult() {
     if (!project || !pasted.trim()) return;

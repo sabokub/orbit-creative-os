@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listProjects, saveProject } from "@/lib/db";
 import { slugify } from "@/lib/slug";
-import { Brief, Project } from "@/lib/types";
+import { DEFAULT_BRAND_PROFILE, WORKFLOW_TYPE_LABELS } from "@/lib/brandProfile";
+import { Project, ProjectBrief } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+
+interface CreateProjectInput extends Omit<ProjectBrief, "brandProfileId"> {
+  name: string;
+}
 
 export async function GET() {
   try {
@@ -16,16 +21,28 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const brief = (await req.json()) as Brief;
-    if (!brief.project_name?.trim()) {
-      return NextResponse.json({ error: "project_name is required" }, { status: 400 });
+    const input = (await req.json()) as CreateProjectInput;
+    if (!input.name?.trim()) {
+      return NextResponse.json({ error: "name is required" }, { status: 400 });
     }
-    const id = slugify(brief.project_name);
+    const id = slugify(input.name);
     const now = new Date().toISOString();
+    const brief: ProjectBrief = {
+      brandProfileId: DEFAULT_BRAND_PROFILE.id,
+      workflowType: input.workflowType,
+      projectGoal: input.projectGoal,
+      specificContext: input.specificContext,
+      deliverableType: input.deliverableType,
+      references: input.references,
+      constraints: input.constraints,
+      channels: input.channels,
+      format: input.format,
+      successCriteria: input.successCriteria,
+    };
     const project: Project = {
       id,
-      name: brief.project_name,
-      type: (brief.activity || "").slice(0, 60),
+      name: input.name,
+      type: WORKFLOW_TYPE_LABELS[input.workflowType] || input.workflowType,
       stage: "brief",
       created_at: now,
       updated_at: now,

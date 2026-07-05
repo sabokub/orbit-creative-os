@@ -12,24 +12,43 @@ export type ReviewStatus = "Approved" | "Needs revision" | "Blocked" | "Not revi
 
 export type WorkflowStep = "strategy" | "creative" | "website" | "content" | "images" | "review";
 
-export interface Brief {
-  project_name: string;
+export type WorkflowType = "website" | "content" | "images" | "review" | "brand-kit";
+
+export interface BrandProfile {
+  id: string;
+  name: string;
   activity: string;
+  positioning: string;
   audience: string;
   offer: string;
-  positioning_goal: string;
-  style_keywords: string;
-  avoid_keywords: string;
-  colors_accent: string;
+  brandPromise: string;
+  messagePillars: string[];
+  visualDirection: string;
+  toneOfVoice: string;
+  colors: string;
+  photographyDirection: string;
+  contentDirection: string;
+  websiteDirection: string;
+  imagePromptRules: string;
+  avoid: string[];
+  successCriteria: string;
+}
+
+/**
+ * Marque = contexte fixe (Brand Profile). Livrable = contexte variable (Project Brief).
+ * Tous les générateurs reçoivent les deux, jamais un brief qui mélange les deux.
+ */
+export interface ProjectBrief {
+  brandProfileId: string;
+  workflowType: WorkflowType;
+  projectGoal: string;
+  specificContext: string;
+  deliverableType: string;
   references: string;
-  competitors: string;
-  budget: string;
-  timeline: string;
-  tools: string;
-  format: string;
+  constraints: string;
   channels: string;
-  needed_output: string;
-  success_criteria: string;
+  format: string;
+  successCriteria: string;
 }
 
 export interface GeneratedOutput {
@@ -58,28 +77,21 @@ export interface Project {
   stage: Stage;
   created_at: string;
   updated_at: string;
-  brief: Brief;
+  brief: ProjectBrief;
   outputs: Partial<Record<WorkflowStep, GeneratedOutput>>;
   reviews: Review[];
   exports: ExportRecord[];
 }
 
-export const emptyBrief = (): Brief => ({
-  project_name: "",
-  activity: "",
-  audience: "",
-  offer: "",
-  positioning_goal: "",
-  style_keywords: "",
-  avoid_keywords: "",
-  colors_accent: "",
+export const emptyProjectBrief = (brandProfileId: string): ProjectBrief => ({
+  brandProfileId,
+  workflowType: "website",
+  projectGoal: "",
+  specificContext: "",
+  deliverableType: "",
   references: "",
-  competitors: "",
-  budget: "",
-  timeline: "",
-  tools: "",
-  format: "Markdown",
+  constraints: "",
   channels: "Instagram, TikTok, Pinterest, Website",
-  needed_output: "",
-  success_criteria: "",
+  format: "Markdown",
+  successCriteria: "",
 });
