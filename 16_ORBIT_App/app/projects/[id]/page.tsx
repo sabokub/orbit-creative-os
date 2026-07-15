@@ -58,7 +58,8 @@ export default function ProjectWorkspace() {
   const lastReview = project.reviews[project.reviews.length - 1];
 
   async function update(patch: Partial<Project>) {
-    const next = { ...project, ...patch };
+    if (!project) return;
+    const next: Project = { ...project, ...patch };
     const saved = await saveProject(next);
     setProject(saved);
   }
