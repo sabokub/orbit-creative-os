@@ -55,6 +55,7 @@ function RunnerContent() {
   const meta = STEP_META[step];
 
   async function generateAuto() {
+    if (!project) return;
     setGenerating(true);
     setGenError("");
     try {
@@ -78,7 +79,7 @@ function RunnerContent() {
   }
 
   async function saveResult() {
-    if (!pasted.trim()) return;
+    if (!project || !pasted.trim()) return;
     setSaving(true);
     try {
       let next: Project;
