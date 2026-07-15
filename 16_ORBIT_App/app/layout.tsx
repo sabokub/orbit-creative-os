@@ -3,7 +3,7 @@ import NavBar from "@/components/NavBar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "24March Command Center",
+  title: "Centre de commande 24March",
   description: "Le cockpit créatif de 24March Studio, propulsé par ORBIT.",
 };
 
