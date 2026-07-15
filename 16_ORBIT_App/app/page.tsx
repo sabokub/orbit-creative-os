@@ -131,35 +131,35 @@ export default function Dashboard() {
       </header>
 
       <section className="grid gap-4 xl:grid-cols-12">
-        <div className="relative min-h-[340px] overflow-hidden rounded-[34px] border border-black/15 bg-[#151515] p-5 text-white shadow-[0_24px_65px_rgba(21,21,21,0.18)] sm:p-7 xl:col-span-8">
-          <div className="dot-grid absolute inset-0 opacity-[0.12]" />
-          <div className="absolute -right-16 -top-20 h-72 w-72 rounded-full bg-[#bdd8f8] blur-[1px]" />
-          <div className="absolute -bottom-24 right-36 h-52 w-52 rounded-full bg-[#f2b8cf] opacity-90" />
-          <div className="absolute bottom-7 right-7 hidden rotate-6 rounded-[20px] border border-black/15 bg-[#f5df75] px-5 py-4 text-black shadow-xl sm:block">
+        <div className="relative min-h-[340px] overflow-hidden rounded-[34px] border border-[#6e735f]/20 bg-[linear-gradient(135deg,#f5f0e7_0%,#ece6da_58%,#dfe8cf_100%)] p-5 text-[#191a16] shadow-[0_24px_65px_rgba(73,70,60,0.14)] sm:p-7 xl:col-span-8">
+          <div className="absolute -right-20 -top-24 h-72 w-72 rounded-[96px] border border-[#72785e]/20" />
+          <div className="absolute -right-8 -top-12 h-52 w-52 rounded-[76px] border border-[#72785e]/15" />
+          <div className="absolute -bottom-20 right-28 h-44 w-72 rounded-[70px] border border-[#72785e]/16" />
+          <div className="absolute bottom-7 right-7 hidden rotate-6 rounded-[20px] border border-black/12 bg-[#f4d979] px-5 py-4 text-black shadow-[0_14px_30px_rgba(93,78,35,0.16)] sm:block">
             <p className="text-[10px] font-black uppercase tracking-[0.15em]">note to self</p>
             <p className="mt-1 max-w-[160px] text-sm font-black leading-tight">Taste first. Systems second. Panic never.</p>
           </div>
 
           <div className="relative flex h-full flex-col justify-between">
             <div className="flex items-start justify-between gap-4">
-              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] backdrop-blur">24March Studio / Build mode</span>
-              <span className="flex h-11 w-11 rotate-6 items-center justify-center rounded-[16px] bg-white text-black">
+              <span className="rounded-full border border-black/12 bg-white/42 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] backdrop-blur">24March Studio / Build mode</span>
+              <span className="flex h-11 w-11 rotate-6 items-center justify-center rounded-[16px] border border-black/10 bg-[#f4d979] text-black shadow-sm">
                 <CommandIcon name="launch" className="h-5 w-5" />
               </span>
             </div>
 
             <div className="mt-12 max-w-xl">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/48">Launch countdown</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-black/48">Launch countdown</p>
               <div className="mt-2 flex items-end gap-3">
                 <span className="display-serif text-[88px] leading-[0.82] sm:text-[116px]">{daysUntilLaunch ?? "—"}</span>
-                <span className="mb-2 text-sm font-black uppercase tracking-[0.14em] text-white/68">days<br />to go</span>
+                <span className="mb-2 text-sm font-black uppercase tracking-[0.14em] text-black/60">days<br />to go</span>
               </div>
               <div className="mt-7 max-w-md">
-                <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.13em] text-white/50">
+                <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.13em] text-black/48">
                   <span>Global build progress</span><span>{averageProgress}%</span>
                 </div>
-                <div className="mt-2 h-3 overflow-hidden rounded-full border border-white/15 bg-white/10">
-                  <div className="h-full rounded-full bg-[#c3d995] transition-all duration-500" style={{ width: `${averageProgress}%` }} />
+                <div className="mt-2 h-3 overflow-hidden rounded-full border border-black/10 bg-white/55">
+                  <div className="h-full rounded-full bg-[#a8c879] transition-all duration-500" style={{ width: `${averageProgress}%` }} />
                 </div>
               </div>
             </div>
