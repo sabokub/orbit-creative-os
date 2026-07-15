@@ -5,13 +5,13 @@ import CommandIcon, { CommandIconName } from "./CommandIcon";
 
 const STAGE_META: Record<Stage, { label: string; progress: number }> = {
   brief: { label: "Brief", progress: 12 },
-  strategy: { label: "Strategy", progress: 25 },
-  creative: { label: "Creative direction", progress: 40 },
-  website: { label: "Website", progress: 58 },
-  content: { label: "Content", progress: 72 },
-  images: { label: "Visual production", progress: 84 },
-  review: { label: "Review", progress: 94 },
-  exported: { label: "Delivered", progress: 100 },
+  strategy: { label: "Stratégie", progress: 25 },
+  creative: { label: "Direction créative", progress: 40 },
+  website: { label: "Site internet", progress: 58 },
+  content: { label: "Contenu", progress: 72 },
+  images: { label: "Production visuelle", progress: 84 },
+  review: { label: "Relecture", progress: 94 },
+  exported: { label: "Livré", progress: 100 },
 };
 
 const TYPE_META: Record<string, { accent: string; icon: CommandIconName }> = {
@@ -40,7 +40,7 @@ export default function ProjectCard({ project }: { project: Project }) {
       </div>
 
       <div className="mt-5">
-        <p className="text-[10px] font-black uppercase tracking-[0.13em] text-black/38">{project.type || "ORBIT project"}</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.13em] text-black/38">{project.type || "Projet ORBIT"}</p>
         <h3 className="mt-1 line-clamp-2 text-lg font-black leading-tight tracking-[-0.025em]">{project.name}</h3>
       </div>
 
@@ -53,8 +53,8 @@ export default function ProjectCard({ project }: { project: Project }) {
           <div className={`h-full rounded-full ${workflow.accent}`} style={{ width: `${stage.progress}%` }} />
         </div>
         <div className="mt-3 flex items-center justify-between text-[11px] font-semibold text-black/42">
-          <span>{Object.keys(project.outputs).length} outputs</span>
-          <span className="flex items-center gap-1.5 group-hover:text-black">Open <CommandIcon name="arrow" className="h-3.5 w-3.5" /></span>
+          <span>{Object.keys(project.outputs).length} livrable{Object.keys(project.outputs).length > 1 ? "s" : ""}</span>
+          <span className="flex items-center gap-1.5 group-hover:text-black">Ouvrir <CommandIcon name="arrow" className="h-3.5 w-3.5" /></span>
         </div>
       </div>
     </Link>
