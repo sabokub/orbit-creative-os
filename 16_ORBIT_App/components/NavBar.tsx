@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import CommandIcon, { CommandIconName } from "./CommandIcon";
 
-const NAV_ITEMS: Array<{ href: string; label: string; icon: CommandIconName }> = [
-  { href: "/", label: "Home", icon: "home" },
-  { href: "/brand-profile", label: "Brand Brain", icon: "brain" },
-  { href: "/#projects", label: "Projects", icon: "projects" },
-  { href: "/#workflows", label: "Visual Lab", icon: "sparkles" },
-  { href: "/#launch", label: "Launch", icon: "launch" },
+const NAV_ITEMS: Array<{ href: string; label: string; mobileLabel: string; icon: CommandIconName }> = [
+  { href: "/", label: "Accueil", mobileLabel: "Accueil", icon: "home" },
+  { href: "/brand-profile", label: "Cerveau de marque", mobileLabel: "Marque", icon: "brain" },
+  { href: "/#projects", label: "Projets", mobileLabel: "Projets", icon: "projects" },
+  { href: "/#workflows", label: "Laboratoire visuel", mobileLabel: "Lab visuel", icon: "sparkles" },
+  { href: "/#launch", label: "Lancement", mobileLabel: "Lancement", icon: "launch" },
 ];
 
 function BrandMark() {
@@ -35,12 +35,12 @@ export default function NavBar() {
           <BrandMark />
           <div>
             <p className="text-[13px] font-black tracking-[-0.03em]">24MARCH</p>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-black/45">Command Center</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-black/45">Centre de commande</p>
           </div>
         </Link>
 
         <div className="mt-8 px-2">
-          <p className="command-label">Workspace</p>
+          <p className="command-label">Espace de travail</p>
         </div>
 
         <nav className="mt-3 space-y-1.5">
@@ -68,21 +68,21 @@ export default function NavBar() {
         <div className="mt-auto space-y-3">
           <div className="relative overflow-hidden rounded-[24px] border border-black/10 bg-[#c3d995] p-4">
             <div className="absolute -right-4 -top-5 h-20 w-20 rounded-full border-[12px] border-white/30" />
-            <p className="command-label text-black/55">Current focus</p>
-            <p className="mt-2 max-w-[150px] text-sm font-black leading-tight">Build the launch system, not random tasks.</p>
+            <p className="command-label text-black/55">Priorité actuelle</p>
+            <p className="mt-2 max-w-[150px] text-sm font-black leading-tight">Construire le système de lancement, pas accumuler les tâches.</p>
             <Link href="/#launch" className="mt-4 inline-flex items-center gap-1.5 text-xs font-black underline decoration-2 underline-offset-4">
-              Open launch board <CommandIcon name="arrow" className="h-3.5 w-3.5" />
+              Ouvrir le tableau de lancement <CommandIcon name="arrow" className="h-3.5 w-3.5" />
             </Link>
           </div>
 
           <Link href="/projects/new" className="command-button w-full">
             <CommandIcon name="plus" className="h-4 w-4" />
-            New project
+            Nouveau projet
           </Link>
 
           <div className="flex items-center justify-between px-2 text-[10px] font-bold uppercase tracking-[0.12em] text-black/38">
             <span>ORBIT Alpha</span>
-            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#72a044]" /> Online</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#72a044]" /> En ligne</span>
           </div>
         </div>
       </aside>
@@ -92,7 +92,7 @@ export default function NavBar() {
           <BrandMark />
           <div>
             <p className="text-xs font-black">24MARCH</p>
-            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/45">Command Center</p>
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/45">Centre de commande</p>
           </div>
         </Link>
         <Link href="/projects/new" className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#151515] text-white shadow-sm" aria-label="Créer un projet">
@@ -110,7 +110,7 @@ export default function NavBar() {
               className={`flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-[18px] text-[9px] font-black ${active ? "bg-[#bdd8f8] text-black" : "text-black/48"}`}
             >
               <CommandIcon name={item.icon} className="h-[19px] w-[19px]" />
-              <span>{item.label.replace("Brand ", "")}</span>
+              <span>{item.mobileLabel}</span>
             </Link>
           );
         })}
