@@ -8,10 +8,10 @@ const STYLES: Record<ReviewStatus, string> = {
 };
 
 const LABELS: Record<ReviewStatus, string> = {
-  Approved: "Validated",
-  "Needs revision": "To refine",
-  Blocked: "Blocked",
-  "Not reviewed": "Not reviewed",
+  Approved: "Validé",
+  "Needs revision": "À affiner",
+  Blocked: "Bloqué",
+  "Not reviewed": "Non relu",
 };
 
 export default function StatusBadge({ status }: { status: ReviewStatus }) {
