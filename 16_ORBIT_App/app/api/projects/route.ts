@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   try {
     const input = (await req.json()) as CreateProjectInput;
     if (!input.name?.trim()) {
-      return NextResponse.json({ error: "name is required" }, { status: 400 });
+      return NextResponse.json({ error: "Le nom du projet est obligatoire." }, { status: 400 });
     }
     const id = slugify(input.name);
     const now = new Date().toISOString();
