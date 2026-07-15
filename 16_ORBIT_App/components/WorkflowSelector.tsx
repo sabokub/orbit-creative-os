@@ -4,12 +4,12 @@ import { WorkflowStep } from "@/lib/types";
 import CommandIcon, { CommandIconName } from "./CommandIcon";
 
 const META: Record<WorkflowStep, { icon: CommandIconName; accent: string; description: string }> = {
-  strategy: { icon: "strategy", accent: "bg-[#f5df75]", description: "Positioning, promise and decisions" },
-  creative: { icon: "sparkles", accent: "bg-[#f2b8cf]", description: "Visual territory and art direction" },
-  website: { icon: "website", accent: "bg-[#bdd8f8]", description: "Structure, copy and UX" },
-  content: { icon: "content", accent: "bg-[#f1a36f]", description: "Formats, hooks and calendar" },
-  images: { icon: "image", accent: "bg-[#cfc5f4]", description: "Production-ready visual prompts" },
-  review: { icon: "critic", accent: "bg-[#c3d995]", description: "Score, issues and next fixes" },
+  strategy: { icon: "strategy", accent: "bg-[#f5df75]", description: "Positionnement, promesse et décisions" },
+  creative: { icon: "sparkles", accent: "bg-[#f2b8cf]", description: "Territoire visuel et direction artistique" },
+  website: { icon: "website", accent: "bg-[#bdd8f8]", description: "Structure, textes et expérience utilisateur" },
+  content: { icon: "content", accent: "bg-[#f1a36f]", description: "Formats, accroches et calendrier" },
+  images: { icon: "image", accent: "bg-[#cfc5f4]", description: "Prompts visuels prêts pour la production" },
+  review: { icon: "critic", accent: "bg-[#c3d995]", description: "Note, problèmes et corrections prioritaires" },
 };
 
 export default function WorkflowSelector({
@@ -39,7 +39,7 @@ export default function WorkflowSelector({
             </div>
             <h3 className="mt-5 text-base font-black tracking-[-0.02em]">{STEP_LABELS[step]}</h3>
             <p className="mt-1 text-xs font-semibold leading-relaxed text-black/42">{meta.description}</p>
-            <span className="absolute bottom-4 right-4 flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] text-black/38 group-hover:text-black">Run <CommandIcon name="arrow" className="h-3.5 w-3.5" /></span>
+            <span className="absolute bottom-4 right-4 flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] text-black/38 group-hover:text-black">Lancer <CommandIcon name="arrow" className="h-3.5 w-3.5" /></span>
           </Link>
         );
       })}
