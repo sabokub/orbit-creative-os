@@ -1,19 +1,20 @@
-import { Review } from "@/lib/types";
+import { Review, WorkflowStep } from "@/lib/types";
+import { STEP_LABELS } from "@/lib/prompts";
 import StatusBadge from "./StatusBadge";
 
 export default function ReviewScoreCard({ review }: { review: Review }) {
+  const targetLabel = STEP_LABELS[review.target as WorkflowStep] || review.target;
+
   return (
-    <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-semibold capitalize text-neutral-800 dark:text-neutral-100">
-          Review — {review.target}
-        </span>
+    <div className="rounded-[22px] border border-black/10 bg-white/55 p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <span className="text-sm font-black text-black/78">Relecture — {targetLabel}</span>
         <StatusBadge status={review.status} />
       </div>
-      <pre className="max-h-72 overflow-auto whitespace-pre-wrap text-xs text-neutral-700 dark:text-neutral-300">
+      <pre className="max-h-72 overflow-auto whitespace-pre-wrap text-xs leading-relaxed text-black/64">
         {review.content}
       </pre>
-      <p className="mt-2 text-xs text-neutral-400">
+      <p className="mt-3 text-xs font-semibold text-black/35">
         {new Date(review.created_at).toLocaleString("fr-FR")}
       </p>
     </div>
