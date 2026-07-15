@@ -35,15 +35,15 @@ export default function BrandProfilePage() {
     <div className="space-y-5 sm:space-y-7">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <span className="command-label"><CommandIcon name="brain" className="h-3.5 w-3.5" /> Single source of truth</span>
-          <h1 className="display-serif mt-3 text-5xl leading-[0.95] sm:text-7xl">The <span className="italic">Brand Brain.</span></h1>
+          <span className="command-label"><CommandIcon name="brain" className="h-3.5 w-3.5" /> Source unique de vérité</span>
+          <h1 className="display-serif mt-3 text-5xl leading-[0.95] sm:text-7xl">Le <span className="italic">cerveau de marque.</span></h1>
           <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-black/52 sm:text-base">
             L’identité fixe de {b.name}. Tous les projets ORBIT héritent de ce noyau avant d’ajouter leur contexte spécifique.
           </p>
         </div>
         <div className="flex gap-2">
-          <span className="command-pill bg-[#c3d995]"><span className="h-2 w-2 rounded-full bg-[#628a31]" /> DNA locked</span>
-          <Link href="/projects/new" className="command-button"><CommandIcon name="plus" className="h-4 w-4" /> Use this brain</Link>
+          <span className="command-pill bg-[#c3d995]"><span className="h-2 w-2 rounded-full bg-[#628a31]" /> ADN verrouillé</span>
+          <Link href="/projects/new" className="command-button"><CommandIcon name="plus" className="h-4 w-4" /> Utiliser ce cerveau</Link>
         </div>
       </header>
 
@@ -52,7 +52,7 @@ export default function BrandProfilePage() {
         <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-[#bdd8f8]" />
         <div className="absolute -bottom-24 right-28 h-48 w-48 rounded-full bg-[#f2b8cf]" />
         <div className="relative max-w-4xl">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/48">Core positioning</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/48">Positionnement central</p>
           <h2 className="display-serif mt-4 text-4xl leading-[1.02] sm:text-6xl">{b.positioning}</h2>
           <div className="mt-7 flex flex-wrap gap-2">
             {b.messagePillars.map((pillar) => (
@@ -63,28 +63,28 @@ export default function BrandProfilePage() {
       </section>
 
       <div className="grid gap-4 xl:grid-cols-12">
-        <Section title="Brand foundations" icon="strategy" accent="bg-[#f5df75]" className="xl:col-span-7">
+        <Section title="Fondations de marque" icon="strategy" accent="bg-[#f5df75]" className="xl:col-span-7">
           <p className="text-base font-black leading-snug text-black">{b.activity}</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[20px] bg-white/65 p-4"><p className="command-label">Offer</p><p className="mt-2">{b.offer}</p></div>
-            <div className="rounded-[20px] bg-[#bdd8f8]/45 p-4"><p className="command-label">Promise</p><p className="mt-2">{b.brandPromise}</p></div>
+            <div className="rounded-[20px] bg-white/65 p-4"><p className="command-label">Offre</p><p className="mt-2">{b.offer}</p></div>
+            <div className="rounded-[20px] bg-[#bdd8f8]/45 p-4"><p className="command-label">Promesse</p><p className="mt-2">{b.brandPromise}</p></div>
           </div>
         </Section>
 
-        <Section title="Audience" icon="focus" accent="bg-[#f2b8cf]" className="xl:col-span-5">
+        <Section title="Cible" icon="focus" accent="bg-[#f2b8cf]" className="xl:col-span-5">
           <p className="text-base font-black leading-snug text-black">{b.audience}</p>
-          <p className="mt-5 rounded-[20px] border border-black/10 bg-white/65 p-4 text-xs font-bold text-black/48">The goal is not to appeal to everyone. It is to feel immediately right to the right person.</p>
+          <p className="mt-5 rounded-[20px] border border-black/10 bg-white/65 p-4 text-xs font-bold text-black/48">Le but n’est pas de plaire à tout le monde. Il faut sembler immédiatement juste à la bonne personne.</p>
         </Section>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <Section title="Visual DNA" icon="sparkles" accent="bg-[#cfc5f4]">
+        <Section title="ADN visuel" icon="sparkles" accent="bg-[#cfc5f4]">
           <p>{b.visualDirection}</p>
         </Section>
-        <Section title="Tone of voice" icon="content" accent="bg-[#f1a36f]">
+        <Section title="Ton de voix" icon="content" accent="bg-[#f1a36f]">
           <p>{b.toneOfVoice}</p>
         </Section>
-        <Section title="Color behaviour" icon="image" accent="bg-[#bdd8f8]">
+        <Section title="Comportement des couleurs" icon="image" accent="bg-[#bdd8f8]">
           <p>{b.colors}</p>
           <div className="mt-5 flex gap-2">
             {["#BDD8F8", "#C3D995", "#F2B8CF", "#F5DF75", "#151515"].map((color) => (
@@ -95,26 +95,26 @@ export default function BrandProfilePage() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <Section title="Image direction" icon="image" accent="bg-[#f2b8cf]">
+        <Section title="Direction image" icon="image" accent="bg-[#f2b8cf]">
           <div className="space-y-4">
-            <div><p className="command-label">Photography</p><p className="mt-2">{b.photographyDirection}</p></div>
-            <div className="rounded-[20px] bg-white/70 p-4"><p className="command-label">Prompt rules</p><p className="mt-2">{b.imagePromptRules}</p></div>
+            <div><p className="command-label">Photographie</p><p className="mt-2">{b.photographyDirection}</p></div>
+            <div className="rounded-[20px] bg-white/70 p-4"><p className="command-label">Règles de prompt</p><p className="mt-2">{b.imagePromptRules}</p></div>
           </div>
         </Section>
-        <Section title="Website direction" icon="website" accent="bg-[#bdd8f8]">
+        <Section title="Direction du site" icon="website" accent="bg-[#bdd8f8]">
           <p className="text-base font-black leading-snug text-black">{b.websiteDirection}</p>
           <div className="mt-5 rounded-[20px] border border-black/10 bg-[#151515] p-4 text-white">
-            <p className="text-[10px] font-black uppercase tracking-[0.13em] text-white/42">Website test</p>
-            <p className="display-serif mt-2 text-2xl italic">“I want to live there.” Then: “I need this studio.”</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.13em] text-white/42">Test du site</p>
+            <p className="display-serif mt-2 text-2xl italic">« Je veux vivre là. » Puis : « J’ai besoin de ce studio. »</p>
           </div>
         </Section>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-12">
-        <Section title="Content direction" icon="content" accent="bg-[#c3d995]" className="xl:col-span-7">
+        <Section title="Direction du contenu" icon="content" accent="bg-[#c3d995]" className="xl:col-span-7">
           <p className="text-base font-black leading-snug text-black">{b.contentDirection}</p>
         </Section>
-        <Section title="Avoid list" icon="critic" accent="bg-[#ffdada]" className="xl:col-span-5">
+        <Section title="Liste à éviter" icon="critic" accent="bg-[#ffdada]" className="xl:col-span-5">
           <div className="flex flex-wrap gap-2">
             {b.avoid.map((item) => (
               <span key={item} className="rounded-full border border-black/10 bg-white/70 px-3 py-2 text-xs font-bold text-black/58">× {item}</span>
@@ -124,7 +124,7 @@ export default function BrandProfilePage() {
       </div>
 
       <section className="rounded-[32px] border border-black/12 bg-[#c3d995] p-6 sm:p-8">
-        <span className="command-label">Definition of success</span>
+        <span className="command-label">Définition de la réussite</span>
         <p className="display-serif mt-3 max-w-5xl text-3xl leading-tight sm:text-5xl">{b.successCriteria}</p>
       </section>
     </div>
