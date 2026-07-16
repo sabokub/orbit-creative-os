@@ -12,19 +12,19 @@ export default function PromptPreview({ prompt }: { prompt: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
-      <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-2 dark:border-neutral-800">
-        <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+    <div className="overflow-hidden rounded-[18px] border border-black/10 bg-[#fbf6e8]/70">
+      <div className="flex items-center justify-between gap-3 border-b border-black/8 px-4 py-2.5">
+        <span className="text-[10px] font-black uppercase tracking-[0.12em] text-black/45">
           Prompt à copier dans ChatGPT / Claude
         </span>
         <button
           onClick={copy}
-          className="rounded-md bg-neutral-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900"
+          className="rounded-full bg-black px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.08em] text-white hover:bg-black/80"
         >
           {copied ? "Copié !" : "Copier"}
         </button>
       </div>
-      <pre className="max-h-96 overflow-auto whitespace-pre-wrap p-4 text-xs text-neutral-800 dark:text-neutral-200">
+      <pre className="max-h-96 overflow-auto whitespace-pre-wrap p-4 text-xs leading-relaxed text-black/68">
         {prompt}
       </pre>
     </div>

@@ -121,10 +121,10 @@ export default function IntakeForm() {
             </button>
 
             {brandOpen && (
-              <div className="mt-3 space-y-3 rounded-[20px] bg-[#151515] p-4 text-white">
-                <div><p className="text-[9px] font-black uppercase tracking-[0.13em] text-white/38">Positionnement</p><p className="mt-1 text-xs font-semibold leading-relaxed text-white/74">{DEFAULT_BRAND_PROFILE.positioning}</p></div>
-                <div><p className="text-[9px] font-black uppercase tracking-[0.13em] text-white/38">Cible</p><p className="mt-1 text-xs font-semibold leading-relaxed text-white/74">{DEFAULT_BRAND_PROFILE.audience}</p></div>
-                <div><p className="text-[9px] font-black uppercase tracking-[0.13em] text-white/38">À éviter</p><p className="mt-1 text-xs font-semibold leading-relaxed text-white/74">{DEFAULT_BRAND_PROFILE.avoid.join(" · ")}</p></div>
+              <div className="mt-3 space-y-3 rounded-[20px] border border-black/10 bg-[#f4efdc] p-4">
+                <div><p className="text-[9px] font-black uppercase tracking-[0.13em] text-black/40">Positionnement</p><p className="mt-1 text-xs font-semibold leading-relaxed text-black/68">{DEFAULT_BRAND_PROFILE.positioning}</p></div>
+                <div><p className="text-[9px] font-black uppercase tracking-[0.13em] text-black/40">Cible</p><p className="mt-1 text-xs font-semibold leading-relaxed text-black/68">{DEFAULT_BRAND_PROFILE.audience}</p></div>
+                <div><p className="text-[9px] font-black uppercase tracking-[0.13em] text-black/40">À éviter</p><p className="mt-1 text-xs font-semibold leading-relaxed text-black/68">{DEFAULT_BRAND_PROFILE.avoid.join(" · ")}</p></div>
               </div>
             )}
 
@@ -155,7 +155,7 @@ export default function IntakeForm() {
 
         <div className="mt-7">
           <p className="mb-3 text-sm font-black tracking-[-0.015em]">Choisis le premier moteur</p>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
             {WORKFLOW_OPTIONS.map((workflow) => {
               const meta = WORKFLOW_META[workflow];
               const selected = input.workflowType === workflow;
@@ -164,11 +164,11 @@ export default function IntakeForm() {
                   key={workflow}
                   type="button"
                   onClick={() => update("workflowType", workflow)}
-                  className={`min-h-[122px] rounded-[20px] border p-3 text-left ${selected ? "border-black bg-[#151515] text-white shadow-lg" : "border-black/10 bg-white/55 hover:bg-white"}`}
+                  className={`min-h-[104px] rounded-[20px] border p-3 text-left ${selected ? `border-black ${meta.accent} shadow-md` : "border-black/10 bg-white/55 hover:bg-white"}`}
                 >
-                  <span className={`flex h-9 w-9 items-center justify-center rounded-[13px] border border-black/10 ${meta.accent} text-black`}><CommandIcon name={meta.icon} className="h-4 w-4" /></span>
-                  <p className="mt-3 text-xs font-black leading-tight">{WORKFLOW_TYPE_LABELS[workflow]}</p>
-                  <p className={`mt-1 text-[9px] font-semibold leading-snug ${selected ? "text-white/48" : "text-black/38"}`}>{meta.description}</p>
+                  <span className={`flex h-9 w-9 items-center justify-center rounded-[13px] border border-black/10 text-black ${selected ? "bg-white/70" : meta.accent}`}><CommandIcon name={meta.icon} className="h-4 w-4" /></span>
+                  <p className="mt-3 text-xs font-black leading-tight text-black">{WORKFLOW_TYPE_LABELS[workflow]}</p>
+                  <p className="mt-1 text-[9px] font-semibold leading-snug text-black/45">{meta.description}</p>
                 </button>
               );
             })}

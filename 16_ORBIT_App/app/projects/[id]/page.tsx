@@ -66,33 +66,33 @@ export default function ProjectWorkspace() {
 
   return (
     <div className="space-y-5 sm:space-y-7">
-      <section className="relative overflow-hidden rounded-[34px] border border-black/15 bg-[#151515] p-5 text-white shadow-[0_24px_65px_rgba(21,21,21,0.17)] sm:p-7">
-        <div className="dot-grid absolute inset-0 opacity-[0.1]" />
-        <div className="absolute -right-16 -top-24 h-72 w-72 rounded-full bg-[#bdd8f8]" />
-        <div className="absolute -bottom-24 right-40 h-52 w-52 rounded-full bg-[#f2b8cf]" />
+      <section className="relative overflow-hidden rounded-[28px] border border-black/10 bg-[linear-gradient(135deg,#fbf6e8_0%,#eef2e2_55%,#e4ecf6_100%)] p-5 shadow-[0_18px_44px_rgba(70,68,57,0.07)] sm:p-7">
+        <div className="dot-grid absolute inset-0 opacity-[0.06]" />
+        <div className="absolute -right-16 -top-24 h-72 w-72 rounded-full bg-[#bdd8f8]/45" />
+        <div className="absolute -bottom-24 right-40 h-52 w-52 rounded-full bg-[#f2b8cf]/40" />
         <div className="relative">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <span className="rounded-full border border-white/16 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-white/65">
+              <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-black/60">
                 {WORKFLOW_TYPE_LABELS[project.brief.workflowType]} / Espace de travail
               </span>
               <h1 className="display-serif mt-5 max-w-4xl text-5xl leading-[0.95] sm:text-7xl">{project.name}</h1>
-              <p className="mt-3 text-sm font-semibold text-white/48">Propulsé par le cerveau de marque {DEFAULT_BRAND_PROFILE.name}</p>
+              <p className="mt-3 text-sm font-semibold text-black/48">Propulsé par le cerveau de marque {DEFAULT_BRAND_PROFILE.name}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={lastReview?.status || "Not reviewed"} />
-              <Link href={`/projects/${project.id}/library`} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-black text-white backdrop-blur hover:bg-white hover:text-black">
+              <Link href={`/projects/${project.id}/library`} className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-white/75 px-4 py-2.5 text-xs font-black text-black backdrop-blur hover:bg-black hover:text-white">
                 <CommandIcon name="library" className="h-4 w-4" /> Bibliothèque des livrables
               </Link>
             </div>
           </div>
 
           <div className="mt-9 max-w-2xl">
-            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.13em] text-white/42">
+            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.13em] text-black/42">
               <span>Avancement du workflow</span><span>{completedCount}/{STEP_ORDER.length} moteurs · {progress}%</span>
             </div>
-            <div className="mt-2 h-3 overflow-hidden rounded-full border border-white/15 bg-white/10">
-              <div className="h-full rounded-full bg-[#c3d995] transition-all duration-500" style={{ width: `${progress}%` }} />
+            <div className="mt-2 h-3 overflow-hidden rounded-full border border-black/10 bg-black/5">
+              <div className="h-full rounded-full bg-[#98b85f] transition-all duration-500" style={{ width: `${progress}%` }} />
             </div>
           </div>
         </div>
