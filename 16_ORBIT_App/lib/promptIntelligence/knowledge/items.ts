@@ -15,10 +15,13 @@ type RawKnowledgeItem = z.input<typeof PromptKnowledgeItemSchema>;
  *     "Ohneis Ressources 2"), independently confirmed to exist and read in
  *     full by this codebase's own author via `search_files` +
  *     `read_file_content` tool calls in this session — not relayed
- *     secondhand. Only the 10 documents actually opened are cited; the
- *     folders contain 23 files total, and the other 13 were never opened,
- *     so they are never cited. `goodExamples`/`badExamples` below are
- *     paraphrased distillations of what those documents illustrate, not
+ *     secondhand. All 23 files across the two priority folders have now
+ *     been personally opened and read; not all 23 are cited below — a
+ *     handful yielded no distinct, non-redundant principle beyond what an
+ *     already-cited document captures, and are explicitly listed as
+ *     "read, not cited" in knowledge/README.md's provenance table rather
+ *     than silently dropped. `goodExamples`/`badExamples` below are
+ *     paraphrased distillations of what cited documents illustrate, not
  *     verbatim reproductions of their (sometimes proprietary, sometimes
  *     unsuitable-for-reuse) example prompts.
  *  2. `"ORBIT Prompt Engineering Guidelines"` — first-party content authored
@@ -82,6 +85,7 @@ const RAW_ITEMS: RawKnowledgeItem[] = [
   {
     id: "real-vision-analysis-first-pattern",
     sourceDocument: "Fashion Pipeline.pdf",
+    additionalSources: ["Jewelry Pipeline.pdf", "Beverage Pipeline.pdf"],
     title: "Extract named subject attributes once, then inject them into every downstream prompt in a chain",
     domain: "structure",
     taskTypes: ["image-prompt", "consistency-review"],
@@ -89,8 +93,8 @@ const RAW_ITEMS: RawKnowledgeItem[] = [
     principle:
       "Before generating any variant of a real subject across a multi-step pipeline, run a separate analysis step that names its defining attributes explicitly (object type, primary material, primary color, distinguishing details) as reusable variables, then inject those exact variables into every subsequent prompt in the chain.",
     rationale:
-      "The source states this directly as the reason for the step: \"These variables inject into EVERY downstream prompt. The AI always knows exactly what it's working with — no hallucination.\" This is the same principle this app's own context-selection (see intelligence/contextSelection.ts) already applies — passing only named, validated prior-step outputs forward rather than re-deriving context each time.",
-    technicalVocabulary: ["object type", "primary material", "primary color", "vision analysis block"],
+      "This pattern recurs, near-identically, across three e-commerce pipeline documents read this session. Fashion: \"These variables inject into EVERY downstream prompt... no hallucination.\" Jewelry: \"Phase 1 runs vision analysis... extracts the variables that downstream prompts will need.\" Beverage calls it the 'Cognitive Anchor': \"Reference Beats Description... More precise than text.\" Independent convergence across three unrelated documents is strong corroboration, and matches this app's own context-selection principle: pass only named, validated prior-step outputs forward rather than re-deriving context each time.",
+    technicalVocabulary: ["object type", "primary material", "primary color", "vision analysis block", "cognitive anchor"],
     goodExamples: ["Extract once: 'waxed cotton field jacket, deep navy, leather collar trim, two patch hip pockets' — reuse in every later prompt."],
     badExamples: ["Re-describing the subject freehand in each new prompt of a multi-step pipeline, risking drift between steps."],
     antiPatterns: ["Letting each step in a chain re-imagine subject details instead of reusing a single validated description."],
@@ -321,16 +325,16 @@ const RAW_ITEMS: RawKnowledgeItem[] = [
   {
     id: "real-reference-image-consistency-lock",
     sourceDocument: "Furniture Pipeline.pdf",
-    additionalSources: ["Fashion Pipeline.pdf"],
+    additionalSources: ["Fashion Pipeline.pdf", "Jewelry Pipeline.pdf", "Beverage Pipeline.pdf"],
     title: "Lock a reference image as the structural anchor when generating variants of a real subject",
     domain: "image-vocabulary",
     taskTypes: ["image-prompt"],
     targetModels: ["openai-image", "nano-banana-image"],
     principle:
-      "When generating multiple variants of the same real subject (a different angle, color, material, or setting), explicitly instruct the model to treat one reference image as a strict structural/geometry lock, and state in words exactly what must stay identical versus what the one named target attribute is allowed to change.",
+      "When generating multiple variants of the same real subject (a different angle, color, material, or setting), explicitly instruct the model to treat one reference image as a strict structural/geometry lock, and state in words exactly what must stay identical versus what the one named target attribute is allowed to change. End the prompt with an explicit prohibition list naming exactly what must never happen.",
     rationale:
-      "Both source pipelines document this as their core consistency mechanism: \"Do NOT change the geometry, color, or style of the furniture\" and \"fabric/face material, texture and weight exactly identical — only the case [color] change. All structural details and proportions unchanged.\" Without this explicit lock instruction, variant-generation tends to drift from the original subject.",
-    technicalVocabulary: ["structural reference", "geometry lock", "master image"],
+      "This is the shared consistency mechanism across all four e-commerce pipeline documents read this session. Furniture: \"Do NOT change the geometry, color, or style of the furniture.\" Fashion: \"fabric/face material, texture and weight exactly identical — only the [color] change.\" Jewelry closes every phase with a prohibition list: \"Never change [PIECE_TYPE] silhouette... Never hallucinate design details not present in the reference.\" Beverage names it directly: \"No Hallucinated Objects: Every prompt contains an explicit prohibition list.\" Without this explicit lock, variant-generation tends to drift from the original subject.",
+    technicalVocabulary: ["structural reference", "geometry lock", "master image", "prohibition list"],
     goodExamples: [
       "Use the attached image as a strict structural reference. Change only the upholstery color to the target; keep stitching pattern, seam placement, and proportions identical.",
     ],
@@ -632,6 +636,154 @@ const RAW_ITEMS: RawKnowledgeItem[] = [
     constraints: [],
     tags: ["chaining", "context-selection"],
     confidence: 0.8,
+    status: "active",
+  },
+
+  // ---- real sources — second reading pass (remaining 13 of the 23 priority documents) --
+  {
+    id: "real-intentional-imperfection-vs-ai-smoothness",
+    sourceDocument: "972181274-7-Master-Prompts-That-Actually-Work.pdf",
+    additionalSources: ["Mixed Media Prompts.pdf"],
+    title: "Name specific imperfection markers to counter the generic 'AI-smooth' look",
+    domain: "image-vocabulary",
+    taskTypes: ["image-prompt"],
+    targetModels: ["openai-image", "nano-banana-image"],
+    principle:
+      "Deliberately name small, physically-plausible imperfections (a dusty fingerprint, an uneven glaze drip, a torn paper edge, natural skin texture, scanned-paper grain) as part of the prompt — not because they're flaws, but because their presence or absence is what reads as 'real' versus 'obviously AI'.",
+    rationale:
+      "Quoting the source's own breakdown of what separates amateur from professional prompts: \"Intentional Imperfection: The details that scream 'real' — Dusty fingerprint / Uneven glaze line / Peeling sticker edge / Natural skin texture.\" The companion document states the underlying reason explicitly: \"The signal for 'AI-made' is smoothness. Cleanness. Too-perfect edges, too-even lighting, no visible texture. Both prompts here reject all of it and ask for the opposite... They tell the AI to work with scissors instead of pixels.\"",
+    technicalVocabulary: ["dusty fingerprint", "uneven glaze line", "torn paper edge", "scanned paper grain", "film grain"],
+    goodExamples: ["A dusty fingerprint near the base, a slight lip irregularity, microbubbles in the glaze."],
+    badExamples: ["A perfectly smooth, flawless, pristine ceramic cup."],
+    antiPatterns: ["Describing a handmade or lived-in object with only flawless/pristine/perfect language."],
+    constraints: [],
+    tags: ["texture", "authenticity"],
+    confidence: 0.7,
+    status: "active",
+  },
+  {
+    id: "real-video-prompt-structure-components",
+    sourceDocument: "AI Sora Prompt – Vol. 2.pdf",
+    title: "Structure a video prompt as framing/lens, lighting, motion behavior, texture cues, and environment",
+    domain: "video-vocabulary",
+    taskTypes: ["video-prompt"],
+    targetModels: ["sora-video"],
+    principle:
+      "Build a video prompt from five distinct components: framing and lens choice, lighting style, motion behavior (including how much motion is absent — locked/frozen vs. flowing), texture and realism cues, and background/environmental design — rather than one continuous descriptive paragraph.",
+    rationale:
+      "The source states this as its own structure explicitly: \"The structure of each variation includes: Framing and lens choice – Lighting style – Motion behavior (or lack of motion) – Texture and realism cues – Background and environmental design.\" Naming what does NOT move is as important as naming what does: the source's own master prompt specifies \"The camera remains locked or deliberately composed... Movement is minimal, hyper-controlled, or frozen mid-air.\"",
+    structurePattern: "framing/lens -> lighting -> motion -> texture -> environment",
+    technicalVocabulary: ["locked camera", "frozen mid-air", "macro lens", "24mm wide-angle", "motion blur", "film grain"],
+    goodExamples: ["Camera locked with a 100mm macro lens. Movement minimal — one droplet slowly elongates; everything else still."],
+    badExamples: ["A cinematic video of a dog jumping." /* — no framing, lighting, motion, texture, or environment specified */],
+    antiPatterns: ["Describing a video prompt's subject only, with no explicit motion/stillness instruction."],
+    constraints: [],
+    tags: ["video", "structure"],
+    confidence: 0.7,
+    status: "active",
+  },
+  {
+    id: "real-explicit-preservation-directive-for-edits",
+    sourceDocument: "Grok Imagine Guideline.pdf",
+    additionalSources: ["Image Enhancer _ Restorer prompt.pdf"],
+    title: "For local edits/enhancement, open with an absolute preservation list before describing the change",
+    domain: "image-vocabulary",
+    taskTypes: ["image-prompt"],
+    targetModels: ["openai-image", "nano-banana-image"],
+    principle:
+      "When the task is a targeted edit or quality enhancement (not full regeneration), open the prompt with an explicit list of what must remain 100% pixel-identical (subject identity, pose, clothing, background, lighting direction), then describe the transformation, then close with a specific negative-prompt list.",
+    rationale:
+      "Both sources use near-identical structure for this. Grok Imagine Guideline: \"CORE DIRECTIVE: MASKING PRESERVATION... Subject Freeze: The subject's skin, face, hands, feet, hair, and the entire background must remain 100% pixel-identical.\" Image Enhancer/Restorer: \"CORE DIRECTIVE: QUALITY ENHANCEMENT ONLY — ZERO CONTENT ALTERATION... The following must remain 100% pixel-identical: Subject identity... Body... Clothing... Hair... Background... HARD ALTERATION RULE: Do NOT reinterpret, restyle, or modify any visual [content].\" Both close with a long, specific negative-prompt list (e.g. \"altered hair, spotted skin, plastic skin, AI-smoothing effect, changed composition, added elements, removed elements, different lighting direction\").",
+    technicalVocabulary: ["pixel-identical", "subject freeze", "hard alteration rule"],
+    goodExamples: ["Preserve 100%: facial features, pose, clothing, background, lighting direction. Change only: [named target]."],
+    badExamples: ["Make the bed white paper instead." /* — no preservation list, risks the model altering more than intended */],
+    antiPatterns: ["Describing only the desired change with no explicit list of what must stay untouched."],
+    constraints: [],
+    tags: ["editing", "preservation", "negative-constraints"],
+    confidence: 0.75,
+    status: "active",
+  },
+  {
+    id: "real-locked-aesthetic-single-variable-template",
+    sourceDocument: "Adobe Stickers Prompt.pdf",
+    additionalSources: ["Marker Style Prompt.pdf", "Risograph Print Style.pdf"],
+    title: "Write a style prompt as a fixed aesthetic template with exactly one swappable subject variable",
+    domain: "structure",
+    taskTypes: ["image-prompt"],
+    targetModels: ["openai-image", "nano-banana-image"],
+    principle:
+      "When a prompt needs to apply the same visual style/aesthetic to many different subjects, write the entire prompt to describe the aesthetic (material, finish, shape logic, surface, palette) and reduce the subject itself to a single named variable used consistently everywhere it appears — never re-describe the aesthetic per subject.",
+    rationale:
+      "Quoting the source directly: \"The problem with sticker prompts is that most of them describe the object, not the aesthetic... These two do the opposite. The whole prompt describes the aesthetic... The object itself is one variable: [OBJECT].\" The same locked-template structure recurs in the marker-style guide (a fixed 4-step technique applied to any subject) and the risograph guide (a fixed ink/paper/misregistration recipe applied to any input image) — both keep every technical/stylistic rule constant and vary only the subject reference.",
+    technicalVocabulary: ["template variable", "locked aesthetic"],
+    goodExamples: ["A single [FINISH] sticker representing [OBJECT], with [FIXED STYLE RULES] — replace only [OBJECT] across regenerations."],
+    badExamples: ["Writing a brand-new style description from scratch every time the subject changes."],
+    antiPatterns: ["Re-deriving style/material/palette rules per-subject instead of reusing one locked template."],
+    constraints: [],
+    tags: ["template", "consistency"],
+    confidence: 0.7,
+    status: "active",
+  },
+  {
+    id: "real-bridge-frame-video-transition",
+    sourceDocument: "Pixel Transition Workflow.pdf",
+    title: "Generate a bridging still to connect two real stills, then let the video model invent only the connecting motion",
+    domain: "video-vocabulary",
+    taskTypes: ["video-prompt"],
+    targetModels: ["sora-video"],
+    principle:
+      "For a cinematic transition between two real locations/scenes, generate one AI bridging image (e.g. an extreme close-up of a shared visual anchor) locked to the same environment as the first still, then have the video model animate only between still-pairs (start → bridge, bridge → end) rather than generating the whole transition from a single text description.",
+    rationale:
+      "Quoting the source's own reasoning: \"Good photos are way easier than good video. Let the AI do the move... You don't shoot the move. You shoot two stills and let [the video model] invent the camera path between them.\" And on why locking the bridge image to the source environment matters: \"Locking the phone and environment means Frame B inherits the exact lighting and angle of Frame A. [The model] only has to invent the camera move — not invent the world. That's why it stays consistent.\"",
+    structurePattern: "still A -> generated bridge still -> still C, animate A->bridge and bridge->C separately, then stitch",
+    technicalVocabulary: ["bridge frame", "start-to-end-frame animation"],
+    goodExamples: [],
+    badExamples: ["Asking a video model to generate an entire multi-location transition from a single text prompt with no anchor stills."],
+    antiPatterns: ["Generating a complex camera move from scratch instead of constraining it between two real/generated anchor frames."],
+    constraints: [],
+    tags: ["video", "transition"],
+    confidence: 0.65,
+    status: "active",
+  },
+  {
+    id: "real-edge-only-lens-transform-skeleton",
+    sourceDocument: "Lens Transition Effect.pdf",
+    title: "For a lens/optical-character restyle, lock the center and push the transformation to the edges only",
+    domain: "image-vocabulary",
+    taskTypes: ["image-prompt", "video-prompt"],
+    targetModels: ["openai-image", "nano-banana-image", "sora-video"],
+    principle:
+      "When restyling an image or video frame to simulate a different lens (anamorphic, ultra-wide, probe lens), follow a fixed 5-step skeleton: (1) name the lens perspective, (2) state the center stays exactly as-is (subject, composition, sharpness), (3) push the lens character to the outer/edge areas only (distortion, curvature, field of view), (4) allow the periphery to extend/complete with subtle invented content if needed, (5) lock the final framing and aspect ratio.",
+    rationale:
+      "Quoting the source's documented skeleton directly: \"01 Name the lens perspective you want. 02 Say the center stays exactly as it is—subject, composition, sharpness. 03 Push the lens character to the outer areas: distortion, curvature, field of view. 04 Allow the periphery to extend or complete with subtle invented content if needed. 05 End by locking the framing and aspect ratio.\" It also names why this works: \"The center stays sharp and unchanged—that's why the subject reads correctly.\"",
+    structurePattern: "name lens -> lock center -> transform edges -> allow periphery completion -> lock framing",
+    technicalVocabulary: ["anamorphic", "probe lens", "ultra-wide", "edge distortion", "field of view"],
+    goodExamples: [],
+    badExamples: ["Applying a lens-style transformation prompt to the whole frame uniformly, distorting the main subject along with the edges."],
+    antiPatterns: ["Not distinguishing which region of the frame a stylistic transformation should and shouldn't touch."],
+    constraints: [],
+    tags: ["lens", "editing"],
+    confidence: 0.65,
+    status: "active",
+  },
+  {
+    id: "real-deconstruct-then-rebuild-reference",
+    sourceDocument: "UGC Agent One.pdf",
+    title: "Deconstruct why a reference works before rebuilding it around a new subject",
+    domain: "structure",
+    taskTypes: ["general-text", "image-prompt", "consistency-review"],
+    targetModels: ["openai-text", "claude-text"],
+    principle:
+      "Before generating new content in the style of a proven reference, run an explicit two-step process: first analyze the reference to name its structure (hook, emotional trigger, why it works, visual/verbal grammar), then — as a separate step — rebuild that same structure around the new subject, rather than jumping straight to 'make something like this'.",
+    rationale:
+      "Quoting the source's own two-prompt workflow: Prompt 1 \"Reads a [reference] and breaks it down: hook, emotional trigger, why it converts\"; Prompt 2 \"Takes your product, photos, and offer [and] rebuilds the same ad in your context... same structure, same psychology.\" Separating analysis from synthesis into two explicit steps produces a rebuild grounded in named reasons the original worked, rather than a surface-level imitation.",
+    technicalVocabulary: ["hook", "emotional trigger", "visual grammar"],
+    goodExamples: ["Step 1: name what makes the reference work. Step 2: reapply that exact structure to the new subject."],
+    badExamples: ["Make me something like this reference." /* — skips naming why the reference works before reusing it */],
+    antiPatterns: ["Imitating a reference's surface style without first naming the structural reason it's effective."],
+    constraints: [],
+    tags: ["reference", "structure"],
+    confidence: 0.65,
     status: "active",
   },
 ];
