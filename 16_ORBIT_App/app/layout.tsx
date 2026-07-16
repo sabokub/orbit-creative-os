@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import NavBar from "@/components/NavBar";
+import CommandPalette from "@/components/CommandPalette";
 import "./globals.css";
 import "./responsive-v2.css";
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="min-h-screen px-4 pb-28 pt-20 sm:px-5 lg:ml-[224px] lg:px-6 lg:pb-10 lg:pt-6">
           <div className="mx-auto w-full max-w-[1320px]">{children}</div>
         </main>
+        <CommandPalette />
       </body>
     </html>
   );
