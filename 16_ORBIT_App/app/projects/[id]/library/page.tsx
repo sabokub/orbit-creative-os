@@ -48,13 +48,13 @@ export default function OutputLibraryPage() {
         <Link href={`/projects/${project.id}`} className="command-button command-button-soft self-start"><CommandIcon name="arrow" className="h-4 w-4 rotate-180" /> Retour au projet</Link>
       </header>
 
-      <section className="relative overflow-hidden rounded-[32px] border border-black/12 bg-[#151515] p-5 text-white sm:p-7">
-        <div className="dot-grid absolute inset-0 opacity-[0.1]" />
-        <div className="absolute -right-12 -top-14 h-52 w-52 rounded-full bg-[#cfc5f4]" />
-        <div className="relative grid gap-5 sm:grid-cols-3">
-          <div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">Livrables enregistrés</p><p className="display-serif mt-2 text-6xl">{Object.keys(project.outputs).length}</p></div>
-          <div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">Relectures</p><p className="display-serif mt-2 text-6xl">{project.reviews.length}</p></div>
-          <div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/38">Exports</p><p className="display-serif mt-2 text-6xl">{project.exports.length}</p></div>
+      <section className="relative overflow-hidden rounded-[26px] border border-black/10 bg-[linear-gradient(135deg,#f7f0df_0%,#ece8f6_58%,#e4ecf6_100%)] p-5 shadow-[0_16px_38px_rgba(89,96,66,0.08)] sm:p-7">
+        <div className="dot-grid absolute inset-0 opacity-[0.06]" />
+        <div className="absolute -right-12 -top-14 h-52 w-52 rounded-full bg-[#cfc5f4]/45" />
+        <div className="relative grid grid-cols-3 gap-3 sm:gap-5">
+          <div><p className="text-[9px] font-black uppercase tracking-[0.12em] text-black/42 sm:text-[10px]">Livrables enregistrés</p><p className="display-serif mt-2 text-4xl sm:text-6xl">{Object.keys(project.outputs).length}</p></div>
+          <div><p className="text-[9px] font-black uppercase tracking-[0.12em] text-black/42 sm:text-[10px]">Relectures</p><p className="display-serif mt-2 text-4xl sm:text-6xl">{project.reviews.length}</p></div>
+          <div><p className="text-[9px] font-black uppercase tracking-[0.12em] text-black/42 sm:text-[10px]">Exports</p><p className="display-serif mt-2 text-4xl sm:text-6xl">{project.exports.length}</p></div>
         </div>
       </section>
 
@@ -63,7 +63,7 @@ export default function OutputLibraryPage() {
           <button
             key={item}
             onClick={() => setFilter(item)}
-            className={`shrink-0 rounded-full border px-4 py-2 text-xs font-black ${filter === item ? "border-black bg-[#151515] text-white" : "border-black/10 bg-white/60 text-black/48 hover:bg-white hover:text-black"}`}
+            className={`shrink-0 rounded-full border px-4 py-2 text-xs font-black ${filter === item ? "border-black bg-black text-white" : "border-black/10 bg-white/60 text-black/48 hover:bg-white hover:text-black"}`}
           >
             {item === "all" ? "Tous les livrables" : STEP_LABELS[item]}
           </button>

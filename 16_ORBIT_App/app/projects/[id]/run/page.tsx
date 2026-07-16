@@ -126,7 +126,7 @@ function RunnerContent() {
             <Link
               key={item}
               href={`/projects/${project.id}/run?step=${item}`}
-              className={`flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-xs font-black ${active ? "border-black bg-[#151515] text-white" : "border-black/10 bg-white/60 text-black/48 hover:bg-white hover:text-black"}`}
+              className={`flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-xs font-black ${active ? "border-black bg-black text-white" : "border-black/10 bg-white/60 text-black/48 hover:bg-white hover:text-black"}`}
             >
               <span className={`flex h-7 w-7 items-center justify-center rounded-full ${active ? itemMeta.accent + " text-black" : "bg-black/[0.05]"}`}><CommandIcon name={itemMeta.icon} className="h-3.5 w-3.5" /></span>
               {STEP_LABELS[item]}
@@ -157,17 +157,17 @@ function RunnerContent() {
         </div>
 
         <aside className="space-y-4 xl:col-span-5">
-          <div className="relative overflow-hidden rounded-[30px] border border-black/12 bg-[#151515] p-5 text-white sm:p-6">
-            <div className={`absolute -right-10 -top-12 h-44 w-44 rounded-full ${meta.accent}`} />
+          <div className="relative overflow-hidden rounded-[24px] border border-black/10 bg-white/78 p-5 shadow-[0_14px_34px_rgba(70,68,57,0.05)] sm:p-6">
+            <div className={`absolute -right-10 -top-12 h-44 w-44 rounded-full opacity-60 ${meta.accent}`} />
             <div className="relative">
-              <span className="text-[10px] font-black uppercase tracking-[0.16em] text-white/42">Génération automatique</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.16em] text-black/42">Génération automatique</span>
               <h2 className="display-serif mt-3 text-4xl">Laisse ORBIT faire le gros du travail.</h2>
-              <p className="mt-3 text-sm font-medium leading-relaxed text-white/52">La réponse n’est jamais sauvegardée automatiquement. Relis-la, modifie-la, puis valide-la toi-même.</p>
-              <button onClick={generateAuto} disabled={generating} className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-black text-black disabled:cursor-not-allowed disabled:opacity-50">
+              <p className="mt-3 text-sm font-medium leading-relaxed text-black/52">La réponse n’est jamais sauvegardée automatiquement. Relis-la, modifie-la, puis valide-la toi-même.</p>
+              <button onClick={generateAuto} disabled={generating} className="command-button mt-6 w-full">
                 <CommandIcon name={generating ? "clock" : "sparkles"} className="h-4 w-4" />
                 {generating ? "Génération…" : "Générer avec OpenAI"}
               </button>
-              <p className="mt-3 text-[10px] font-semibold leading-relaxed text-white/32">Nécessite OPENAI_API_KEY sur Vercel. Le copier-coller manuel reste disponible sans clé.</p>
+              <p className="mt-3 text-[10px] font-semibold leading-relaxed text-black/38">Nécessite OPENAI_API_KEY sur Vercel. Le copier-coller manuel reste disponible sans clé.</p>
             </div>
           </div>
 

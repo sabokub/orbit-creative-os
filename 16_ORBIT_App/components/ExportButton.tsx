@@ -27,7 +27,7 @@ export default function ExportButton({
       onClick={download}
       disabled={disabled}
       title={disabled ? "Bloqué : à corriger avant export" : "Télécharger en Markdown"}
-      className="rounded-lg border border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+      className="rounded-full border border-black/12 bg-white/80 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.08em] text-black/62 hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white/80 disabled:hover:text-black/62"
     >
       Exporter (.md)
     </button>

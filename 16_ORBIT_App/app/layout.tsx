@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import NavBar from "@/components/NavBar";
 import "./globals.css";
+import "./responsive-v2.css";
 
 export const metadata: Metadata = {
   title: "Centre de commande 24March",
@@ -18,8 +19,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr">
       <body>
         <NavBar />
-        <main className="min-h-screen px-4 pb-28 pt-20 sm:px-6 lg:ml-[248px] lg:px-8 lg:pb-12 lg:pt-8">
-          <div className="mx-auto w-full max-w-[1440px]">{children}</div>
+        <main className="min-h-screen px-4 pb-28 pt-20 sm:px-5 lg:ml-[224px] lg:px-6 lg:pb-10 lg:pt-6">
+          <div className="mx-auto w-full max-w-[1320px]">{children}</div>
         </main>
       </body>
     </html>

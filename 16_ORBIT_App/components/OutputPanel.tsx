@@ -18,23 +18,23 @@ export default function OutputPanel({
 
   if (!content && !onSave) {
     return (
-      <div className="rounded-xl border border-dashed border-neutral-300 p-4 text-sm text-neutral-400 dark:border-neutral-700">
+      <div className="rounded-[18px] border border-dashed border-black/15 bg-white/40 p-4 text-sm font-semibold text-black/35">
         {emptyLabel}
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800">
-      <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-2 dark:border-neutral-800">
-        <h4 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">{title}</h4>
+    <div className="overflow-hidden rounded-[18px] border border-black/10 bg-white/55">
+      <div className="flex items-center justify-between gap-3 border-b border-black/8 bg-white/50 px-4 py-2.5">
+        <h4 className="text-xs font-black tracking-[-0.01em] text-black/70">{title}</h4>
         {onSave && (
           <button
             onClick={() => {
               if (editing) onSave(draft);
               setEditing((v) => !v);
             }}
-            className="text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+            className="rounded-full border border-black/10 bg-white/80 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.08em] text-black/60 hover:bg-white hover:text-black"
           >
             {editing ? "Enregistrer" : "Éditer"}
           </button>
@@ -42,17 +42,17 @@ export default function OutputPanel({
       </div>
       {editing ? (
         <textarea
-          className="w-full resize-y bg-transparent p-4 text-sm text-neutral-800 focus:outline-none dark:text-neutral-200"
+          className="w-full resize-y bg-transparent p-4 font-mono text-[13px] leading-relaxed text-black focus:outline-none"
           rows={12}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
         />
       ) : content ? (
-        <pre className="max-h-96 overflow-auto whitespace-pre-wrap p-4 text-sm text-neutral-800 dark:text-neutral-200">
+        <pre className="max-h-96 overflow-auto whitespace-pre-wrap p-4 text-[13px] leading-relaxed text-black/72">
           {content}
         </pre>
       ) : (
-        <p className="p-4 text-sm text-neutral-400">{emptyLabel}</p>
+        <p className="p-4 text-sm font-semibold text-black/35">{emptyLabel}</p>
       )}
     </div>
   );
