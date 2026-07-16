@@ -1,36 +1,53 @@
-import { parsePromptKnowledgeItems, PromptKnowledgeItem } from "./schema";
+import { z } from "zod";
+import { parsePromptKnowledgeItems, PromptKnowledgeItemSchema } from "./schema";
+
+/** Input shape (pre-Zod-defaults) — lets individual items omit array fields that default to []. */
+type RawKnowledgeItem = z.input<typeof PromptKnowledgeItemSchema>;
 
 /**
  * Seeded Knowledge Layer content.
  *
- * Honesty note (do not remove): every item below is attributed to
- * `"ORBIT Prompt Engineering Guidelines"`, a first-party knowledge base
- * written for this PR from genuine, well-established prompt-engineering
- * practice (prompt structure, image-prompt vocabulary, clarity rules,
- * model-specific quirks). It is NOT extracted from any uploaded PDF —
- * no such files exist in this repository/session. See
- * `lib/promptIntelligence/knowledge/README.md` for how real ingestion from
- * actual source documents would work once they are provided.
+ * Provenance (do not remove — see knowledge/README.md "Provenance history"
+ * for the full account): items below come from two honestly-distinct
+ * sources:
+ *
+ *  1. Real documents in the user's Google Drive ("Ohneis Ressources" /
+ *     "Ohneis Ressources 2"), independently confirmed to exist and read in
+ *     full by this codebase's own author via `search_files` +
+ *     `read_file_content` tool calls in this session — not relayed
+ *     secondhand. Only the 10 documents actually opened are cited; the
+ *     folders contain 23 files total, and the other 13 were never opened,
+ *     so they are never cited. `goodExamples`/`badExamples` below are
+ *     paraphrased distillations of what those documents illustrate, not
+ *     verbatim reproductions of their (sometimes proprietary, sometimes
+ *     unsuitable-for-reuse) example prompts.
+ *  2. `"ORBIT Prompt Engineering Guidelines"` — first-party content authored
+ *     for this PR, used only where the real documents above (which are all
+ *     general AI-image/product-photography prompting material) don't apply:
+ *     website copywriting structure, SEO length conventions, UX writing,
+ *     Brand-DNA/Studio-Brain integration, and this app's own prompt-chaining
+ *     mechanics.
  */
 
-const RAW_ITEMS: PromptKnowledgeItem[] = [
-  // ---- structure -----------------------------------------------------------
+const RAW_ITEMS: RawKnowledgeItem[] = [
+  // ---- structure (real sources) -----------------------------------------------
   {
-    id: "structure-subject-setting-style-tech",
-    sourceDocument: "ORBIT Prompt Engineering Guidelines",
-    title: "Order image prompts subject → setting → style → technical details",
-    domain: "image-vocabulary",
+    id: "real-prompt-structured-ordering",
+    sourceDocument: "Prompting Guideline Pack_ Crafting Effective Prompts for AI Image Generators.pdf",
+    additionalSources: ["04-The Three Pillars of Professional AI Image Creation.pdf"],
+    title: "Order image prompts Subject > Action > Setting > Style > Technical Details",
+    domain: "structure",
     taskTypes: ["image-prompt"],
     targetModels: ["openai-image", "nano-banana-image", "sora-video"],
     principle:
-      "Describe, in order: the subject/action, the setting/environment, the visual style/mood, then camera and technical parameters last.",
+      "Organize an image prompt logically: [Subject Description] [Action/Pose] in [Environment/Setting], [Lighting Conditions], [Style/Medium], [Camera Specifications], [Technical Parameters], with negative prompts last.",
     rationale:
-      "Image models weight earlier tokens more heavily for composition. Leading with the subject anchors the main content; trailing technical detail refines rendering without displacing the subject.",
-    recommendedWording: "[subject/action], [setting], [style/mood], [camera/lens/lighting], [technical constraints]",
-    structurePattern: "subject -> setting -> style -> technical",
+      "The source document states this directly: \"Structure Matters: Organize your prompt logically\" and \"Keyword Weighting: Words appearing earlier often have more influence; some platforms allow explicit weighting.\" Leading with the subject anchors composition before technical detail refines it.",
+    recommendedWording: "[subject/action] in [setting], [lighting], [style/medium], [camera specs], [technical parameters] --no [exclusions]",
+    structurePattern: "subject -> action -> setting -> lighting -> style -> camera -> technical -> negative",
     technicalVocabulary: [],
     goodExamples: [
-      "A stylist arranging linen cushions on a corduroy sofa, sunlit apartment living room, editorial lifestyle mood, shot on 35mm, soft window light from the left",
+      "A stylist arranging linen cushions on a corduroy sofa in a sunlit apartment living room, editorial lifestyle mood, shot on 35mm, soft window light from the left, --no clutter, watermarks",
     ],
     badExamples: ["35mm lens, soft light, editorial mood, apartment, sofa, stylist arranging cushions"],
     antiPatterns: ["Leading a prompt with camera/technical jargon before establishing subject and scene."],
@@ -40,71 +57,94 @@ const RAW_ITEMS: PromptKnowledgeItem[] = [
     status: "active",
   },
   {
-    id: "structure-role-objective-context-constraints",
-    sourceDocument: "ORBIT Prompt Engineering Guidelines",
-    title: "Structure text prompts as role, objective, context, constraints, output format, verification",
+    id: "real-3-pillar-system",
+    sourceDocument: "04-The Three Pillars of Professional AI Image Creation.pdf",
+    title: "Separate an image prompt into Structure, Reference, and Vision layers",
     domain: "structure",
-    taskTypes: ["general-text", "copywriting", "information-architecture", "consistency-review"],
-    targetModels: ["openai-text", "claude-text", "manual-export"],
+    taskTypes: ["image-prompt"],
+    targetModels: ["openai-image", "nano-banana-image"],
     principle:
-      "A production prompt separates: who the model should act as, what the concrete objective is, what context it needs, what constraints bound the answer, what output format is required, and a checklist to self-verify against before returning the answer.",
+      "Build (and review) an image prompt as three distinct layers: Structure (camera, lighting, material, composition — the technical foundation), Reference (named photographers/movements/eras that anchor a style vocabulary), and Vision (the emotional intent — what the viewer should feel).",
     rationale:
-      "Mixing role, context and constraints into one paragraph forces the model to disentangle intent from data; separating them into labeled sections reduces ambiguity and improves instruction-following, especially for multi-part deliverables.",
-    recommendedWording: "Role: ... / Objective: ... / Context: ... / Constraints: ... / Output format: ... / Verify: ...",
-    structurePattern: "role-objective-context-constraints-format-verification",
+      "Quoting the source directly: \"Structure is your technical foundation... Reference gives you style... Vision is about soul... this pillar separates good technical work from memorable art by defining the emotional intent.\" Keeping the three layers distinct avoids blending technical specification with emotional language, which tends to produce vague prompts.",
+    structurePattern: "structure -> reference -> vision",
     technicalVocabulary: [],
-    goodExamples: [],
-    badExamples: [],
-    antiPatterns: ["Burying the required output format in the middle of a long paragraph of context."],
+    goodExamples: [
+      "Structure: 85mm lens, soft window lighting, shallow depth of field. Reference: contemporary editorial portrait photography. Vision: quiet confidence, approachable authority.",
+    ],
+    badExamples: ["Cool motorcycle at night."],
+    antiPatterns: ["Writing only technical specification with no stated emotional intent, or only mood language with no technical foundation."],
     constraints: [],
-    tags: ["structure", "text"],
-    confidence: 0.9,
-    status: "active",
-  },
-  {
-    id: "structure-one-deliverable-per-step",
-    sourceDocument: "ORBIT Prompt Engineering Guidelines",
-    title: "Chain prompts so each step produces one coherent deliverable",
-    domain: "structure",
-    taskTypes: ["general-text", "consistency-review"],
-    targetModels: ["openai-text", "claude-text", "manual-export"],
-    principle:
-      "When a task has more than 3-4 genuinely distinct deliverables, split it into a chain of prompts — one per deliverable (or one small coherent group) — rather than requesting all of them in a single call.",
-    rationale:
-      "Long multi-deliverable prompts dilute attention across many instructions at once; the model tends to under-deliver on later items and truncate output length. Splitting into a chain lets each step get full attention and a realistic length budget, and lets a failed step be retried alone.",
-    recommendedWording: undefined,
-    structurePattern: "chain: step_n -> validate -> step_n+1",
-    technicalVocabulary: [],
-    goodExamples: [],
-    badExamples: ["A single prompt asking for 13 distinct website deliverables at once."],
-    antiPatterns: ["Requesting an entire site's worth of copy, structure, SEO and image prompts in one prompt."],
-    constraints: [],
-    tags: ["chaining", "budget"],
+    tags: ["3-pillar", "image"],
     confidence: 0.85,
     status: "active",
   },
   {
-    id: "structure-carry-validated-decisions-forward",
-    sourceDocument: "ORBIT Prompt Engineering Guidelines",
-    title: "Carry only validated prior decisions forward in a chain, not full transcripts",
+    id: "real-vision-analysis-first-pattern",
+    sourceDocument: "Fashion Pipeline.pdf",
+    title: "Extract named subject attributes once, then inject them into every downstream prompt in a chain",
     domain: "structure",
-    taskTypes: ["general-text", "information-architecture", "consistency-review"],
-    targetModels: ["openai-text", "claude-text"],
+    taskTypes: ["image-prompt", "consistency-review"],
+    targetModels: ["openai-text", "claude-text", "openai-image", "nano-banana-image"],
     principle:
-      "Later steps in a chain should receive a compact summary of validated prior outputs relevant to them (e.g. the validated hero promise, not the entire previous response) rather than the full raw text of every earlier step.",
+      "Before generating any variant of a real subject across a multi-step pipeline, run a separate analysis step that names its defining attributes explicitly (object type, primary material, primary color, distinguishing details) as reusable variables, then inject those exact variables into every subsequent prompt in the chain.",
     rationale:
-      "Passing entire prior deliverables verbatim into every subsequent prompt compounds token cost across a chain and re-introduces irrelevant detail the model has to filter out; a targeted summary keeps continuity without the overhead.",
-    technicalVocabulary: [],
-    goodExamples: [],
-    badExamples: [],
-    antiPatterns: ["Concatenating every previous step's full output into each new prompt."],
+      "The source states this directly as the reason for the step: \"These variables inject into EVERY downstream prompt. The AI always knows exactly what it's working with — no hallucination.\" This is the same principle this app's own context-selection (see intelligence/contextSelection.ts) already applies — passing only named, validated prior-step outputs forward rather than re-deriving context each time.",
+    technicalVocabulary: ["object type", "primary material", "primary color", "vision analysis block"],
+    goodExamples: ["Extract once: 'waxed cotton field jacket, deep navy, leather collar trim, two patch hip pockets' — reuse in every later prompt."],
+    badExamples: ["Re-describing the subject freehand in each new prompt of a multi-step pipeline, risking drift between steps."],
+    antiPatterns: ["Letting each step in a chain re-imagine subject details instead of reusing a single validated description."],
     constraints: [],
     tags: ["chaining", "context-selection"],
-    confidence: 0.8,
+    confidence: 0.75,
+    status: "active",
+  },
+  {
+    id: "real-comparison-loop-iterative-refinement",
+    sourceDocument: "05-Accelerated Aesthetic Development- AI-Powered Visual Mastery.pdf",
+    additionalSources: ["Prompting Guideline Pack_ Crafting Effective Prompts for AI Image Generators.pdf"],
+    title: "Iterate on one named gap at a time against a chosen reference, not a full prompt rewrite",
+    domain: "structure",
+    taskTypes: ["image-prompt", "consistency-review"],
+    targetModels: ["openai-image", "nano-banana-image", "openai-text", "claude-text"],
+    principle:
+      "Generate, place the result beside a chosen reference image, identify one specific weakness (not a vague 'make it better'), adjust the prompt to address only that one element, then regenerate and compare again.",
+    rationale:
+      "Quoting the source's own method: \"Identify one specific weakness / Adjust your prompt to address it / Regenerate and compare again.\" The companion source's advanced-technique section reinforces the same idea: \"Change just one element at a time to see its impact.\" Changing one variable per iteration makes it possible to attribute a quality change to a specific prompt edit.",
+    technicalVocabulary: [],
+    goodExamples: [],
+    badExamples: ["Rewriting an entire prompt from scratch after a single unsatisfying result, losing track of which change helped."],
+    antiPatterns: ["Changing many prompt elements at once between iterations, making it impossible to tell what improved or worsened the result."],
+    constraints: [],
+    tags: ["iteration", "image"],
+    confidence: 0.7,
     status: "active",
   },
 
-  // ---- clarity / anti-pattern ------------------------------------------------
+  // ---- clarity / anti-pattern (mixed real + first-party) -----------------------
+  {
+    id: "real-specificity-reduces-guesswork",
+    sourceDocument: "Prompting Guideline Pack_ Crafting Effective Prompts for AI Image Generators.pdf",
+    additionalSources: ["03-Technical Language- The Bridge Between Vision and AI.pdf"],
+    title: "Specificity is Key: detailed prompts reduce the AI's guesswork",
+    domain: "clarity",
+    taskTypes: ["image-prompt"],
+    targetModels: ["openai-image", "nano-banana-image"],
+    principle:
+      "Replace a bare subject/mood description with concrete, specific detail — named action, named setting, named technical parameters — because vague prompts force the model to guess.",
+    rationale:
+      "Quoting the source's first core principle: \"Specificity is Key: Detailed prompts reduce the AI's guesswork and produce more targeted results.\" The companion document gives the same lesson from the opposite direction, showing a documented weak/strong pair: \"Wrong: 'A businessman in an office' / Right: 'Medium shot of a businessman at f/2.8, 85mm lens, side-lit by large window, reviewing documents with focused expression...'\"",
+    badExamples: ["A businessman in an office.", "Cool motorcycle at night."],
+    goodExamples: [
+      "Medium shot of a businessman at f/2.8, 85mm lens, side-lit by a large window, reviewing documents with a focused expression, shallow depth of field isolating him from a blurred office background.",
+    ],
+    antiPatterns: ["Vague subject/mood description with no concrete technical or compositional detail."],
+    technicalVocabulary: [],
+    constraints: [],
+    tags: ["clarity", "specificity"],
+    confidence: 0.85,
+    status: "active",
+  },
   {
     id: "clarity-avoid-vague-verbs",
     sourceDocument: "ORBIT Prompt Engineering Guidelines",
@@ -115,7 +155,7 @@ const RAW_ITEMS: PromptKnowledgeItem[] = [
     principle:
       "Replace vague instruction verbs ('improve', 'enhance', 'optimize') with a concrete, checkable action ('shorten to under 12 words', 'add one measurable proof point', 'remove passive voice').",
     rationale:
-      "Vague verbs give the model no criterion for success, so it optimizes for plausible-sounding change rather than the actual goal — the output looks different but isn't reliably better.",
+      "Vague verbs give the model no criterion for success, so it optimizes for plausible-sounding change rather than the actual goal — the output looks different but isn't reliably better. This is the text-deliverable analogue of the image-prompting 'specificity' principle above; none of the real source documents (all image/product-photography focused) address text-editing instructions directly, so this stays first-party.",
     badExamples: ["Improve this CTA.", "Make the hero copy more impactful."],
     goodExamples: ["Rewrite this CTA to name the specific action and result in 5 words or fewer."],
     antiPatterns: ["Vague improvement verbs with no measurable target."],
@@ -185,90 +225,124 @@ const RAW_ITEMS: PromptKnowledgeItem[] = [
     confidence: 0.85,
     status: "active",
   },
-
-  // ---- image vocabulary -------------------------------------------------------
   {
-    id: "image-vocab-camera-lens",
-    sourceDocument: "ORBIT Prompt Engineering Guidelines",
-    title: "Use concrete camera/lens vocabulary instead of generic quality adjectives",
+    id: "real-negative-prompting-explicit-exclusions",
+    sourceDocument: "Prompting Guideline Pack_ Crafting Effective Prompts for AI Image Generators.pdf",
+    title: "End image prompts with an explicit, named exclusion list",
+    domain: "anti-pattern",
+    taskTypes: ["image-prompt"],
+    targetModels: ["openai-image", "nano-banana-image"],
+    principle:
+      "Name specifically what must not appear (distorted features, text, watermarks, unwanted elements) at the end of the prompt, rather than a generic 'avoid anything bad'.",
+    rationale:
+      "The source documents this as a standard structural component (\"-- distorted features, text, watermarks\") and gives a troubleshooting table mapping named problems to named negative terms (e.g. \"Distorted faces: Add --no deformed features, distorted face\"). Specific negative constraints are checkable by a reviewer; a vague negative instruction is not.",
+    technicalVocabulary: [],
+    goodExamples: ["-- distorted features, text, watermarks, low-res artifacts"],
+    badExamples: ["Avoid anything that looks bad or off-brand."],
+    antiPatterns: ["Vague negative constraints with nothing concrete to check."],
+    constraints: [
+      "The exact '--no'/'--ar'/'--seed' flag syntax documented in this source is specific to certain platforms (Midjourney-style tools) — treat it as an example convention, not a universal API parameter (see model-quirk-image-model-param-caution).",
+    ],
+    tags: ["negative-constraints", "image"],
+    confidence: 0.75,
+    status: "active",
+  },
+
+  // ---- image vocabulary (real sources) ------------------------------------------
+  {
+    id: "real-camera-lens-vocabulary",
+    sourceDocument: "03-Technical Language- The Bridge Between Vision and AI.pdf",
+    additionalSources: ["Prompting Guideline Pack_ Crafting Effective Prompts for AI Image Generators.pdf"],
+    title: "Choose focal length, aperture and camera angle deliberately, not decoratively",
     domain: "image-vocabulary",
     taskTypes: ["image-prompt"],
     targetModels: ["openai-image", "nano-banana-image"],
     principle:
-      "Prefer concrete camera/lens terms (35mm, 50mm, wide angle, shallow depth of field, eye-level, low angle) over generic quality adjectives ('high quality', '4k', 'professional photo') which carry little compositional information.",
+      "Pick lens/aperture/angle for the compositional and emotional effect they're documented to produce, and name them explicitly instead of a generic quality adjective.",
     rationale:
-      "Concrete optical vocabulary maps to learned visual patterns (framing, distortion, depth) that generic quality words do not — they describe *how* the image should look, not just that it should look good.",
-    technicalVocabulary: ["35mm", "50mm", "wide angle", "shallow depth of field", "eye-level", "low angle", "close-up", "medium shot"],
-    goodExamples: ["shot on 35mm, shallow depth of field, eye-level framing"],
+      "Quoting the source's own vocabulary tables: \"85-135mm Medium Telephoto: Professional portraits, fashion, beautiful bokeh\", \"f/1.2-f/1.8: Extreme shallow depth, dreamlike bokeh, low-light capability\", \"Low Angle: Subject dominance, heroic feel, architectural strength\", \"High Angle: Vulnerability, overview, diminished subject.\" These map technical choices to specific, checkable effects, unlike 'high quality, 4k, professional photo'.",
+    technicalVocabulary: [
+      "24mm wide-angle", "35-50mm standard", "85mm short telephoto", "135-300mm long telephoto",
+      "f/1.4-f/1.8 shallow depth of field", "f/8-f/11 landscape sharpness",
+      "eye-level", "low-angle", "high-angle", "worm's-eye view", "dutch angle",
+    ],
+    goodExamples: ["85mm lens, f/2.0, low-angle, subject dominance"],
     badExamples: ["high quality, 4k, professional photo, best quality"],
-    antiPatterns: ["Stacking generic quality adjectives instead of concrete camera/lens choices."],
+    antiPatterns: ["Stacking generic quality adjectives instead of naming a lens/aperture/angle choice and its intended effect."],
     constraints: [],
     tags: ["camera", "lens"],
     confidence: 0.8,
     status: "active",
   },
   {
-    id: "image-vocab-lighting",
-    sourceDocument: "ORBIT Prompt Engineering Guidelines",
-    title: "Describe lighting by direction, quality and source, not just brightness",
+    id: "real-lighting-vocabulary",
+    sourceDocument: "03-Technical Language- The Bridge Between Vision and AI.pdf",
+    title: "Describe lighting by source, direction, quality and color temperature, not just brightness",
     domain: "image-vocabulary",
     taskTypes: ["image-prompt"],
     targetModels: ["openai-image", "nano-banana-image"],
     principle:
-      "Specify light direction (from the left, backlit, overhead), quality (soft, hard, diffused) and source (window light, flash, golden hour) rather than only brightness ('well lit', 'bright').",
+      "Specify light source (window, strobe, neon), direction (front/side/back-lit), quality (hard/soft/diffused) and color temperature rather than only brightness ('good lighting').",
     rationale:
-      "Lighting direction and quality are the dominant drivers of mood and depth in a generated image; brightness alone under-specifies the scene and leaves rendering to chance.",
-    technicalVocabulary: ["backlit", "golden hour", "window light", "diffused light", "hard shadow", "flash photography", "rim light"],
-    goodExamples: ["soft window light from the left, golden hour warmth"],
-    badExamples: ["well lit, bright, good lighting"],
+      "The source names this as a 'fatal mistake': \"Wrong: 'Good lighting' / Right: 'Key light from large softbox positioned 45° camera right, fill light from silver reflector camera left at 1/4 power, subtle rim light from behind for edge separation.'\" It also documents concrete color-temperature vocabulary: warm tungsten (2700K), neutral daylight (5600K), cool LED (6500K).",
+    technicalVocabulary: [
+      "hard light", "soft light", "directional light", "diffused light",
+      "backlighting / rim light", "side lighting", "2700K warm tungsten", "5600K neutral daylight", "6500K cool LED",
+    ],
+    goodExamples: ["Key light from a large softbox at 45° camera right, fill from a silver reflector camera left, subtle rim light for edge separation."],
+    badExamples: ["Good lighting.", "well lit, bright"],
     antiPatterns: ["Describing lighting only in terms of brightness."],
     constraints: [],
     tags: ["lighting"],
+    confidence: 0.85,
+    status: "active",
+  },
+  {
+    id: "real-material-texture-specificity",
+    sourceDocument: "03-Technical Language- The Bridge Between Vision and AI.pdf",
+    additionalSources: ["Prompting Guideline Pack_ Crafting Effective Prompts for AI Image Generators.pdf"],
+    title: "Name concrete surface properties and material states instead of a bare object noun",
+    domain: "image-vocabulary",
+    taskTypes: ["image-prompt"],
+    targetModels: ["openai-image", "nano-banana-image"],
+    principle:
+      "Describe surface properties (glossy, matte, brushed, weathered) and texture detail (fabric weave, wood grain, metal scratches) rather than naming only the object.",
+    rationale:
+      "The source's documented 'fatal mistake': \"Wrong: 'Luxury watch' / Right: 'Swiss luxury watch with brushed steel case showing micro-scratches, sapphire crystal with anti-reflective coating, black leather strap with visible grain texture...'\"",
+    technicalVocabulary: ["glossy", "matte", "brushed", "weathered", "patinated", "fabric weave", "wood grain"],
+    goodExamples: ["Brushed steel case with micro-scratches, black leather strap with visible grain texture."],
+    badExamples: ["Luxury watch.", "cozy, luxurious, elevated interior"],
+    antiPatterns: ["Naming an object with no surface/material detail."],
+    constraints: [],
+    tags: ["materials"],
     confidence: 0.8,
     status: "active",
   },
   {
-    id: "image-vocab-materials",
-    sourceDocument: "ORBIT Prompt Engineering Guidelines",
-    title: "Name specific materials and textures rather than abstract mood words",
+    id: "real-reference-image-consistency-lock",
+    sourceDocument: "Furniture Pipeline.pdf",
+    additionalSources: ["Fashion Pipeline.pdf"],
+    title: "Lock a reference image as the structural anchor when generating variants of a real subject",
     domain: "image-vocabulary",
     taskTypes: ["image-prompt"],
     targetModels: ["openai-image", "nano-banana-image"],
     principle:
-      "Name concrete materials (corduroy, linen, brushed brass, raw plaster, terracotta) instead of abstract mood adjectives (cozy, luxurious, elevated) to steer texture and material rendering.",
+      "When generating multiple variants of the same real subject (a different angle, color, material, or setting), explicitly instruct the model to treat one reference image as a strict structural/geometry lock, and state in words exactly what must stay identical versus what the one named target attribute is allowed to change.",
     rationale:
-      "Material nouns give the model a specific visual reference; mood adjectives are compatible with too many different renderings to reliably produce a consistent visual identity.",
-    technicalVocabulary: ["corduroy", "linen", "brushed brass", "raw plaster", "terracotta", "boucle", "rattan"],
-    goodExamples: ["corduroy sofa, linen curtains, brushed brass fixtures"],
-    badExamples: ["cozy, luxurious, elevated interior"],
-    antiPatterns: ["Relying on abstract mood adjectives instead of naming materials."],
+      "Both source pipelines document this as their core consistency mechanism: \"Do NOT change the geometry, color, or style of the furniture\" and \"fabric/face material, texture and weight exactly identical — only the case [color] change. All structural details and proportions unchanged.\" Without this explicit lock instruction, variant-generation tends to drift from the original subject.",
+    technicalVocabulary: ["structural reference", "geometry lock", "master image"],
+    goodExamples: [
+      "Use the attached image as a strict structural reference. Change only the upholstery color to the target; keep stitching pattern, seam placement, and proportions identical.",
+    ],
+    badExamples: ["Generate the same sofa in navy blue." /* — no explicit lock on what must stay unchanged */],
+    antiPatterns: ["Requesting a variant of a real subject without stating what must remain identical, allowing the model to redesign it."],
     constraints: [],
-    tags: ["materials"],
-    confidence: 0.75,
-    status: "active",
-  },
-  {
-    id: "image-vocab-negative-constraints",
-    sourceDocument: "ORBIT Prompt Engineering Guidelines",
-    title: "State negative constraints explicitly and specifically",
-    domain: "image-vocabulary",
-    taskTypes: ["image-prompt"],
-    targetModels: ["openai-image", "nano-banana-image"],
-    principle:
-      "Name specifically what must not appear (no text overlays, no human faces, no visible logos, no clutter on the counter) rather than a generic 'avoid anything bad'.",
-    rationale:
-      "Specific negative constraints are checkable by a reviewer and by automated analysis; a vague negative instruction is neither followed reliably nor verifiable after generation.",
-    technicalVocabulary: [],
-    goodExamples: ["No text overlays. No visible brand logos. No people in frame."],
-    badExamples: ["Avoid anything that looks bad or off-brand."],
-    antiPatterns: ["Vague negative constraints with nothing concrete to check."],
-    constraints: [],
-    tags: ["negative-constraints"],
+    tags: ["consistency", "product-photography"],
     confidence: 0.75,
     status: "active",
   },
 
-  // ---- text deliverable / seo / ux -------------------------------------------
+  // ---- text deliverable / seo / ux (first-party — no real source covers this) --
   {
     id: "text-cta-specificity",
     sourceDocument: "ORBIT Prompt Engineering Guidelines",
@@ -350,7 +424,28 @@ const RAW_ITEMS: PromptKnowledgeItem[] = [
     status: "active",
   },
 
-  // ---- model quirks -----------------------------------------------------------
+  // ---- model quirks (mixed real + first-party) ----------------------------------
+  {
+    id: "real-gpt-as-structured-prompt-intermediary",
+    sourceDocument: "Prompting Guideline Pack_ Crafting Effective Prompts for AI Image Generators.pdf",
+    sourcePageOrSection: "Appendix: Advanced Prompt Engineering for AI Image Models Using GPT",
+    title: "Use a text/reasoning model to expand a short brief into a structured image prompt",
+    domain: "model-quirk",
+    taskTypes: ["image-prompt"],
+    targetModels: ["openai-text", "claude-text"],
+    principle:
+      "A text/reasoning model can act as an intermediate 'visual prompt engine': given a short creative brief, it expands it into a fully structured, technically detailed image prompt (Subject → Action → Setting → Materials → Light → Mood → Camera → Style) before that prompt is sent to an image generator.",
+    rationale:
+      "Quoting the source's appendix: \"GPT is not just a language model—it can act as a powerful visual prompt generator... It does not generate images itself, but it helps shape your prompt vocabulary with far more control, modularity, and refinement than most direct image generation UIs allow.\" This directly validates this app's own architecture choice for the hero-image-direction/section-image-prompts Website chain steps, which target a text model (not an image model) to produce structured image-direction text.",
+    technicalVocabulary: [],
+    goodExamples: ["\"Let's build the prompt in parts. First, describe only the subject. Then add the setting. Then mood. Then lens. Each in a new paragraph.\""],
+    badExamples: [],
+    antiPatterns: ["Sending a one-line creative brief directly to an image model instead of first structuring it."],
+    constraints: [],
+    tags: ["gpt", "image", "chaining"],
+    confidence: 0.7,
+    status: "active",
+  },
   {
     id: "model-quirk-openai-json-mode",
     sourceDocument: "ORBIT Prompt Engineering Guidelines",
@@ -401,7 +496,7 @@ const RAW_ITEMS: PromptKnowledgeItem[] = [
     principle:
       "Prompt profiles for image/video models should describe vocabulary and structure conventions, not claim specific undocumented API parameters (aspect ratio flags, seed syntax, negative-prompt fields) exist for a given model unless independently confirmed — those change frequently across providers.",
     rationale:
-      "Third-party image/video model APIs change parameters and syntax often; hard-coding an unconfirmed parameter into a 'best practice' risks producing prompts that reference features that don't exist, which is worse than omitting them.",
+      "Third-party image/video model APIs change parameters and syntax often; hard-coding an unconfirmed parameter into a 'best practice' risks producing prompts that reference features that don't exist, which is worse than omitting them. (One real source document does confirm concrete Midjourney-specific flags — --ar, --s, --c, --seed — which corroborates that such parameters are real but tool-specific, not a universal image-model API; see real-negative-prompting-explicit-exclusions.)",
     technicalVocabulary: [],
     goodExamples: [],
     badExamples: [],
@@ -412,7 +507,7 @@ const RAW_ITEMS: PromptKnowledgeItem[] = [
     status: "active",
   },
 
-  // ---- brand fit ---------------------------------------------------------------
+  // ---- brand fit (first-party — specific to this app's Studio Brain / Brand DNA model) --
   {
     id: "brand-fit-avoid-list-is-a-hard-constraint",
     sourceDocument: "ORBIT Prompt Engineering Guidelines",
@@ -453,6 +548,92 @@ const RAW_ITEMS: PromptKnowledgeItem[] = [
     confidence: 0.8,
     status: "active",
   },
+  {
+    id: "real-consistency-beats-perfection",
+    sourceDocument: "02-Mastering Visual Instinct- From Random to Intentional AI Art.pdf",
+    title: "One perfect image is worthless for a brand; a repeatable visual system is what matters",
+    domain: "brand-fit",
+    taskTypes: ["image-prompt", "consistency-review"],
+    targetModels: ["openai-image", "nano-banana-image"],
+    principle:
+      "Judge a generated image not only on its own merit but on whether it reproduces the same lighting, composition and mood as prior validated outputs for the same brand/subject — a recognizable, repeatable system beats one lucky great image.",
+    rationale:
+      "Quoting the source directly: \"One 'perfect' image that you can't reproduce is worthless for building a brand or style. But ten solid images that share consistent lighting, composition, and mood? That's a visual language... Your goal isn't to create the perfect image. It's to create a perfect system for creating images.\" This directly corroborates this app's own product decision to require section-image-prompts to stay consistent with the validated hero-image-direction (see WEBSITE_CHAIN section-image-prompts.dependsOnSteps).",
+    technicalVocabulary: [],
+    goodExamples: [],
+    badExamples: [],
+    antiPatterns: ["Approving an individually strong image that doesn't match the lighting/composition/mood of already-validated brand images."],
+    constraints: [],
+    tags: ["consistency", "brand"],
+    confidence: 0.75,
+    status: "active",
+  },
+
+  // ---- structure (chaining — first-party, specific to this app's own chain design) --
+  {
+    id: "structure-role-objective-context-constraints",
+    sourceDocument: "ORBIT Prompt Engineering Guidelines",
+    title: "Structure text prompts as role, objective, context, constraints, output format, verification",
+    domain: "structure",
+    taskTypes: ["general-text", "copywriting", "information-architecture", "consistency-review"],
+    targetModels: ["openai-text", "claude-text", "manual-export"],
+    principle:
+      "A production prompt separates: who the model should act as, what the concrete objective is, what context it needs, what constraints bound the answer, what output format is required, and a checklist to self-verify against before returning the answer.",
+    rationale:
+      "Mixing role, context and constraints into one paragraph forces the model to disentangle intent from data; separating them into labeled sections reduces ambiguity and improves instruction-following, especially for multi-part deliverables.",
+    recommendedWording: "Role: ... / Objective: ... / Context: ... / Constraints: ... / Output format: ... / Verify: ...",
+    structurePattern: "role-objective-context-constraints-format-verification",
+    technicalVocabulary: [],
+    goodExamples: [],
+    badExamples: [],
+    antiPatterns: ["Burying the required output format in the middle of a long paragraph of context."],
+    constraints: [],
+    tags: ["structure", "text"],
+    confidence: 0.9,
+    status: "active",
+  },
+  {
+    id: "structure-one-deliverable-per-step",
+    sourceDocument: "ORBIT Prompt Engineering Guidelines",
+    title: "Chain prompts so each step produces one coherent deliverable",
+    domain: "structure",
+    taskTypes: ["general-text", "consistency-review"],
+    targetModels: ["openai-text", "claude-text", "manual-export"],
+    principle:
+      "When a task has more than 3-4 genuinely distinct deliverables, split it into a chain of prompts — one per deliverable (or one small coherent group) — rather than requesting all of them in a single call.",
+    rationale:
+      "Long multi-deliverable prompts dilute attention across many instructions at once; the model tends to under-deliver on later items and truncate output length. Splitting into a chain lets each step get full attention and a realistic length budget, and lets a failed step be retried alone.",
+    recommendedWording: undefined,
+    structurePattern: "chain: step_n -> validate -> step_n+1",
+    technicalVocabulary: [],
+    goodExamples: [],
+    badExamples: ["A single prompt asking for 13 distinct website deliverables at once."],
+    antiPatterns: ["Requesting an entire site's worth of copy, structure, SEO and image prompts in one prompt."],
+    constraints: [],
+    tags: ["chaining", "budget"],
+    confidence: 0.85,
+    status: "active",
+  },
+  {
+    id: "structure-carry-validated-decisions-forward",
+    sourceDocument: "ORBIT Prompt Engineering Guidelines",
+    title: "Carry only validated prior decisions forward in a chain, not full transcripts",
+    domain: "structure",
+    taskTypes: ["general-text", "information-architecture", "consistency-review"],
+    targetModels: ["openai-text", "claude-text"],
+    principle:
+      "Later steps in a chain should receive a compact summary of validated prior outputs relevant to them (e.g. the validated hero promise, not the entire previous response) rather than the full raw text of every earlier step.",
+    rationale:
+      "Passing entire prior deliverables verbatim into every subsequent prompt compounds token cost across a chain and re-introduces irrelevant detail the model has to filter out; a targeted summary keeps continuity without the overhead.",
+    technicalVocabulary: [],
+    goodExamples: [],
+    badExamples: [],
+    antiPatterns: ["Concatenating every previous step's full output into each new prompt."],
+    constraints: [],
+    tags: ["chaining", "context-selection"],
+    confidence: 0.8,
+    status: "active",
+  },
 ];
 
-export const SEEDED_PROMPT_KNOWLEDGE: PromptKnowledgeItem[] = parsePromptKnowledgeItems(RAW_ITEMS);
+export const SEEDED_PROMPT_KNOWLEDGE = parsePromptKnowledgeItems(RAW_ITEMS);

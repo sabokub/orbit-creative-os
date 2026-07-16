@@ -49,8 +49,9 @@ describe("buildOrbitPrompt — canonical Generation Layer entry point", () => {
     expect(result.sourceTrace.length).toBeGreaterThan(0);
     expect(result.sourceTrace.some((t) => t.kind === "knowledge")).toBe(true);
     expect(result.sourceTrace.some((t) => t.kind === "brandDNA")).toBe(true);
+    // Every knowledge trace names a real, honest source — never empty/undefined.
     for (const knowledgeTrace of result.sourceTrace.filter((t) => t.kind === "knowledge")) {
-      expect(knowledgeTrace.note).toContain("ORBIT Prompt Engineering Guidelines");
+      expect(knowledgeTrace.note.length).toBeGreaterThan(0);
     }
   });
 
