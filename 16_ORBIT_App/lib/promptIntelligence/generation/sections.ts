@@ -38,6 +38,7 @@ export interface WebsiteStepSectionInputs {
   brandContext: SelectedContextItem[];
   briefContext: SelectedContextItem[];
   priorDecisionContext: SelectedContextItem[];
+  studioBrainContext: SelectedContextItem[];
   selectedKnowledge: SelectedKnowledgeItem[];
 }
 
@@ -59,7 +60,7 @@ export function buildWebsiteStepSections(input: WebsiteStepSectionInputs): Promp
       `Produis uniquement le livrable "${step.title}" (id: ${step.deliverableIds.join(", ") || "revue de cohérence"}). Ne produis aucun autre livrable de la chaîne Website à cette étape.`
   );
 
-  const projectContext = section("projectContext", "Contexte projet pertinent", renderContextBlock(input.briefContext));
+  const projectContext = section("projectContext", "Contexte projet pertinent", renderContextBlock([...input.briefContext, ...input.studioBrainContext]));
 
   const brandDNA = section("brandDNA", "Brand DNA pertinent", renderContextBlock(input.brandContext));
 

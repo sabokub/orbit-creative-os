@@ -63,6 +63,7 @@ export function buildOrbitPrompt(input: PromptBuildInput): PromptBuildResult {
       brandContext: contextForRebuild.filter((c) => c.source === "brandDNA"),
       briefContext: contextForRebuild.filter((c) => c.source === "projectBrief"),
       priorDecisionContext: contextForRebuild.filter((c) => c.source === "priorOutput"),
+      studioBrainContext: contextForRebuild.filter((c) => c.source === "studioBrain"),
       selectedKnowledge: knowledgeForRebuild,
     });
 
