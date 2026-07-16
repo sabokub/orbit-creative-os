@@ -16,6 +16,13 @@ function scoreTask(priority: "high" | "medium" | "low", duration = 60, blocked =
   return Math.max(0, Math.min(100, urgency + impact + quickWin - (blocked ? 35 : 0)));
 }
 
+const PILOT_VIEWS = [
+  { href: "/studio", title: "Studio", note: "Santé globale, charge et risques", icon: "home" as const, tint: "bg-[#eef7ff]" },
+  { href: "/dependencies", title: "Dépendances", note: "Visualise ce qui bloque quoi", icon: "projects" as const, tint: "bg-[#fff0f5]" },
+  { href: "/timeline", title: "Timeline", note: "Échéances, décisions et historique", icon: "launch" as const, tint: "bg-[#fff8e5]" },
+  { href: "/search", title: "Recherche", note: "Retrouve tout dans ORBIT", icon: "sparkles" as const, tint: "bg-[#f5effd]" },
+];
+
 export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [days, setDays] = useState(0);
@@ -62,6 +69,13 @@ export default function Dashboard() {
       </section>
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4"><Link href="/projects" className="rounded-[22px] border border-black/10 bg-[#eef7ff] p-4"><p className="command-label">Projets</p><p className="mt-2 text-4xl font-black">{projects.length}</p></Link><Link href="/launch#tasks" className="rounded-[22px] border border-black/10 bg-[#f2f7e8] p-4"><p className="command-label">Tâches ouvertes</p><p className="mt-2 text-4xl font-black">{openTasks.length}</p></Link><Link href="/launch#content" className="rounded-[22px] border border-black/10 bg-[#fff8e5] p-4"><p className="command-label">Contenus ouverts</p><p className="mt-2 text-4xl font-black">{plan.contentQueue.filter((item) => item.status !== "done").length}</p></Link><Link href="/launch#decisions" className="rounded-[22px] border border-black/10 bg-[#f5effd] p-4"><p className="command-label">Décisions</p><p className="mt-2 text-4xl font-black">{pendingDecisions.length}</p></Link></section>
+
+      <section className="rounded-[28px] border border-black/10 bg-white/82 p-5">
+        <div className="flex items-end justify-between gap-3"><div><p className="command-label">Pilotage ORBIT</p><h2 className="mt-1 text-xl font-black">Les vues qui font avancer le studio</h2></div><span className="hidden text-[10px] font-black uppercase text-black/35 sm:block">Aussi accessibles avec ⌘K</span></div>
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {PILOT_VIEWS.map((view) => <Link key={view.href} href={view.href} className={`group rounded-[20px] border border-black/8 p-4 ${view.tint}`}><span className="flex h-10 w-10 items-center justify-center rounded-[14px] border border-black/8 bg-white/75"><CommandIcon name={view.icon} className="h-5 w-5" /></span><p className="mt-4 text-sm font-black">{view.title}</p><p className="mt-1 text-[11px] leading-snug text-black/48">{view.note}</p><p className="mt-4 text-[10px] font-black uppercase">Ouvrir →</p></Link>)}
+        </div>
+      </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]"><article className="rounded-[28px] border border-black/10 bg-white/80 p-5"><div className="flex items-center justify-between"><div><p className="command-label">Projets récents</p><h2 className="mt-1 text-xl font-black">Ce qui bouge</h2></div><Link href="/projects" className="text-[10px] font-black uppercase">Tout voir →</Link></div><div className="mt-4 grid gap-3 sm:grid-cols-2">{recentProjects.map((project, index) => <Link key={project.id} href={`/projects/${project.id}`} className={`rounded-[18px] border border-black/8 p-4 ${index % 2 === 0 ? "bg-[#eef7ff]" : "bg-[#fff8e5]"}`}><p className="text-sm font-black">{project.name}</p><p className="mt-1 text-[10px] uppercase text-black/40">{project.stage}</p></Link>)}{!recentProjects.length && <p className="text-sm text-black/45">Aucun projet enregistré.</p>}</div></article><article className="rounded-[28px] border border-black/10 bg-white/80 p-5"><div className="flex items-center justify-between"><div><p className="command-label">Contenus à créer</p><h2 className="mt-1 text-xl font-black">File éditoriale</h2></div><Link href="/launch#content" className="text-[10px] font-black uppercase">Gérer →</Link></div><div className="mt-4 divide-y divide-black/8">{openContent.map((item) => <Link key={item.id} href="/launch#content" className="flex items-center justify-between gap-3 py-3"><div className="min-w-0"><p className="truncate text-sm font-black">{item.title}</p><p className="truncate text-[11px] text-black/45">{item.format}</p></div><span className="text-[9px] font-black">{PRIORITY_LABEL[item.priority]}</span></Link>)}</div></article></section>
     </div>
