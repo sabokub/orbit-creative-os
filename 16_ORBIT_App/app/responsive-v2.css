@@ -12,7 +12,6 @@ main .grid > * {
 }
 
 main > div { width: 100%; }
-
 [id] { scroll-margin-top: 5.25rem; }
 
 @media (min-width: 1024px) {
@@ -29,9 +28,10 @@ main > div { width: 100%; }
     max-width: 100%;
     padding-top: calc(4.75rem + env(safe-area-inset-top, 0px)) !important;
     padding-right: 0.8rem !important;
-    padding-bottom: calc(6.8rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(9rem + env(safe-area-inset-bottom, 0px)) !important;
     padding-left: 0.8rem !important;
     overflow-x: clip;
+    scroll-padding-bottom: calc(8rem + env(safe-area-inset-bottom, 0px));
   }
   main > div { width: 100%; max-width: 760px; margin-right: auto; margin-left: auto; }
   main header { gap: 0.65rem !important; }
@@ -50,8 +50,9 @@ main > div { width: 100%; }
   main [class*="gap-5"], main [class*="gap-4"] { gap: 0.75rem !important; }
   main textarea { min-height: 112px; }
   main textarea[rows="16"] { min-height: 260px !important; }
-  main input, main select { min-height: 44px; }
+  main input, main select { min-height: 44px; width: 100%; max-width: 100%; min-width: 0; }
   main input, main textarea, main select { border-radius: 14px !important; font-size: 0.8rem !important; }
+  main input[type="date"] { appearance: none; -webkit-appearance: none; }
   main .overflow-x-auto { max-width: calc(100vw - 1.6rem); margin-right: 0; margin-left: 0; padding-right: 0; padding-left: 0; scroll-snap-type: x proximity; }
   main .overflow-x-auto > * { scroll-snap-align: start; }
   main img, main svg { max-width: 100%; }
