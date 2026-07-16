@@ -22,14 +22,17 @@ export default function LaunchPage() {
   const updatedLabel = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(plan.updatedAt));
 
   async function updateTask(id: string, patch: Partial<(typeof plan.priorities)[number]>) {
-    const priorities = plan.priorities.map((item) => (item.id === id ? { ...item, ...patch } : item));
-    await save({ ...plan, priorities });
+    await save({ ...plan, priorities: plan.priorities.map((item) => (item.id === id ? { ...item, ...patch } : item)) });
+  }
+
+  async function updateContent(id: string, patch: Partial<(typeof plan.contentQueue)[number]>) {
+    await save({ ...plan, contentQueue: plan.contentQueue.map((item) => (item.id === id ? { ...item, ...patch } : item)) });
   }
 
   const nextTask = plan.priorities.find((item) => item.status !== "done");
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="space-y-4 pb-36 lg:pb-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <span className="command-label"><CommandIcon name="launch" className="h-3.5 w-3.5" /> Opération lancement</span>
@@ -74,41 +77,47 @@ export default function LaunchPage() {
           </div>
         </article>
 
-        <article id="tasks" className="command-card scroll-mt-24 p-5">
+        <article id="tasks" className="command-card scroll-mt-24 p-4 sm:p-5">
           <div className="flex items-center justify-between"><div><p className="command-label">Tâches réelles</p><h2 className="mt-1 text-xl font-black">Priorités actuelles</h2></div><span className="command-pill bg-[#f9d9e6]">{plan.priorities.filter((item) => item.status !== "done").length} ouvertes</span></div>
           <div className="mt-4 space-y-3">
             {plan.priorities.map((item) => (
               <div key={item.id} className={`rounded-[18px] border border-black/8 p-3 ${item.status === "done" ? "bg-[#edf2e5]/65 opacity-70" : "bg-white/70"}`}>
                 <div className="flex items-start gap-3">
-                  <button type="button" onClick={() => void updateTask(item.id, { status: item.status === "done" ? "todo" : "done" })} className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[13px] border ${item.status === "done" ? "border-[#7ca34d] bg-[#c3d995]" : "border-black/12 bg-white"}`} aria-label={item.status === "done" ? "Rouvrir la tâche" : "Terminer la tâche"}>
-                    {item.status === "done" && <CommandIcon name="check" className="h-4 w-4" />}
-                  </button>
+                  <button type="button" onClick={() => void updateTask(item.id, { status: item.status === "done" ? "todo" : "done" })} className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[13px] border ${item.status === "done" ? "border-[#7ca34d] bg-[#c3d995]" : "border-black/12 bg-white"}`} aria-label={item.status === "done" ? "Rouvrir la tâche" : "Terminer la tâche"}>{item.status === "done" && <CommandIcon name="check" className="h-4 w-4" />}</button>
                   <div className="min-w-0 flex-1"><p className={`text-sm font-black ${item.status === "done" ? "line-through" : ""}`}>{item.title}</p><p className="mt-0.5 text-[11px] text-black/45">{item.area} · {item.detail}</p></div>
                 </div>
-                <div className="mt-3 grid grid-cols-1 gap-2 border-t border-black/7 pt-3 sm:grid-cols-3">
-                  <label className="text-[9px] font-black uppercase tracking-[0.1em] text-black/40">Statut
-                    <select value={item.status} onChange={(event) => void updateTask(item.id, { status: event.target.value as PlanStatus })} className="mt-1 !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold">
-                      {STATUS_OPTIONS.map((status) => <option key={status} value={status}>{STATUS_LABEL[status]}</option>)}
-                    </select>
-                  </label>
-                  <label className="text-[9px] font-black uppercase tracking-[0.1em] text-black/40">Priorité
-                    <select value={item.priority} onChange={(event) => void updateTask(item.id, { priority: event.target.value as PlanPriority })} className="mt-1 !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold">
-                      {PRIORITY_OPTIONS.map((priority) => <option key={priority} value={priority}>{PRIORITY_LABEL[priority]}</option>)}
-                    </select>
-                  </label>
-                  <label className="text-[9px] font-black uppercase tracking-[0.1em] text-black/40">Prévue pour
-                    <input type="date" value={item.scheduledFor || ""} onChange={(event) => void updateTask(item.id, { scheduledFor: event.target.value || undefined, due: event.target.value ? "Planifiée" : item.due })} className="mt-1 !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold" />
-                  </label>
+                <div className="mt-3 grid grid-cols-2 gap-2 border-t border-black/7 pt-3 sm:grid-cols-3">
+                  <label className="min-w-0 text-[9px] font-black uppercase tracking-[0.1em] text-black/40">Statut<select value={item.status} onChange={(event) => void updateTask(item.id, { status: event.target.value as PlanStatus })} className="mt-1 w-full !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold">{STATUS_OPTIONS.map((status) => <option key={status} value={status}>{STATUS_LABEL[status]}</option>)}</select></label>
+                  <label className="min-w-0 text-[9px] font-black uppercase tracking-[0.1em] text-black/40">Priorité<select value={item.priority} onChange={(event) => void updateTask(item.id, { priority: event.target.value as PlanPriority })} className="mt-1 w-full !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold">{PRIORITY_OPTIONS.map((priority) => <option key={priority} value={priority}>{PRIORITY_LABEL[priority]}</option>)}</select></label>
+                  <label className="col-span-2 min-w-0 text-[9px] font-black uppercase tracking-[0.1em] text-black/40 sm:col-span-1">Prévue pour<input type="date" value={item.scheduledFor || ""} onChange={(event) => void updateTask(item.id, { scheduledFor: event.target.value || undefined, due: event.target.value ? "Planifiée" : item.due })} className="mt-1 w-full max-w-full !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold" /></label>
                 </div>
               </div>
             ))}
-            {!plan.priorities.length && <p className="text-sm text-black/45">Aucune priorité renseignée.</p>}
           </div>
         </article>
       </section>
 
       <section className="grid gap-3 xl:grid-cols-2">
-        <article id="content" className="command-card scroll-mt-24 p-5"><p className="command-label">Calendrier éditorial</p><h2 className="mt-1 text-xl font-black">Contenus à créer et publier</h2><div className="mt-4 divide-y divide-black/8">{plan.contentQueue.map((item) => <div key={item.id} className="grid grid-cols-[1fr_auto] gap-3 py-3"><div><p className="text-sm font-black">{item.title}</p><p className="text-[11px] text-black/45">{item.format}</p></div><div className="text-right"><span className="text-[9px] font-black">{item.status}</span><p className="text-[10px] text-black/40">{item.timing}</p></div></div>)}{!plan.contentQueue.length && <p className="py-4 text-sm text-black/45">Aucun contenu renseigné.</p>}</div></article>
+        <article id="content" className="command-card scroll-mt-24 p-4 sm:p-5">
+          <div className="flex items-center justify-between"><div><p className="command-label">Calendrier éditorial</p><h2 className="mt-1 text-xl font-black">Contenus à créer et publier</h2></div><span className="command-pill bg-[#dcecff]">{plan.contentQueue.filter((item) => item.status !== "done").length} ouverts</span></div>
+          <div className="mt-4 space-y-3">
+            {plan.contentQueue.map((item) => (
+              <div key={item.id} className={`rounded-[18px] border border-black/8 p-3 ${item.status === "done" ? "bg-[#edf2e5]/65 opacity-70" : "bg-white/70"}`}>
+                <div className="flex items-start gap-3">
+                  <button type="button" onClick={() => void updateContent(item.id, { status: item.status === "done" ? "todo" : "done" })} className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[13px] border ${item.status === "done" ? "border-[#7ca34d] bg-[#c3d995]" : "border-black/12 bg-white"}`} aria-label={item.status === "done" ? "Rouvrir le contenu" : "Marquer le contenu terminé"}>{item.status === "done" && <CommandIcon name="check" className="h-4 w-4" />}</button>
+                  <div className="min-w-0 flex-1"><p className={`text-sm font-black ${item.status === "done" ? "line-through" : ""}`}>{item.title}</p><p className="mt-0.5 text-[11px] text-black/45">{item.format} · {item.timing}</p></div>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2 border-t border-black/7 pt-3 sm:grid-cols-3">
+                  <label className="min-w-0 text-[9px] font-black uppercase tracking-[0.1em] text-black/40">Statut<select value={item.status} onChange={(event) => void updateContent(item.id, { status: event.target.value as PlanStatus })} className="mt-1 w-full !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold">{STATUS_OPTIONS.map((status) => <option key={status} value={status}>{STATUS_LABEL[status]}</option>)}</select></label>
+                  <label className="min-w-0 text-[9px] font-black uppercase tracking-[0.1em] text-black/40">Priorité<select value={item.priority} onChange={(event) => void updateContent(item.id, { priority: event.target.value as PlanPriority })} className="mt-1 w-full !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold">{PRIORITY_OPTIONS.map((priority) => <option key={priority} value={priority}>{PRIORITY_LABEL[priority]}</option>)}</select></label>
+                  <label className="col-span-2 min-w-0 text-[9px] font-black uppercase tracking-[0.1em] text-black/40 sm:col-span-1">Prévu pour<input type="date" value={item.scheduledFor || ""} onChange={(event) => void updateContent(item.id, { scheduledFor: event.target.value || undefined, timing: event.target.value ? "Planifié" : item.timing })} className="mt-1 w-full max-w-full !min-h-[38px] !rounded-[12px] !px-3 !py-1 text-xs font-bold" /></label>
+                </div>
+              </div>
+            ))}
+            {!plan.contentQueue.length && <p className="py-4 text-sm text-black/45">Aucun contenu renseigné.</p>}
+          </div>
+        </article>
+
         <article id="site" className="command-card scroll-mt-24 p-5"><p className="command-label">Production du site</p><h2 className="mt-1 text-xl font-black">État réel des pages</h2><div className="mt-4 space-y-3">{plan.sitePages.map((page) => <div key={page.id} className="grid grid-cols-[1fr_auto] gap-3"><div><div className="flex justify-between gap-3"><span className="text-sm font-black">{page.title}</span><span className="text-[10px] text-black/40">{page.status}</span></div><div className="mt-2 h-2 rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${page.progress}%` }} /></div></div><span className="text-xs font-black">{page.progress}%</span></div>)}</div></article>
       </section>
     </div>
