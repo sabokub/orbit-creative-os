@@ -22,7 +22,13 @@ const TYPE_META: Record<string, { accent: string; icon: CommandIconName }> = {
   "brand-kit": { accent: "bg-[#f5df75]", icon: "brain" },
 };
 
-export default function ProjectCard({ project }: { project: Project }) {
+export default function ProjectCard({
+  project,
+  onRequestDelete,
+}: {
+  project: Project;
+  onRequestDelete?: (project: Project) => void;
+}) {
   const lastReview = project.reviews[project.reviews.length - 1];
   const stage = STAGE_META[project.stage];
   const workflow = TYPE_META[project.brief?.workflowType] || { accent: "bg-[#f2b8cf]", icon: "projects" as CommandIconName };
@@ -36,7 +42,23 @@ export default function ProjectCard({ project }: { project: Project }) {
         <span className={`flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/10 ${workflow.accent}`}>
           <CommandIcon name={workflow.icon} className="h-5 w-5" />
         </span>
-        <StatusBadge status={lastReview?.status || "Not reviewed"} />
+        <div className="flex items-center gap-2">
+          <StatusBadge status={lastReview?.status || "Not reviewed"} />
+          {onRequestDelete && (
+            <button
+              type="button"
+              aria-label={`Supprimer le projet "${project.name}"`}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onRequestDelete(project);
+              }}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white/90 text-black/45 opacity-0 shadow-sm transition hover:border-red-300 hover:bg-red-50 hover:text-red-700 focus-visible:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100"
+            >
+              <CommandIcon name="trash" className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="mt-5">

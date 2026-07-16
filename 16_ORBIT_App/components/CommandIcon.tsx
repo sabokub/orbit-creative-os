@@ -24,7 +24,8 @@ export type CommandIconName =
   | "search"
   | "target"
   | "link"
-  | "calendar";
+  | "calendar"
+  | "trash";
 
 const paths: Record<CommandIconName, React.ReactNode> = {
   home: <><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/></>,
@@ -51,6 +52,7 @@ const paths: Record<CommandIconName, React.ReactNode> = {
   target: <><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></>,
   link: <><path d="M9.5 14.5 14.5 9.5"/><path d="M11 6.5 13 4.6a3.6 3.6 0 0 1 5 5L16.1 11.5M13 17.5 11 19.4a3.6 3.6 0 0 1-5-5L7.9 12.5"/></>,
   calendar: <><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></>,
+  trash: <><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 12.5A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.5L18 7"/><path d="M10 11v6M14 11v6"/></>,
 };
 
 export default function CommandIcon({

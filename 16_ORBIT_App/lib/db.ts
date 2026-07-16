@@ -1,6 +1,7 @@
 import "server-only";
 import { Redis } from "@upstash/redis";
 import { Project } from "./types";
+import { deleteItemsByProjectId } from "./studioBrain";
 
 const INDEX_KEY = "orbit-hub:projects";
 
@@ -50,6 +51,13 @@ export async function saveProject(project: Project): Promise<Project> {
   return project;
 }
 
+/**
+ * Deletes a project and cascades to every Studio Brain item (task/content)
+ * linked to it via `projectId`. `outputs`/`reviews`/`exports` already live
+ * inside the `Project` record itself, so removing that record is enough for
+ * them; only the separately-stored Studio Brain items need an explicit
+ * cascade (see `deleteItemsByProjectId` in `lib/studioBrain.ts`).
+ */
 export async function deleteProject(id: string): Promise<void> {
   const redis = client();
   await redis.del(projectKey(id));
@@ -58,4 +66,5 @@ export async function deleteProject(id: string): Promise<void> {
     INDEX_KEY,
     ids.filter((i) => i !== id)
   );
+  await deleteItemsByProjectId(id);
 }

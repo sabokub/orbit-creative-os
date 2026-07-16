@@ -759,3 +759,41 @@ async function ensureSeeded(redis: Redis): Promise<void> {
 export function computeBlockedCount(itemId: string, allItems: StudioItem[]): number {
   return countBlockedBy(itemId, allItems);
 }
+
+/* ------------------------------------------------------------------------ *
+ * Project cascade delete
+ * ------------------------------------------------------------------------ */
+
+/**
+ * Hard-deletes every StudioItem (task or content) linked to the given
+ * project via `projectId`, removing them from Redis and from the items
+ * index. Called from `lib/db.ts`'s `deleteProject` so that deleting a
+ * project also removes all its tasks/content items instead of leaving
+ * orphaned Studio Brain data behind.
+ *
+ * Deliberately a hard delete rather than `archiveItem` -- archiving keeps
+ * history for items whose lifecycle continues; a deleted project has no
+ * lifecycle left to keep history for, and the requirement is that deleting
+ * a project removes "all associated Studio Brain data" (not just hides it).
+ *
+ * Returns the number of items removed.
+ */
+export async function deleteItemsByProjectId(projectId: string): Promise<number> {
+  const redis = client();
+  const ids = (await redis.get<string[]>(ITEMS_INDEX_KEY)) || [];
+  if (ids.length === 0) return 0;
+  const raw = await Promise.all(ids.map((id) => redis.get(ITEM_KEY(id))));
+  const items = raw.map((r) => normalizeItem(r)).filter((it): it is StudioItem => it !== null);
+  const toDelete = items.filter((it) => it.projectId === projectId);
+  if (toDelete.length === 0) return 0;
+
+  const toDeleteIds = new Set(toDelete.map((it) => it.id));
+  await Promise.all(toDelete.map((it) => redis.del(ITEM_KEY(it.id))));
+  const remainingIds = ids.filter((id) => !toDeleteIds.has(id));
+  await redis.set(ITEMS_INDEX_KEY, remainingIds);
+  await pushActivity(
+    "note",
+    `${toDelete.length} élément(s) du Studio Brain supprimé(s) suite à la suppression d'un projet`
+  );
+  return toDelete.length;
+}
