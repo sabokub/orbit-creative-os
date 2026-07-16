@@ -10,6 +10,7 @@ import { getBrandProfile } from "@/lib/brandProfile";
 import PromptPreview from "@/components/PromptPreview";
 import CommandIcon, { CommandIconName } from "@/components/CommandIcon";
 import ResponseAnalysisReview from "@/components/ResponseAnalysisReview";
+import PromptLab from "@/components/PromptLab";
 import { AnalysisResult, AnalysisSource } from "@/lib/responseAnalysis/types";
 import { VersionDiff } from "@/lib/responseAnalysis/versioning";
 import {
@@ -267,6 +268,16 @@ function RunnerContent() {
           );
         })}
       </div>
+
+      {step === "website" && (
+        <PromptLab project={project} onProjectUpdated={setProject} />
+      )}
+
+      {step === "website" && (
+        <div className="rounded-[18px] border border-black/12 bg-black/[0.02] px-4 py-3 text-xs font-bold text-black/50">
+          Prompt historique (legacy) ci-dessous — toujours disponible pour comparaison, un livrable à la fois avec la chaîne modulaire ci-dessus reste recommandé.
+        </div>
+      )}
 
       <section className="grid gap-4 xl:grid-cols-12">
         <div className="space-y-4 xl:col-span-7">

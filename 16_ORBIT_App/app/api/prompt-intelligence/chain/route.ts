@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     const steps = WEBSITE_CHAIN.map((step) => ({
       ...step,
       hasValidatedOutput: Boolean(project.websiteChainOutputs?.[step.id]?.trim()),
-      versionCount: project.websitePromptChain?.[step.id]?.length || 0,
+      versionHistory: project.websitePromptChain?.[step.id] || [],
     }));
 
     return NextResponse.json({ steps });
