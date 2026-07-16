@@ -10,6 +10,7 @@ export function useStudioPlan() {
   const [plan, setPlan] = useState<StudioPlan>(DEFAULT_STUDIO_PLAN);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState("");
 
   const refresh = useCallback(async () => {
@@ -17,8 +18,10 @@ export function useStudioPlan() {
       const nextPlan = await fetchStudioPlan();
       setPlan(nextPlan);
       setError("");
+      return nextPlan;
     } catch (err) {
       setError((err as Error).message);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -43,6 +46,20 @@ export function useStudioPlan() {
     }
   }, [plan]);
 
+  const manualSync = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const fresh = await refresh();
+      const synced = { ...fresh, lastManualSyncAt: new Date().toISOString() };
+      const saved = await updateStudioPlan(synced);
+      setPlan(saved);
+      setError("");
+      return saved;
+    } finally {
+      setSyncing(false);
+    }
+  }, [refresh]);
+
   useEffect(() => {
     void refresh();
     const interval = window.setInterval(() => void refresh(), REFRESH_INTERVAL_MS);
@@ -59,5 +76,5 @@ export function useStudioPlan() {
     };
   }, [refresh]);
 
-  return { plan, setPlan, loading, saving, error, refresh, save };
+  return { plan, setPlan, loading, saving, syncing, error, refresh, manualSync, save };
 }
