@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { DEFAULT_STUDIO_PLAN, StudioPlan } from "@/lib/studioPlan";
-import { fetchStudioPlan } from "@/lib/studioPlanClient";
+import { fetchStudioPlan, updateStudioPlan } from "@/lib/studioPlanClient";
 
 const REFRESH_INTERVAL_MS = 15_000;
 
 export function useStudioPlan() {
   const [plan, setPlan] = useState<StudioPlan>(DEFAULT_STUDIO_PLAN);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const refresh = useCallback(async () => {
@@ -22,6 +23,25 @@ export function useStudioPlan() {
       setLoading(false);
     }
   }, []);
+
+  const save = useCallback(async (nextPlan: StudioPlan) => {
+    const previous = plan;
+    const optimistic = { ...nextPlan, updatedAt: new Date().toISOString() };
+    setPlan(optimistic);
+    setSaving(true);
+    try {
+      const saved = await updateStudioPlan(optimistic);
+      setPlan(saved);
+      setError("");
+      return saved;
+    } catch (err) {
+      setPlan(previous);
+      setError((err as Error).message);
+      throw err;
+    } finally {
+      setSaving(false);
+    }
+  }, [plan]);
 
   useEffect(() => {
     void refresh();
@@ -39,5 +59,5 @@ export function useStudioPlan() {
     };
   }, [refresh]);
 
-  return { plan, loading, error, refresh };
+  return { plan, setPlan, loading, saving, error, refresh, save };
 }
