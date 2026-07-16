@@ -385,7 +385,7 @@ export async function markNotificationRead(id: string): Promise<void> {
  * ------------------------------------------------------------------------ */
 
 const DEFAULT_INTEGRATIONS: Record<IntegrationId, IntegrationSyncState> = {
-  github: { id: "github", label: "GitHub", status: "not_connected", detail: "Dépôt agent/dashboard-dense-v2" },
+  github: { id: "github", label: "GitHub", status: "not_connected", detail: "Dépôt orbit-creative-os" },
   vercel: { id: "vercel", label: "Vercel", status: "not_connected", detail: "Déploiement de production" },
   redis: { id: "redis", label: "Redis (Upstash)", status: "not_connected", detail: "Base de données studio" },
   drive: { id: "drive", label: "Google Drive", status: "not_connected", detail: "Assets et documents" },
