@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Project, WorkflowStep } from "@/lib/types";
-import { getProject, saveProject } from "@/lib/storage";
+import { deleteProject, getProject, saveProject } from "@/lib/storage";
 import { STEP_LABELS, STEP_ORDER } from "@/lib/prompts";
 import { DEFAULT_BRAND_PROFILE, WORKFLOW_TYPE_LABELS } from "@/lib/brandProfile";
 import WorkflowSelector from "@/components/WorkflowSelector";
@@ -13,17 +13,46 @@ import ReviewScoreCard from "@/components/ReviewScoreCard";
 import ExportButton from "@/components/ExportButton";
 import StatusBadge from "@/components/StatusBadge";
 import CommandIcon from "@/components/CommandIcon";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { setPendingToast } from "@/components/Toast";
 
 export default function ProjectWorkspace() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const [project, setProject] = useState<Project | null | undefined>(undefined);
   const [error, setError] = useState("");
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     getProject(params.id)
       .then(setProject)
       .catch((err) => setError((err as Error).message));
   }, [params.id]);
+
+  async function confirmDelete() {
+    if (!project) return;
+    setDeleteBusy(true);
+    setDeleteError("");
+    try {
+      await deleteProject(project.id);
+      // The project currently open is the one being deleted -- redirect back
+      // to the list. The success toast is handed off via sessionStorage since
+      // this page is about to unmount before it could render one itself.
+      setPendingToast("success", `"${project.name}" a été supprimé, avec toutes ses données Studio Brain associées.`);
+      router.push("/projects");
+    } catch (err) {
+      setDeleteBusy(false);
+      setDeleteError((err as Error).message || "La suppression a échoué. Réessaie.");
+    }
+  }
+
+  function cancelDelete() {
+    if (deleteBusy) return;
+    setDeleteOpen(false);
+    setDeleteError("");
+  }
 
   if (error) {
     return <div className="rounded-[22px] border border-red-300 bg-red-50 p-4 text-sm font-bold text-red-800">{error}</div>;
@@ -201,6 +230,36 @@ export default function ProjectWorkspace() {
           </div>
         )}
       </section>
+
+      <section className="command-card border-red-200/70 bg-red-50/40 p-5 sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <span className="command-label text-red-800/70">Zone de danger</span>
+            <h2 className="mt-2 text-lg font-black text-red-900">Supprimer ce projet</h2>
+            <p className="mt-1 max-w-xl text-xs font-semibold leading-relaxed text-red-900/60">
+              Action irréversible : supprime le projet ainsi que toutes les tâches et contenus du Studio Brain qui lui sont liés.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDeleteOpen(true)}
+            className="inline-flex min-h-[44px] items-center justify-center gap-2 self-start rounded-full border border-red-300 bg-white px-4 py-2.5 text-xs font-black text-red-700 hover:bg-red-600 hover:text-white sm:self-auto"
+          >
+            <CommandIcon name="trash" className="h-4 w-4" /> Supprimer le projet
+          </button>
+        </div>
+      </section>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title={project ? `Supprimer "${project.name}" ?` : "Supprimer le projet ?"}
+        description="Cette action est irréversible. Le projet, ses livrables, relectures et exports, ainsi que toutes les tâches et contenus du Studio Brain liés exclusivement à ce projet seront définitivement supprimés."
+        confirmLabel="Supprimer définitivement"
+        busy={deleteBusy}
+        error={deleteError}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }
