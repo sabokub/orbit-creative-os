@@ -16,8 +16,10 @@ export type ContentItem = {
   id: string;
   title: string;
   format: string;
-  status: string;
+  status: PlanStatus;
+  priority: PlanPriority;
   timing: string;
+  scheduledFor?: string;
 };
 
 export type SitePageItem = {
@@ -52,10 +54,10 @@ export const DEFAULT_STUDIO_PLAN: StudioPlan = {
     { id: "waitlist-announcement", title: "Préparer l’annonce à la waitlist", detail: "Carrousel 3 slides et email de lancement du guide", area: "Contenu", status: "in-progress", priority: "medium", due: "Avant lancement" },
   ],
   contentQueue: [
-    { id: "video-da", title: "Vidéo — J’ai enfin trouvé ma DA", format: "TikTok / Reel", status: "Montage terminé", timing: "À publier" },
-    { id: "carousel-guide", title: "Carrousel — sortie du guide waitlist", format: "Instagram · 3 slides", status: "Texte à finaliser", timing: "Avant lancement" },
-    { id: "email-guide", title: "Email — accès anticipé au guide", format: "Email waitlist", status: "À rédiger", timing: "Avant lancement" },
-    { id: "video-work-everywhere", title: "Vidéo — je bosse partout", format: "Reel / coulisses", status: "Caption prête", timing: "À programmer" },
+    { id: "video-da", title: "Vidéo — J’ai enfin trouvé ma DA", format: "TikTok / Reel", status: "review", priority: "high", timing: "À publier" },
+    { id: "carousel-guide", title: "Carrousel — sortie du guide waitlist", format: "Instagram · 3 slides", status: "in-progress", priority: "high", timing: "Avant lancement" },
+    { id: "email-guide", title: "Email — accès anticipé au guide", format: "Email waitlist", status: "todo", priority: "medium", timing: "Avant lancement" },
+    { id: "video-work-everywhere", title: "Vidéo — je bosse partout", format: "Reel / coulisses", status: "review", priority: "low", timing: "À programmer" },
   ],
   sitePages: [
     { id: "home", title: "Accueil", status: "V2 en validation mobile", progress: 75 },
