@@ -37,11 +37,7 @@ function PanelTitle({ title, href }: { title: string; href?: string }) {
   return (
     <div className="flex items-center justify-between gap-4">
       <h2 className="text-[11px] font-black uppercase tracking-[0.12em]">{title}</h2>
-      {href && (
-        <Link href={href} className="rounded-full border border-black/10 bg-white/75 px-3 py-1.5 text-[10px] font-bold text-black/55">
-          Voir tout
-        </Link>
-      )}
+      {href && <Link href={href} className="rounded-full border border-black/10 bg-white/75 px-3 py-1.5 text-[10px] font-bold text-black/55">Voir tout</Link>}
     </div>
   );
 }
@@ -57,13 +53,8 @@ function MetricCard({ label, value, note, icon, tint, href }: {
   return (
     <Link href={href} className={`block rounded-[24px] border border-black/10 p-4 shadow-[0_10px_28px_rgba(38,37,32,0.05)] ${tint}`}>
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.12em] text-black/55">{label}</p>
-          <p className="mt-2 text-[36px] font-black leading-none tracking-[-0.04em]">{value}</p>
-        </div>
-        <span className="flex h-10 w-10 items-center justify-center rounded-[15px] border border-black/10 bg-white/70">
-          <CommandIcon name={icon} className="h-[18px] w-[18px]" />
-        </span>
+        <div><p className="text-[10px] font-black uppercase tracking-[0.12em] text-black/55">{label}</p><p className="mt-2 text-[36px] font-black leading-none tracking-[-0.04em]">{value}</p></div>
+        <span className="flex h-10 w-10 items-center justify-center rounded-[15px] border border-black/10 bg-white/70"><CommandIcon name={icon} className="h-[18px] w-[18px]" /></span>
       </div>
       <p className="mt-3 text-[11px] font-semibold text-black/52">{note}</p>
     </Link>
@@ -90,70 +81,35 @@ export default function Dashboard() {
 
   useEffect(() => {
     setDaysUntilLaunch(Math.max(0, Math.ceil((LAUNCH_DATE.getTime() - Date.now()) / 86_400_000)));
-    listProjects()
-      .then((items) => {
-        setProjects(items);
-        setLoaded(true);
-      })
-      .catch((err) => {
-        setError((err as Error).message);
-        setLoaded(true);
-      });
+    listProjects().then((items) => { setProjects(items); setLoaded(true); }).catch((err) => { setError((err as Error).message); setLoaded(true); });
   }, []);
 
-  const recentProjects = useMemo(
-    () => [...projects].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, 5),
-    [projects]
-  );
-
+  const recentProjects = useMemo(() => [...projects].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, 5), [projects]);
   const totalOutputs = projects.reduce((sum, project) => sum + Object.keys(project.outputs).length, 0);
   const totalReviews = projects.reduce((sum, project) => sum + project.reviews.length, 0);
   const totalExports = projects.reduce((sum, project) => sum + project.exports.length, 0);
-  const blockedReviews = projects.flatMap((project) =>
-    project.reviews
-      .filter((review) => review.status === "Blocked")
-      .map((review) => ({ projectId: project.id, projectName: project.name, target: review.target }))
-  );
-  const pendingReviews = projects.reduce(
-    (sum, project) => sum + project.reviews.filter((review) => review.status === "Needs revision").length,
-    0
-  );
-  const averageProjectProgress = projects.length
-    ? Math.round(projects.reduce((sum, project) => sum + STAGE_PROGRESS[project.stage], 0) / projects.length)
-    : 0;
+  const blockedReviews = projects.flatMap((project) => project.reviews.filter((review) => review.status === "Blocked").map((review) => ({ projectId: project.id, projectName: project.name, target: review.target })));
+  const pendingReviews = projects.reduce((sum, project) => sum + project.reviews.filter((review) => review.status === "Needs revision").length, 0);
+  const averageProjectProgress = projects.length ? Math.round(projects.reduce((sum, project) => sum + STAGE_PROGRESS[project.stage], 0) / projects.length) : 0;
   const qualityScore = reviewScore(projects);
 
   return (
     <div className="mx-auto max-w-[1500px] space-y-4 pb-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-black tracking-[-0.03em] sm:text-3xl">👋 Bienvenue, Sab</h1>
-          <p className="mt-1 text-sm font-medium text-black/52">Données ORBIT réelles + plan de lancement 24March.</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="command-pill bg-[#e8f3ff]"><CommandIcon name="sparkles" className="h-3.5 w-3.5" /> Mis à jour le {PLAN_UPDATED_AT}</span>
-          <Link href="/projects/new" className="command-button hidden sm:inline-flex"><CommandIcon name="plus" className="h-4 w-4" /> Nouveau projet</Link>
-        </div>
+        <div><h1 className="text-2xl font-black tracking-[-0.03em] sm:text-3xl">👋 Bienvenue, Sab</h1><p className="mt-1 text-sm font-medium text-black/52">Données ORBIT réelles + plan de lancement 24March.</p></div>
+        <div className="flex flex-wrap items-center gap-2"><span className="command-pill bg-[#e8f3ff]"><CommandIcon name="sparkles" className="h-3.5 w-3.5" /> Mis à jour le {PLAN_UPDATED_AT}</span><Link href="/projects/new" className="command-button hidden sm:inline-flex"><CommandIcon name="plus" className="h-4 w-4" /> Nouveau projet</Link></div>
       </header>
 
       <section className="grid gap-4 xl:grid-cols-[1.55fr_1fr]">
         <article className="relative min-h-[320px] overflow-hidden rounded-[30px] border border-black/10 bg-[linear-gradient(135deg,#fbf6e8_0%,#f7f3e7_55%,#edf2e5_100%)] p-5 shadow-[0_18px_44px_rgba(70,68,57,0.07)] sm:p-6">
           <div className="absolute inset-0 opacity-80 [background:radial-gradient(circle_at_80%_85%,rgba(195,217,149,0.2),transparent_34%)]" />
           <div className="relative flex h-full flex-col justify-between">
-            <div className="flex items-start justify-between gap-3">
-              <span className="rounded-full border border-black/10 bg-[#f4efdc]/90 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.13em]">24March Studio / plan réel</span>
-              <Link href="/launch" className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/10 bg-white/80" aria-label="Ouvrir le lancement">
-                <CommandIcon name="launch" className="h-5 w-5" />
-              </Link>
-            </div>
+            <div className="flex items-start justify-between gap-3"><span className="rounded-full border border-black/10 bg-[#f4efdc]/90 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.13em]">24March Studio / plan réel</span><Link href="/launch" className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/10 bg-white/80" aria-label="Ouvrir le lancement"><CommandIcon name="launch" className="h-5 w-5" /></Link></div>
             <div className="mt-10">
               <p className="text-[11px] font-black uppercase tracking-[0.14em]">Compte à rebours lancement</p>
               <div className="mt-2 flex items-end gap-3"><span className="text-[56px] font-black leading-[0.82] tracking-[-0.07em] sm:text-[86px] lg:text-[106px]">{daysUntilLaunch ?? "—"}</span><span className="mb-2 text-sm font-black uppercase leading-tight tracking-[0.1em]">jours<br />restants</span></div>
               <p className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-[#7d9f4c]">1er septembre 2026</p>
-              <div className="mt-6 max-w-xl">
-                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.11em]"><span>Progression du plan de lancement</span><span>{GLOBAL_LAUNCH_PROGRESS}%</span></div>
-                <div className="mt-2 h-3 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#98b85f]" style={{ width: `${GLOBAL_LAUNCH_PROGRESS}%` }} /></div>
-              </div>
+              <div className="mt-6 max-w-xl"><div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.11em]"><span>Progression du plan de lancement</span><span>{GLOBAL_LAUNCH_PROGRESS}%</span></div><div className="mt-2 h-3 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#98b85f]" style={{ width: `${GLOBAL_LAUNCH_PROGRESS}%` }} /></div></div></div>
               <p className="mt-3 text-[10px] font-semibold text-black/42">Calculée à partir des tâches terminées, en cours, à relire et à faire.</p>
             </div>
           </div>
@@ -161,18 +117,7 @@ export default function Dashboard() {
 
         <article className="rounded-[30px] border border-black/10 bg-white/78 p-5 shadow-[0_18px_44px_rgba(70,68,57,0.06)] sm:p-6">
           <PanelTitle title="Priorités réelles" />
-          <div className="mt-4 space-y-3">
-            {PRIORITIES.map((item) => {
-              const meta = AREA_META[item.area] || AREA_META.Système;
-              return (
-                <Link href="/launch#tasks" key={item.title} className="flex items-center gap-3 rounded-[20px] border border-black/8 bg-[#fffdf8] p-3">
-                  <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[15px] ${meta.color}`}><CommandIcon name={meta.icon} className="h-5 w-5" /></span>
-                  <div className="min-w-0 flex-1"><p className="truncate text-sm font-black">{item.title}</p><p className="mt-0.5 truncate text-[11px] font-medium text-black/45">{item.detail}</p></div>
-                  <div className="text-right"><span className="rounded-full border border-black/8 bg-white px-2.5 py-1 text-[9px] font-black">{STATUS_LABEL[item.status]}</span><p className="mt-1 text-[9px] font-semibold text-black/35">{item.due}</p></div>
-                </Link>
-              );
-            })}
-          </div>
+          <div className="mt-4 space-y-3">{PRIORITIES.map((item) => { const meta = AREA_META[item.area] || AREA_META.Système; return <Link href="/launch#tasks" key={item.title} className="flex items-center gap-3 rounded-[20px] border border-black/8 bg-[#fffdf8] p-3"><span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[15px] ${meta.color}`}><CommandIcon name={meta.icon} className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="truncate text-sm font-black">{item.title}</p><p className="mt-0.5 truncate text-[11px] font-medium text-black/45">{item.detail}</p></div><div className="text-right"><span className="rounded-full border border-black/8 bg-white px-2.5 py-1 text-[9px] font-black">{STATUS_LABEL[item.status]}</span><p className="mt-1 text-[9px] font-semibold text-black/35">{item.due}</p></div></Link>; })}</div>
           <Link href="/launch#tasks" className="mt-4 flex items-center justify-end gap-2 border-t border-black/8 pt-4 text-[10px] font-black uppercase tracking-[0.1em]">Voir toutes les tâches <CommandIcon name="arrow" className="h-4 w-4" /></Link>
         </article>
       </section>
@@ -191,7 +136,7 @@ export default function Dashboard() {
 
         <article className="rounded-[28px] border border-black/10 bg-white/78 p-5"><PanelTitle title="Contenus réels à créer / publier" href="/launch#content" /><div className="mt-4 divide-y divide-black/7">{CONTENT_QUEUE.map((item, index) => <Link href="/launch#content" key={item.title} className="grid grid-cols-[44px_1fr_auto] items-center gap-3 py-2.5"><div className={`h-11 rounded-[12px] ${index % 2 === 0 ? "bg-[#e6d3b5]" : "bg-[#dcecff]"}`} /><div className="min-w-0"><p className="truncate text-[11px] font-black">{item.title}</p><p className="mt-0.5 truncate text-[10px] font-medium text-black/40">{item.format}</p></div><div className="text-right"><span className="rounded-full border border-black/8 bg-[#f8faf4] px-2 py-1 text-[9px] font-black">{item.status}</span><p className="mt-1 text-[9px] font-semibold text-black/35">{item.timing}</p></div></Link>)}</div></article>
 
-        <article className="rounded-[28px] border border-black/10 bg-white/78 p-5"><PanelTitle title="État réel du site" href="/launch#site" /><div className="mt-4 space-y-3">{SITE_PAGES.map((page) => <Link href="/launch#site" key={page.title} className="grid grid-cols-[1fr_auto] items-center gap-3"><div><div className="flex justify-between gap-2"><span className="text-[11px] font-bold">{page.title}</span><span className="truncate text-[9px] font-semibold text-black/38">{page.status}</span></div><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${page.progress}%` }} /></div></div><span className="text-[10px] font-black">{page.progress}%</span></Link>)}</div></article>
+        <article className="rounded-[28px] border border-black/10 bg-white/78 p-5"><PanelTitle title="État réel du site" href="/launch#site" /><div className="mt-4 space-y-3">{SITE_PAGES.map((page) => <Link href="/launch#site" key={page.title} className="grid grid-cols-[1fr_auto] items-center gap-3"><div><div className="flex justify-between gap-2"><span className="text-[11px] font-bold">{page.title}</span><span className="truncate text-[9px] font-semibold text-black/38">{page.status}</span></div><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${page.progress}%` }} /></div></div></div><span className="text-[10px] font-black">{page.progress}%</span></Link>)}</div></article>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[0.8fr_1.25fr_1.15fr]">
