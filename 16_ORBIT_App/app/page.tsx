@@ -7,7 +7,10 @@ import { Project, STUDIO_LAUNCH_MOMENT } from "@/lib/types";
 import { scoreAll, sortByPriority } from "@/lib/priority";
 import { relativeTime } from "@/lib/format";
 import { useStudioBrain } from "@/contexts/StudioBrainContext";
+import { importanceTier, tierStyleForPriority } from "@/lib/importanceColor";
 import CommandIcon from "@/components/CommandIcon";
+import CriticalTaskCard from "@/components/CriticalTaskCard";
+import ImportanceMark from "@/components/ImportanceMark";
 
 const LAUNCH_DATE = new Date(STUDIO_LAUNCH_MOMENT);
 
@@ -49,6 +52,15 @@ export default function Dashboard() {
   ).slice(0, 5);
   const totalMinutes = todayTasks.reduce((sum, item) => sum + item.estimateMinutes, 0);
 
+  const criticalTasks = useMemo(
+    () =>
+      sortByPriority(
+        active.filter((it) => importanceTier(scores.get(it.id) ?? { label: "Faible" }) === "critical"),
+        scores
+      ).slice(0, 4),
+    [active, scores]
+  );
+
   const recentProjects = useMemo(() => [...projects].sort((a, b) => b.updated_at.localeCompare(a.updated_at)).slice(0, 4), [projects]);
   const pendingDecisions = decisions.filter((d) => d.status === "pending");
   const recentChanges = activity.slice(0, 3);
@@ -71,6 +83,16 @@ export default function Dashboard() {
     return pendingDeps[0]?.title || "une dépendance";
   }
 
+  /** Titles of active items that are waiting on `item` — the inverse of dependsOn ("what does finishing this unblock"). */
+  function dependentTitlesOf(item: (typeof items)[number]): string[] {
+    return active.filter((candidate) => candidate.id !== item.id && candidate.dependsOn.includes(item.id)).map((candidate) => candidate.title);
+  }
+
+  function blockedByTitleOf(item: (typeof items)[number]): string | null {
+    if (item.status !== "blocked") return null;
+    return blockedReason(item);
+  }
+
   return (
     <div className="mx-auto max-w-[1320px] space-y-4 pb-36 lg:pb-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -90,6 +112,29 @@ export default function Dashboard() {
 
       {(error || projectError) && <div className="rounded-[18px] border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-800">{error || projectError}</div>}
 
+      {loaded && criticalTasks.length > 0 && (
+        <section className="rounded-[28px] border border-black/10 bg-white/82 p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="command-label">Priorité absolue</p>
+              <h2 className="mt-1 text-xl font-black">Tâches critiques du studio</h2>
+            </div>
+            <span className="command-pill bg-[#fbdede]">{criticalTasks.length}</span>
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {criticalTasks.map((item) => (
+              <CriticalTaskCard
+                key={item.id}
+                item={item}
+                priority={scores.get(item.id)!}
+                dependentTitles={dependentTitlesOf(item)}
+                blockedByTitle={blockedByTitleOf(item)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-[30px] border border-black/10 bg-white/85 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3">
@@ -103,25 +148,29 @@ export default function Dashboard() {
           </div>
           <div className="mt-5 space-y-2.5">
             {loaded &&
-              todayTasks.map((item, index) => (
-                <Link
-                  key={item.id}
-                  href="/launch#tasks"
-                  className="grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-[18px] border border-black/8 bg-[#fffdf8] p-3"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#f5df75] text-sm font-black">{index + 1}</span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-black">{item.title}</p>
-                    <p className="truncate text-[11px] text-black/45">
-                      {item.estimateMinutes} min · {item.category}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-black">{scores.get(item.id)?.score ?? 0}</p>
-                    <p className="text-[9px] uppercase text-black/35">score</p>
-                  </div>
-                </Link>
-              ))}
+              todayTasks.map((item, index) => {
+                const priority = scores.get(item.id);
+                const tier = priority ? tierStyleForPriority(priority) : null;
+                return (
+                  <Link
+                    key={item.id}
+                    href="/launch#tasks"
+                    className={`grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-[18px] border border-black/8 ${tier?.cardBorder ?? ""} ${tier?.cardTint ?? ""} bg-[#fffdf8] p-3`}
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#f5df75] text-sm font-black">{index + 1}</span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-black">{item.title}</p>
+                      <p className="truncate text-[11px] text-black/45">
+                        {item.estimateMinutes} min · {item.category}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-black">{priority?.score ?? 0}</p>
+                      <p className="text-[9px] uppercase text-black/35">{tier?.tag ?? "score"}</p>
+                    </div>
+                  </Link>
+                );
+              })}
             {loaded && !todayTasks.length && (
               <div className="rounded-[18px] bg-[#edf2e5] p-4 text-sm font-bold text-black/55">Aucune tâche ouverte. Le studio est à jour.</div>
             )}
@@ -299,15 +348,24 @@ export default function Dashboard() {
             </Link>
           </div>
           <div className="mt-4 divide-y divide-black/8">
-            {openContent.map((item) => (
-              <Link key={item.id} href="/launch#content" className="flex items-center justify-between gap-3 py-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-black">{item.title}</p>
-                  <p className="truncate text-[11px] text-black/45">{item.channel}</p>
-                </div>
-                <span className="text-[9px] font-black">{scores.get(item.id)?.label}</span>
-              </Link>
-            ))}
+            {openContent.map((item) => {
+              const priority = scores.get(item.id);
+              const tier = priority ? tierStyleForPriority(priority) : null;
+              return (
+                <Link key={item.id} href="/launch#content" className="flex items-center justify-between gap-3 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-black">{item.title}</p>
+                    <p className="truncate text-[11px] text-black/45">{item.channel}</p>
+                  </div>
+                  {tier && priority && (
+                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.06em] ${tier.badge}`}>
+                      <ImportanceMark shape={tier.mark} color={tier.markColor} />
+                      {priority.label}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         </article>
       </section>

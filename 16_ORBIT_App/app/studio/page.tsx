@@ -7,6 +7,7 @@ import { scoreAll, sortByPriority } from "@/lib/priority";
 import { formatShortDate } from "@/lib/format";
 import CommandIcon from "@/components/CommandIcon";
 import PriorityBadge from "@/components/PriorityBadge";
+import { tierStyleForPriority } from "@/lib/importanceColor";
 
 const STATUS_WEIGHT: Record<string, number> = { done: 1, in_progress: 0.6, today: 0.4, blocked: 0.2, backlog: 0, archived: 1 };
 
@@ -178,17 +179,24 @@ export default function StudioHealthPage() {
           </div>
           <div className="mt-4 space-y-2.5">
             {loaded &&
-              openTasks.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 rounded-[16px] border border-black/8 bg-[#fffdf8] p-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-black">{item.title}</p>
-                    <p className="mt-1 truncate text-[11px] text-black/45">
-                      {item.category} · {item.estimateMinutes} min
-                    </p>
+              openTasks.map((item) => {
+                const priority = scores.get(item.id)!;
+                const tier = tierStyleForPriority(priority);
+                return (
+                  <div
+                    key={item.id}
+                    className={`flex items-center gap-3 rounded-[16px] border border-black/8 ${tier.cardBorder} ${tier.cardTint} bg-[#fffdf8] p-3`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-black">{item.title}</p>
+                      <p className="mt-1 truncate text-[11px] text-black/45">
+                        {item.category} · {item.estimateMinutes} min
+                      </p>
+                    </div>
+                    <PriorityBadge result={priority} />
                   </div>
-                  <PriorityBadge result={scores.get(item.id)!} />
-                </div>
-              ))}
+                );
+              })}
             {loaded && !openTasks.length && <p className="text-sm text-black/45">Rien d&apos;ouvert.</p>}
           </div>
         </article>

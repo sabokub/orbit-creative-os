@@ -2,13 +2,8 @@
 
 import { useState } from "react";
 import { PriorityResult } from "@/lib/types";
-
-const LABEL_TINT: Record<PriorityResult["label"], string> = {
-  Critique: "border-[#d87979]/35 bg-[#ffdada] text-[#7b2525]",
-  Haute: "border-[#d7aa2f]/35 bg-[#f5df75]/65 text-[#69510a]",
-  Moyenne: "border-black/10 bg-[#dcecff] text-[#1f3a5c]",
-  Faible: "border-black/10 bg-black/[0.045] text-black/45",
-};
+import { tierStyleForPriority } from "@/lib/importanceColor";
+import ImportanceMark from "./ImportanceMark";
 
 /**
  * Every score ships with its explanation — shown via native title (hover on
@@ -18,9 +13,15 @@ const LABEL_TINT: Record<PriorityResult["label"], string> = {
  * overlay: cards in this app are compact, and an absolutely-positioned
  * tooltip reliably ends up covering another card's controls underneath it.
  * Growing the row instead means it can never block a click somewhere else.
+ *
+ * Color is never the only signal: the tag text (Critique/Haute/Moyenne/
+ * Faible) and a shape mark (triangle/diamond/square/circle) both ship
+ * alongside the tint, sourced from the single canonical map in
+ * lib/importanceColor.ts.
  */
 export default function PriorityBadge({ result, className = "" }: { result: PriorityResult; className?: string }) {
   const [open, setOpen] = useState(false);
+  const style = tierStyleForPriority(result);
 
   return (
     <span className={`inline-flex shrink-0 flex-col items-end gap-1.5 ${className}`}>
@@ -33,9 +34,9 @@ export default function PriorityBadge({ result, className = "" }: { result: Prio
         }}
         title={result.explanation}
         aria-expanded={open}
-        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] ${LABEL_TINT[result.label]}`}
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] ${style.badge}`}
       >
-        <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+        <ImportanceMark shape={style.mark} color={style.markColor} />
         {result.label} · {result.score}
       </button>
       {open && (

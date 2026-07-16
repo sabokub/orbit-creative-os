@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { useStudioBrain } from "@/contexts/StudioBrainContext";
 import { countBlockedBy, scoreAll, sortByPriority } from "@/lib/priority";
+import { tierStyleForPriority } from "@/lib/importanceColor";
+import ImportanceMark from "@/components/ImportanceMark";
 
 const STATUS_LABEL: Record<string, string> = {
   backlog: "À faire",
@@ -102,8 +104,13 @@ export default function DependenciesPage() {
               ranked.map((item, index) => {
                 const result = scores.get(item.id)!;
                 const dependents = countBlockedBy(item.id, active);
+                const tier = tierStyleForPriority(result);
                 return (
-                  <Link href={item.kind === "task" ? "/studio/content" : "/studio/content"} key={item.id} className="block rounded-[20px] border border-black/8 bg-white/75 p-4">
+                  <Link
+                    href={item.kind === "task" ? "/studio/content" : "/studio/content"}
+                    key={item.id}
+                    className={`block rounded-[20px] border border-black/8 ${tier.cardBorder} ${tier.cardTint} bg-white/75 p-4`}
+                  >
                     <div className="flex items-center gap-3">
                       <span className="flex h-11 w-11 items-center justify-center rounded-[15px] bg-[#f5df75] text-lg font-black">
                         {result.score}
@@ -112,7 +119,9 @@ export default function DependenciesPage() {
                         <p className="truncate text-sm font-black">
                           {index + 1}. {item.title}
                         </p>
-                        <p className="mt-1 text-[10px] text-black/42">
+                        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-black/42">
+                          <ImportanceMark shape={tier.mark} color={tier.markColor} />
+                          <span className="font-black uppercase tracking-[0.06em]">{tier.tag}</span> ·{" "}
                           {result.explanation} · débloque {dependents} élément(s)
                         </p>
                       </div>
