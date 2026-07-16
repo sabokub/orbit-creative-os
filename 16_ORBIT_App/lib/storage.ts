@@ -7,7 +7,7 @@ export type CreateProjectInput = Omit<ProjectBrief, "brandProfileId"> & { name: 
 async function parse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Request failed (${res.status})`);
+    throw new Error(body.error || `La requête a échoué (${res.status})`);
   }
   return res.json();
 }

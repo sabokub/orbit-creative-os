@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const project = await getProject(params.id);
-    if (!project) return NextResponse.json({ error: "not found" }, { status: 404 });
+    if (!project) return NextResponse.json({ error: "Projet introuvable." }, { status: 404 });
     return NextResponse.json(project);
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 503 });

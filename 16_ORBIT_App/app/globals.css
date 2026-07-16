@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: light;
+  --ink: #151515;
+  --muted: #6f716c;
+  --paper: #f4f1e9;
+  --card: #fffdf8;
+  --blue: #bdd8f8;
+  --green: #c3d995;
+  --pink: #f2b8cf;
+  --yellow: #f5df75;
+  --lavender: #cfc5f4;
+  --orange: #f1a36f;
+  --line: rgba(21, 21, 21, 0.12);
+  --shadow: 0 18px 50px rgba(41, 39, 32, 0.09);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   max-width: 100vw;
@@ -9,13 +33,214 @@ body {
 }
 
 body {
-  color: rgb(23 23 23);
-  background: rgb(250 250 250);
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(189, 216, 248, 0.55), transparent 25rem),
+    radial-gradient(circle at 92% 18%, rgba(242, 184, 207, 0.34), transparent 24rem),
+    radial-gradient(circle at 55% 96%, rgba(195, 217, 149, 0.35), transparent 30rem),
+    var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
+::selection {
+  color: var(--ink);
+  background: var(--yellow);
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+button:active,
+a:active {
+  transform: scale(0.985);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid var(--line) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 253, 248, 0.86) !important;
+  color: var(--ink) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+input,
+select {
+  min-height: 48px;
+}
+
+textarea {
+  line-height: 1.55;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 3px solid rgba(189, 216, 248, 0.75) !important;
+  outline-offset: 1px;
+  border-color: rgba(21, 21, 21, 0.5) !important;
+}
+
+.display-serif {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.045em;
+}
+
+.command-card {
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255, 253, 248, 0.88);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.command-card-flat {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.command-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(21, 21, 21, 0.62);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.command-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  padding: 0.7rem 1rem;
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 750;
+  box-shadow: 0 8px 20px rgba(21, 21, 21, 0.14);
+}
+
+.command-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(21, 21, 21, 0.18);
+}
+
+.command-button-soft {
+  border-color: var(--line);
+  background: rgba(255, 253, 248, 0.82);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.command-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.82);
+  padding: 0.45rem 0.72rem;
+  color: rgba(21, 21, 21, 0.76);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.dot-grid {
+  background-image: radial-gradient(rgba(21, 21, 21, 0.17) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.squiggle {
+  position: relative;
+}
+
+.squiggle::after {
+  position: absolute;
+  right: -0.25rem;
+  bottom: -0.3rem;
+  left: -0.25rem;
+  height: 0.42rem;
+  content: "";
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='8' viewBox='0 0 100 8'%3E%3Cpath d='M0 4c8-5 17 5 25 0s17 5 25 0 17 5 25 0 17 5 25 0' fill='none' stroke='%23151515' stroke-width='1.5'/%3E%3C/svg%3E") repeat-x center / 100px 8px;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+
+/* Les grandes cartes éditoriales restent lumineuses : le noir est réservé aux boutons et micro-accents. */
+section[class*="bg-[#151515]"],
+aside[class*="bg-[#151515]"],
+div[class*="rounded-[30px]"][class*="bg-[#151515]"],
+div[class*="rounded-[20px]"][class*="bg-[#151515]"] {
+  background: linear-gradient(135deg, #f7f0df 0%, #e7edcf 58%, #dbe7cd 100%) !important;
+  color: var(--ink) !important;
+  box-shadow: 0 22px 55px rgba(89, 96, 66, 0.13) !important;
+}
+
+section[class*="bg-[#151515]"] [class*="text-white"],
+aside[class*="bg-[#151515]"] [class*="text-white"],
+div[class*="rounded-[30px]"][class*="bg-[#151515]"] [class*="text-white"],
+div[class*="rounded-[20px]"][class*="bg-[#151515]"] [class*="text-white"] {
+  color: rgba(21, 21, 21, 0.72) !important;
+}
+
+section[class*="bg-[#151515]"] [class*="border-white"],
+aside[class*="bg-[#151515]"] [class*="border-white"],
+div[class*="rounded-[30px]"][class*="bg-[#151515]"] [class*="border-white"],
+div[class*="rounded-[20px]"][class*="bg-[#151515]"] [class*="border-white"] {
+  border-color: rgba(21, 21, 21, 0.12) !important;
+}
+
+section[class*="bg-[#151515]"] [class*="bg-white/10"],
+aside[class*="bg-[#151515]"] [class*="bg-white/10"],
+div[class*="rounded-[30px]"][class*="bg-[#151515]"] [class*="bg-white/10"],
+div[class*="rounded-[20px]"][class*="bg-[#151515]"] [class*="bg-white/10"] {
+  background: rgba(255, 253, 248, 0.62) !important;
+}
+
+@media (max-width: 1023px) {
   body {
-    color: rgb(237 237 237);
-    background: rgb(10 10 10);
+    background:
+      radial-gradient(circle at 0 0, rgba(189, 216, 248, 0.48), transparent 18rem),
+      radial-gradient(circle at 100% 20%, rgba(242, 184, 207, 0.28), transparent 17rem),
+      var(--paper);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

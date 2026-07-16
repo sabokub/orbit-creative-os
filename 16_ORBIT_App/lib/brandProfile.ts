@@ -61,11 +61,11 @@ export function getBrandProfile(_id?: string): BrandProfile {
 }
 
 export const WORKFLOW_TYPE_LABELS: Record<string, string> = {
-  website: "Website Generator",
-  content: "Content Generator",
-  images: "Image Prompt Generator",
-  review: "Hero Image Review",
-  "brand-kit": "Brand Kit Generator",
+  website: "Générateur de site",
+  content: "Générateur de contenu",
+  images: "Générateur de prompts image",
+  review: "Relecture d’image hero",
+  "brand-kit": "Générateur de brand kit",
 };
 
 /** Première étape du pipeline interne (strategy/creative/website/content/images/review) associée à chaque workflow visible. */
