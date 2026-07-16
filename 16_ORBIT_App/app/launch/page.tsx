@@ -45,7 +45,7 @@ export default function LaunchPage() {
       <section id="roadmap" className="scroll-mt-24 grid min-w-0 gap-3 xl:grid-cols-[0.9fr_1.1fr]">
         <article className="command-card min-w-0 p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3"><div><p className="command-label">Roadmap</p><h2 className="mt-1 text-xl font-black">Progression par chantier</h2></div><span className="command-pill bg-[#e6edcd]">{TRACK_PROGRESS.length} chantiers</span></div>
-          <div className="mt-4 space-y-4">{TRACK_PROGRESS.map((track) => <div key={track.label} className="grid min-w-0 grid-cols-[34px_1fr_auto] items-center gap-3"><span className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-[#edf2e5]"><CommandIcon name={track.icon} className="h-4 w-4" /></span><div className="min-w-0"><p className="truncate text-sm font-black">{track.label}</p><div className="mt-1.5 h-2 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${track.progress}%` }} /></div></div><span className="text-xs font-black">{track.progress}%</span></div>)}</div>
+          <div className="mt-4 space-y-4">{TRACK_PROGRESS.map((track) => <div key={track.label} className="grid min-w-0 grid-cols-[34px_1fr_auto] items-center gap-3"><span className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-[#edf2e5]"><CommandIcon name={track.icon} className="h-4 w-4" /></span><div className="min-w-0"><p className="truncate text-sm font-black">{track.label}</p><div className="mt-1.5 h-2 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${track.progress}%` }} /></div></div></div><span className="text-xs font-black">{track.progress}%</span></div>)}</div>
         </article>
 
         <article id="tasks" className="command-card min-w-0 scroll-mt-24 p-4 sm:p-5">
@@ -62,7 +62,7 @@ export default function LaunchPage() {
 
         <article id="site" className="command-card min-w-0 scroll-mt-24 p-4 sm:p-5">
           <div><p className="command-label">Production du site</p><h2 className="mt-1 text-xl font-black">État réel des pages</h2></div>
-          <div className="mt-4 space-y-3">{SITE_PAGES.map((page) => <div key={page.title} className="grid grid-cols-[1fr_auto] items-center gap-3"><div><div className="flex justify-between gap-3 text-sm font-black"><span>{page.title}</span><span className="text-[10px] font-semibold text-black/40">{page.status}</span></div><div className="mt-2 h-2 rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${page.progress}%` }} /></div></div><span className="text-xs font-black">{page.progress}%</span></div>)}</div>
+          <div className="mt-4 space-y-3">{SITE_PAGES.map((page) => <div key={page.title} className="grid grid-cols-[1fr_auto] items-center gap-3"><div><div className="flex justify-between gap-3 text-sm font-black"><span>{page.title}</span><span className="text-[10px] font-semibold text-black/40">{page.status}</span></div><div className="mt-2 h-2 rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${page.progress}%` }} /></div></div></div><span className="text-xs font-black">{page.progress}%</span></div>)}</div>
         </article>
       </section>
     </div>
