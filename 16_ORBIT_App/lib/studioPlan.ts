@@ -1,4 +1,5 @@
 export type PlanStatus = "done" | "in-progress" | "review" | "todo";
+export type PlanPriority = "high" | "medium" | "low";
 
 export type PlanItem = {
   id: string;
@@ -6,7 +7,9 @@ export type PlanItem = {
   detail: string;
   area: string;
   status: PlanStatus;
+  priority: PlanPriority;
   due: string;
+  scheduledFor?: string;
 };
 
 export type ContentItem = {
@@ -44,9 +47,9 @@ export const DEFAULT_STUDIO_PLAN: StudioPlan = {
   launchDate: "2026-09-01T09:00:00+02:00",
   updatedAt: "2026-07-16T09:00:00+02:00",
   priorities: [
-    { id: "orbit-v2-mobile", title: "Valider ORBIT V2 sur mobile", detail: "Responsive, navigation et liens de toutes les pages", area: "Système", status: "in-progress", due: "Cette semaine" },
-    { id: "guide-client-final", title: "Finaliser le guide client", detail: "Dernière relecture visuelle puis export PDF final", area: "Produit", status: "review", due: "Avant lancement" },
-    { id: "waitlist-announcement", title: "Préparer l’annonce à la waitlist", detail: "Carrousel 3 slides et email de lancement du guide", area: "Contenu", status: "in-progress", due: "Avant lancement" },
+    { id: "orbit-v2-mobile", title: "Valider ORBIT V2 sur mobile", detail: "Responsive, navigation et liens de toutes les pages", area: "Système", status: "in-progress", priority: "high", due: "Aujourd’hui", scheduledFor: "2026-07-16" },
+    { id: "guide-client-final", title: "Finaliser le guide client", detail: "Dernière relecture visuelle puis export PDF final", area: "Produit", status: "review", priority: "high", due: "Avant lancement" },
+    { id: "waitlist-announcement", title: "Préparer l’annonce à la waitlist", detail: "Carrousel 3 slides et email de lancement du guide", area: "Contenu", status: "in-progress", priority: "medium", due: "Avant lancement" },
   ],
   contentQueue: [
     { id: "video-da", title: "Vidéo — J’ai enfin trouvé ma DA", format: "TikTok / Reel", status: "Montage terminé", timing: "À publier" },
@@ -88,3 +91,5 @@ export function globalLaunchProgress(plan: StudioPlan): number {
 }
 
 export const STATUS_LABEL: Record<PlanStatus, string> = { done: "Terminé", review: "À relire", "in-progress": "En cours", todo: "À faire" };
+export const PRIORITY_LABEL: Record<PlanPriority, string> = { high: "Haute", medium: "Moyenne", low: "Basse" };
+export const PRIORITY_WEIGHT: Record<PlanPriority, number> = { high: 3, medium: 2, low: 1 };
