@@ -4,3 +4,4 @@ out
 .vercel
 *.local
 .DS_Store
+*.tsbuildinfo
