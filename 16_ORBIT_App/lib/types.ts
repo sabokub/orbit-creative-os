@@ -1,4 +1,5 @@
 import type { AnalysisResult } from "./responseAnalysis/types";
+import type { PromptVersionRecord } from "./promptIntelligence/versioning";
 
 export type Stage =
   | "brief"
@@ -98,6 +99,21 @@ export interface Project {
   outputs: Partial<Record<WorkflowStep, GeneratedOutput>>;
   reviews: Review[];
   exports: ExportRecord[];
+  /**
+   * Prompt-version history for the Website prompt chain (Prompt Intelligence
+   * Engine, issue #13), keyed by chain step id. Purely additive: absent on
+   * projects that never used the chain, never required by any existing
+   * code path. See lib/promptIntelligence/versioning.ts and migration.ts.
+   */
+  websitePromptChain?: Partial<Record<string, PromptVersionRecord[]>>;
+  /**
+   * Validated deliverable content per Website chain step id, populated only
+   * when a chain-step response is explicitly validated via
+   * POST /api/analyze/apply with a `chainStepId`. Feeds
+   * `PromptBuildInput.previousValidatedOutputs` for later steps. Absent on
+   * projects that never used the chain.
+   */
+  websiteChainOutputs?: Partial<Record<string, string>>;
 }
 
 export const emptyProjectBrief = (brandProfileId: string): ProjectBrief => ({

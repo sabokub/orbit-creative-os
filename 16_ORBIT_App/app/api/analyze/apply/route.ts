@@ -7,6 +7,8 @@ import { parseAnalysisResult, WORKFLOW_STEPS } from "@/lib/responseAnalysis/sche
 import { detectReviewStatus } from "@/lib/prompts";
 import { assertReasonablePayload, requireEnum, requireString, ValidationError } from "@/lib/validation";
 import { GeneratedOutput, Project, Review, WorkflowStep } from "@/lib/types";
+import { websiteChainStepIds } from "@/lib/promptIntelligence/contracts/website";
+import { appendVersionIdempotent, PromptVersionMetaSchema, recordFromMeta } from "@/lib/promptIntelligence/versioning";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +44,15 @@ export async function POST(req: NextRequest) {
     const versionAction =
       body.versionAction !== undefined ? (requireEnum(body.versionAction, VERSION_ACTIONS, "versionAction") as VersionAction) : undefined;
     const ifMatch = typeof body.ifMatch === "string" ? body.ifMatch : undefined;
+
+    // Optional Website chain metadata (Prompt Intelligence Engine, issue #13).
+    // Absent on every legacy call — purely additive, never required.
+    const chainStepId =
+      body.chainStepId !== undefined ? requireEnum(body.chainStepId, websiteChainStepIds() as readonly string[], "chainStepId") : undefined;
+    const promptMetaParsed = body.promptMeta !== undefined ? PromptVersionMetaSchema.safeParse(body.promptMeta) : undefined;
+    if (body.promptMeta !== undefined && !promptMetaParsed?.success) {
+      throw new ValidationError(`Métadonnées de prompt invalides : ${promptMetaParsed?.error?.issues[0]?.message || "schéma non respecté"}.`);
+    }
 
     if (workflowStep === "review" && !reviewTarget) {
       throw new ValidationError('Le champ "reviewTarget" est obligatoire pour une relecture.');
@@ -154,6 +165,26 @@ export async function POST(req: NextRequest) {
         nextProject = {
           ...nextProject,
           outputs: { ...nextProject.outputs, [workflowStep]: { ...nextProject.outputs[workflowStep]!, studioBrainApplied: true } },
+        };
+      }
+    }
+
+    // Website chain: on explicit validation only, record the validated
+    // deliverable content (feeds later steps' context selection) and append
+    // a prompt-version record (idempotent — resubmitting the same
+    // promptVersion never creates a duplicate history entry).
+    if (mode === "validate" && chainStepId && workflowStep === "website" && !isReview) {
+      nextProject = {
+        ...nextProject,
+        websiteChainOutputs: { ...(nextProject.websiteChainOutputs || {}), [chainStepId]: content },
+      };
+      if (promptMetaParsed?.success) {
+        const record = recordFromMeta(chainStepId, workflowStep, promptMetaParsed.data, analysis.id);
+        const existingHistory = nextProject.websitePromptChain?.[chainStepId] || [];
+        const { history } = appendVersionIdempotent(existingHistory, record);
+        nextProject = {
+          ...nextProject,
+          websitePromptChain: { ...(nextProject.websitePromptChain || {}), [chainStepId]: history },
         };
       }
     }
