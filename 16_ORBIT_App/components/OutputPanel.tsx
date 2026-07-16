@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { AnalysisResult } from "@/lib/responseAnalysis/types";
 
 export default function OutputPanel({
   title,
   content,
   onSave,
   emptyLabel = "Pas encore généré.",
+  analysis,
 }: {
   title: string;
   content?: string;
   onSave?: (value: string) => void;
   emptyLabel?: string;
+  /** Canonical analysis result attached at save time. Absent on outputs saved before the response-analysis engine existed. */
+  analysis?: AnalysisResult;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content || "");
@@ -28,6 +32,15 @@ export default function OutputPanel({
     <div className="overflow-hidden rounded-[18px] border border-black/10 bg-white/55">
       <div className="flex items-center justify-between gap-3 border-b border-black/8 bg-white/50 px-4 py-2.5">
         <h4 className="text-xs font-black tracking-[-0.01em] text-black/70">{title}</h4>
+        {content && (
+          <span
+            className={`rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.06em] ${
+              analysis ? "bg-[#c3d995] text-black" : "bg-black/[0.06] text-black/45"
+            }`}
+          >
+            {analysis ? `${analysis.completenessScore}% complet` : "Non analysé"}
+          </span>
+        )}
         {onSave && (
           <button
             onClick={() => {

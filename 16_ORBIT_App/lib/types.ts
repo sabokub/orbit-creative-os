@@ -1,3 +1,5 @@
+import type { AnalysisResult } from "./responseAnalysis/types";
+
 export type Stage =
   | "brief"
   | "strategy"
@@ -55,6 +57,17 @@ export interface GeneratedOutput {
   step: WorkflowStep;
   content: string;
   created_at: string;
+  /**
+   * Canonical analysis-pipeline result attached at save time, when the
+   * output went through `analyzeOrbitResponse` + explicit user validation.
+   * Optional and absent on outputs saved before the response-analysis
+   * engine existed — those render as "not analyzed" rather than an error.
+   */
+  analysis?: AnalysisResult;
+  /** Prior saved versions, kept when the user explicitly chose "save as new version" over an existing deliverable. */
+  previousVersions?: GeneratedOutput[];
+  /** True once the accepted Studio Brain changes for `analysis` have actually been applied — makes double-validation a safe no-op instead of a duplicate apply. */
+  studioBrainApplied?: boolean;
 }
 
 export interface Review {
@@ -62,6 +75,10 @@ export interface Review {
   content: string;
   status: ReviewStatus;
   created_at: string;
+  /** Same canonical analysis result as GeneratedOutput.analysis, when available. */
+  analysis?: AnalysisResult;
+  previousVersions?: Review[];
+  studioBrainApplied?: boolean;
 }
 
 export interface ExportRecord {

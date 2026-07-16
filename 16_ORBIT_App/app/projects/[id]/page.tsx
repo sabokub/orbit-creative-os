@@ -199,6 +199,7 @@ export default function ProjectWorkspace() {
               <OutputPanel
                 title={STEP_LABELS[step]}
                 content={project.outputs[step]?.content}
+                analysis={project.outputs[step]?.analysis}
                 onSave={(value) =>
                   update({
                     outputs: {
