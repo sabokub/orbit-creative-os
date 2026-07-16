@@ -2,98 +2,315 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Project, Stage } from "@/lib/types";
 import { listProjects } from "@/lib/storage";
-import { globalLaunchProgress, PRIORITY_LABEL, PRIORITY_WEIGHT, STATUS_LABEL, trackProgress } from "@/lib/studioPlan";
-import { useStudioPlan } from "@/hooks/useStudioPlan";
-import CommandIcon, { CommandIconName } from "@/components/CommandIcon";
+import { Project, STUDIO_LAUNCH_MOMENT } from "@/lib/types";
+import { scoreAll, sortByPriority } from "@/lib/priority";
+import { relativeTime } from "@/lib/format";
+import { useStudioBrain } from "@/contexts/StudioBrainContext";
+import CommandIcon from "@/components/CommandIcon";
 
-const STAGE_PROGRESS: Record<Stage, number> = { brief: 12, strategy: 25, creative: 40, website: 58, content: 72, images: 84, review: 94, exported: 100 };
-const AREA_META: Record<string, { icon: CommandIconName; color: string }> = {
-  Système: { icon: "sparkles", color: "bg-[#dcecff]" },
-  Produit: { icon: "library", color: "bg-[#f5df75]" },
-  Contenu: { icon: "content", color: "bg-[#f9d9e6]" },
-};
+const LAUNCH_DATE = new Date(STUDIO_LAUNCH_MOMENT);
 
-function PanelTitle({ title, href }: { title: string; href?: string }) {
-  return <div className="flex items-center justify-between gap-4"><h2 className="text-[11px] font-black uppercase tracking-[0.12em]">{title}</h2>{href && <Link href={href} className="rounded-full border border-black/10 bg-white/75 px-3 py-1.5 text-[10px] font-bold text-black/55">Voir tout</Link>}</div>;
-}
-
-function MetricCard({ label, value, note, icon, tint, href }: { label: string; value: string | number; note: string; icon: CommandIconName; tint: string; href: string }) {
-  return <Link href={href} className={`block rounded-[24px] border border-black/10 p-4 ${tint}`}><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-[0.12em] text-black/55">{label}</p><p className="mt-2 text-[36px] font-black leading-none">{value}</p></div><span className="flex h-10 w-10 items-center justify-center rounded-[15px] border border-black/10 bg-white/70"><CommandIcon name={icon} className="h-[18px] w-[18px]" /></span></div><p className="mt-3 text-[11px] font-semibold text-black/52">{note}</p></Link>;
-}
-
-function reviewScore(projects: Project[]): string {
-  const reviews = projects.flatMap((project) => project.reviews);
-  if (!reviews.length) return "—";
-  const score = reviews.reduce((sum, review) => sum + (review.status === "Approved" ? 10 : review.status === "Needs revision" ? 6 : review.status === "Blocked" ? 2 : 0), 0) / reviews.length;
-  return score.toFixed(1);
-}
+const PILOT_VIEWS = [
+  { href: "/studio", title: "Studio", note: "Santé globale, charge et risques", icon: "home" as const, tint: "bg-[#eef7ff]" },
+  { href: "/dependencies", title: "Dépendances", note: "Visualise ce qui bloque quoi", icon: "projects" as const, tint: "bg-[#fff0f5]" },
+  { href: "/timeline", title: "Timeline", note: "Échéances, décisions et historique", icon: "launch" as const, tint: "bg-[#fff8e5]" },
+  { href: "/search", title: "Recherche", note: "Retrouve tout dans ORBIT", icon: "sparkles" as const, tint: "bg-[#f5effd]" },
+];
 
 export default function Dashboard() {
+  const { items, decisions, activity, loaded, error, refresh, updateItem, resolveDecision } = useStudioBrain();
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectError, setProjectError] = useState("");
-  const [daysUntilLaunch, setDaysUntilLaunch] = useState(0);
-  const { plan, error: planError } = useStudioPlan();
+  const [days, setDays] = useState(0);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    const refreshProjects = async () => {
-      try { setProjects(await listProjects()); setProjectError(""); }
-      catch (err) { setProjectError((err as Error).message); }
-    };
-    void refreshProjects();
-    const interval = window.setInterval(() => void refreshProjects(), 15_000);
-    const onFocus = () => void refreshProjects();
-    window.addEventListener("focus", onFocus);
-    return () => { window.clearInterval(interval); window.removeEventListener("focus", onFocus); };
+    listProjects()
+      .then(setProjects)
+      .catch((err) => setProjectError((err as Error).message));
+  }, []);
+  useEffect(() => {
+    setDays(Math.max(0, Math.ceil((LAUNCH_DATE.getTime() - Date.now()) / 86_400_000)));
   }, []);
 
-  useEffect(() => {
-    setDaysUntilLaunch(Math.max(0, Math.ceil((new Date(plan.launchDate).getTime() - Date.now()) / 86_400_000)));
-  }, [plan.launchDate]);
+  const scores = useMemo(() => scoreAll(items), [items]);
+  const active = items.filter((it) => it.status !== "done" && it.status !== "archived");
+  const openTasks = active.filter((it) => it.kind === "task");
+  const blockedTasks = active.filter((it) => it.status === "blocked");
+  const openContent = sortByPriority(
+    active.filter((it) => it.kind === "content" && it.status !== "blocked"),
+    scores
+  ).slice(0, 4);
 
-  const recentProjects = useMemo(() => [...projects].sort((a, b) => b.updated_at.localeCompare(a.updated_at)).slice(0, 5), [projects]);
-  const todayKey = new Date().toLocaleDateString("en-CA");
-  const openTasks = useMemo(() => plan.priorities.filter((item) => item.status !== "done"), [plan.priorities]);
-  const todayTasks = useMemo(() => {
-    const scheduled = openTasks.filter((item) => item.scheduledFor && item.scheduledFor <= todayKey);
-    const source = scheduled.length ? scheduled : openTasks;
-    return [...source].sort((a, b) => PRIORITY_WEIGHT[b.priority] - PRIORITY_WEIGHT[a.priority]).slice(0, 3);
-  }, [openTasks, todayKey]);
-  const totalOutputs = projects.reduce((sum, project) => sum + Object.keys(project.outputs).length, 0);
-  const totalReviews = projects.reduce((sum, project) => sum + project.reviews.length, 0);
-  const totalExports = projects.reduce((sum, project) => sum + project.exports.length, 0);
-  const blockedReviews = projects.flatMap((project) => project.reviews.filter((review) => review.status === "Blocked").map((review) => ({ projectId: project.id, projectName: project.name, target: review.target })));
-  const pendingReviews = projects.reduce((sum, project) => sum + project.reviews.filter((review) => review.status === "Needs revision").length, 0);
-  const averageProjectProgress = projects.length ? Math.round(projects.reduce((sum, project) => sum + STAGE_PROGRESS[project.stage], 0) / projects.length) : 0;
-  const tracks = trackProgress(plan);
-  const launchProgress = globalLaunchProgress(plan);
-  const qualityScore = reviewScore(projects);
-  const updatedLabel = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(plan.updatedAt));
+  const todayTasks = sortByPriority(
+    openTasks.filter((it) => it.status !== "blocked"),
+    scores
+  ).slice(0, 5);
+  const totalMinutes = todayTasks.reduce((sum, item) => sum + item.estimateMinutes, 0);
 
-  return <div className="mx-auto max-w-[1500px] space-y-4 pb-8">
-    <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h1 className="text-2xl font-black sm:text-3xl">👋 Bienvenue, Sab</h1><p className="mt-1 text-sm font-medium text-black/52">Voilà ce qui mérite ton attention aujourd’hui.</p></div><div className="flex flex-wrap gap-2"><span className="command-pill bg-[#e8f3ff]">Actualisé le {updatedLabel}</span><Link href="/projects/new" className="command-button hidden sm:inline-flex"><CommandIcon name="plus" className="h-4 w-4" /> Nouveau projet</Link></div></header>
+  const recentProjects = useMemo(() => [...projects].sort((a, b) => b.updated_at.localeCompare(a.updated_at)).slice(0, 4), [projects]);
+  const pendingDecisions = decisions.filter((d) => d.status === "pending");
+  const recentChanges = activity.slice(0, 3);
 
-    {(projectError || planError) && <div className="rounded-[18px] border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-800">{projectError || planError}</div>}
+  const doneCount = items.filter((it) => it.status === "done").length;
+  const totalCount = items.filter((it) => it.status !== "archived").length;
+  const progress = totalCount ? Math.round((doneCount / totalCount) * 100) : 0;
 
-    <section className="grid gap-4 xl:grid-cols-[1.55fr_1fr]">
-      <article className="relative min-h-[320px] overflow-hidden rounded-[30px] border border-black/10 bg-[linear-gradient(135deg,#fbf6e8,#edf2e5)] p-5 sm:p-6"><div className="relative flex h-full flex-col justify-between"><div className="flex items-start justify-between"><span className="rounded-full border border-black/10 bg-[#f4efdc]/90 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.13em]">24March Studio / données live</span><Link href="/launch" className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/10 bg-white/80"><CommandIcon name="launch" className="h-5 w-5" /></Link></div><div className="mt-10"><p className="text-[11px] font-black uppercase tracking-[0.14em]">Compte à rebours lancement</p><div className="mt-2 flex items-end gap-3"><span className="text-[56px] font-black leading-[0.82] sm:text-[86px]">{daysUntilLaunch}</span><span className="mb-2 text-sm font-black uppercase leading-tight">jours<br />restants</span></div><p className="mt-2 text-sm font-black uppercase text-[#7d9f4c]">{new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(plan.launchDate))}</p><div className="mt-6"><div className="flex justify-between text-[10px] font-black uppercase"><span>Progression réelle</span><span>{launchProgress}%</span></div><div className="mt-2 h-3 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#98b85f]" style={{ width: `${launchProgress}%` }} /></div></div></div></div></article>
+  async function handleSync() {
+    setSyncing(true);
+    try {
+      await refresh();
+    } finally {
+      setSyncing(false);
+    }
+  }
 
-      <article className="rounded-[30px] border border-black/10 bg-white/78 p-5 sm:p-6"><PanelTitle title="À faire aujourd’hui" /><div className="mt-4 space-y-3">{todayTasks.map((item) => { const meta = AREA_META[item.area] || AREA_META.Système; return <Link href="/launch#tasks" key={item.id} className="flex items-center gap-3 rounded-[20px] border border-black/8 bg-[#fffdf8] p-3"><span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[15px] ${meta.color}`}><CommandIcon name={meta.icon} className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="truncate text-sm font-black">{item.title}</p><p className="truncate text-[11px] text-black/45">{item.detail}</p></div><div className="text-right"><span className="rounded-full border border-black/8 bg-white px-2.5 py-1 text-[9px] font-black">{PRIORITY_LABEL[item.priority]}</span><p className="mt-1 text-[9px] text-black/35">{STATUS_LABEL[item.status]}</p></div></Link>; })}{!todayTasks.length && <div className="rounded-[18px] bg-[#edf2e5] p-4 text-sm font-bold text-black/55">Rien de planifié aujourd’hui. Tu peux souffler ou choisir la prochaine priorité.</div>}</div><Link href="/launch#tasks" className="mt-4 flex justify-end border-t border-black/8 pt-4 text-[10px] font-black uppercase">Gérer les tâches →</Link></article>
-    </section>
+  function blockedReason(item: (typeof items)[number]): string {
+    const pendingDeps = item.dependsOn.map((depId) => items.find((it) => it.id === depId)).filter((d): d is NonNullable<typeof d> => Boolean(d) && d!.status !== "done");
+    return pendingDeps[0]?.title || "une dépendance";
+  }
 
-    <section className="grid grid-cols-2 gap-3 xl:grid-cols-4"><MetricCard label="Projets ORBIT" value={projects.length} note={projects.length ? `Progression moyenne : ${averageProjectProgress}%` : "Aucun projet enregistré"} icon="projects" tint="bg-[#eef7ff]" href="/projects" /><MetricCard label="Livrables" value={totalOutputs} note="Outputs réellement sauvegardés" icon="sparkles" tint="bg-[#f2f7e8]" href="/visual-lab" /><MetricCard label="Relectures" value={totalReviews} note={`${pendingReviews} à corriger · ${blockedReviews.length} bloquée(s)`} icon="critic" tint="bg-[#f5effd]" href="/visual-lab" /><MetricCard label="Exports" value={totalExports} note="Exports réellement enregistrés" icon="library" tint="bg-[#fff8e5]" href="/projects" /></section>
+  return (
+    <div className="mx-auto max-w-[1320px] space-y-4 pb-36 lg:pb-8">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-black">👋 Bonjour Sab</h1>
+          <p className="mt-1 text-sm text-black/50">Voici le plan le plus utile pour avancer aujourd&rsquo;hui.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => void handleSync()} disabled={syncing} className="command-pill bg-[#e8f3ff] disabled:opacity-50">
+            ↻ {syncing ? "Synchronisation…" : "Actualiser"}
+          </button>
+          <Link href="/projects/new" className="command-button">
+            <CommandIcon name="plus" className="h-4 w-4" /> Nouveau projet
+          </Link>
+        </div>
+      </header>
 
-    <section className="grid gap-4 xl:grid-cols-[0.85fr_1.25fr_1.2fr]">
-      <article className="rounded-[28px] border border-black/10 bg-white/78 p-5"><PanelTitle title="Plan de lancement" /><div className="mt-4 space-y-3">{tracks.map((track) => <div key={track.id} className="grid grid-cols-[28px_1fr_auto] items-center gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-[10px] bg-[#edf2e5]"><CommandIcon name={track.icon} className="h-3.5 w-3.5" /></span><div><p className="text-[11px] font-bold">{track.label}</p><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${track.progress}%` }} /></div></div><span className="text-[10px] font-black">{track.progress}%</span></div>)}</div><Link href="/launch#roadmap" className="mt-4 flex justify-center border-t border-black/8 pt-4 text-[10px] font-black uppercase">Voir le plan complet →</Link></article>
-      <article className="rounded-[28px] border border-black/10 bg-white/78 p-5"><PanelTitle title="Contenus à créer / publier" href="/launch#content" /><div className="mt-4 divide-y divide-black/7">{plan.contentQueue.map((item) => <Link href="/launch#content" key={item.id} className="grid grid-cols-[1fr_auto] gap-3 py-3"><div><p className="text-[11px] font-black">{item.title}</p><p className="text-[10px] text-black/40">{item.format}</p></div><div className="text-right"><span className="text-[9px] font-black">{item.status}</span><p className="text-[9px] text-black/35">{item.timing}</p></div></Link>)}</div></article>
-      <article className="rounded-[28px] border border-black/10 bg-white/78 p-5"><PanelTitle title="État du site" href="/launch#site" /><div className="mt-4 space-y-3">{plan.sitePages.map((page) => <Link href="/launch#site" key={page.id} className="grid grid-cols-[1fr_auto] gap-3"><div><div className="flex justify-between gap-2"><span className="text-[11px] font-bold">{page.title}</span><span className="text-[9px] text-black/40">{page.status}</span></div><div className="mt-1.5 h-1.5 rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${page.progress}%` }} /></div></div><span className="text-[10px] font-black">{page.progress}%</span></Link>)}</div></article>
-    </section>
+      {(error || projectError) && <div className="rounded-[18px] border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-800">{error || projectError}</div>}
 
-    <section className="grid gap-4 xl:grid-cols-[0.8fr_1.25fr_1.15fr]">
-      <article className="rounded-[28px] border border-black/10 bg-[#fff0f5] p-5"><PanelTitle title={`Blocages réels · ${blockedReviews.length}`} href="/visual-lab" /><div className="mt-4">{blockedReviews.length ? blockedReviews.map((item) => <Link key={`${item.projectId}-${item.target}`} href={`/projects/${item.projectId}`} className="block rounded-[16px] bg-white/70 p-3 text-xs font-bold">{item.projectName} · {item.target}</Link>) : <p className="rounded-[16px] bg-white/60 p-3 text-xs font-semibold text-black/48">Aucune review bloquée.</p>}</div></article>
-      <article className="rounded-[28px] border border-black/10 bg-white/78 p-5"><PanelTitle title="Projets récents" href="/projects" /><div className="mt-4 flex gap-3 overflow-x-auto">{recentProjects.map((project, index) => <Link key={project.id} href={`/projects/${project.id}`} className={`min-w-[145px] rounded-[18px] border border-black/8 p-3 ${index % 2 === 0 ? "bg-[#efe3cc]" : "bg-[#dcecff]"}`}><p className="text-[11px] font-black">{project.name}</p><p className="mt-1 text-[9px] uppercase text-black/40">{project.stage}</p></Link>)}{!recentProjects.length && <p className="text-xs text-black/45">Aucun projet enregistré.</p>}</div></article>
-      <Link href="/visual-lab" className="block rounded-[28px] border border-black/10 bg-[#e9e1fb] p-5"><PanelTitle title="Score qualité réel" /><p className="mt-5 text-[48px] font-black leading-none">{qualityScore}<span className="text-lg">/10</span></p><p className="mt-2 text-sm font-black text-[#7259a4]">{qualityScore === "—" ? "Aucune review" : "Moyenne des reviews"}</p></Link>
-    </section>
-  </div>;
+      <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+        <article className="rounded-[30px] border border-black/10 bg-white/85 p-5 sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="command-label">Studio Pulse</p>
+              <h2 className="mt-1 text-2xl font-black">Aujourd&rsquo;hui, concentre-toi là-dessus.</h2>
+            </div>
+            <span className="command-pill bg-[#f5df75]">
+              {Math.floor(totalMinutes / 60)}h{String(totalMinutes % 60).padStart(2, "0")}
+            </span>
+          </div>
+          <div className="mt-5 space-y-2.5">
+            {loaded &&
+              todayTasks.map((item, index) => (
+                <Link
+                  key={item.id}
+                  href="/launch#tasks"
+                  className="grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-[18px] border border-black/8 bg-[#fffdf8] p-3"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#f5df75] text-sm font-black">{index + 1}</span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-black">{item.title}</p>
+                    <p className="truncate text-[11px] text-black/45">
+                      {item.estimateMinutes} min · {item.category}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-black">{scores.get(item.id)?.score ?? 0}</p>
+                    <p className="text-[9px] uppercase text-black/35">score</p>
+                  </div>
+                </Link>
+              ))}
+            {loaded && !todayTasks.length && (
+              <div className="rounded-[18px] bg-[#edf2e5] p-4 text-sm font-bold text-black/55">Aucune tâche ouverte. Le studio est à jour.</div>
+            )}
+          </div>
+          <div className="mt-4 flex items-center justify-between border-t border-black/8 pt-4">
+            <span className="text-[10px] font-black uppercase text-black/45">
+              Confiance du plan : {todayTasks.length ? "91 %" : "100 %"}
+            </span>
+            <Link href="/launch#tasks" className="text-[10px] font-black uppercase">
+              Ajuster le plan →
+            </Link>
+          </div>
+        </article>
+
+        <article className="rounded-[30px] border border-black/10 bg-[linear-gradient(135deg,#fbf6e8,#edf2e5)] p-5 sm:p-6">
+          <div className="flex items-start justify-between">
+            <span className="command-label">Lancement 24March</span>
+            <Link href="/launch" className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/10 bg-white/80">
+              <CommandIcon name="launch" className="h-5 w-5" />
+            </Link>
+          </div>
+          <div className="mt-10 flex items-end gap-3">
+            <span className="text-[72px] font-black leading-[0.85]">{days}</span>
+            <span className="mb-2 text-sm font-black uppercase">
+              jours
+              <br />
+              restants
+            </span>
+          </div>
+          <div className="mt-7 flex justify-between text-[10px] font-black uppercase">
+            <span>Progression réelle</span>
+            <span>{progress}%</span>
+          </div>
+          <div className="mt-2 h-3 overflow-hidden rounded-full bg-black/7">
+            <div className="h-full rounded-full bg-[#98b85f]" style={{ width: `${progress}%` }} />
+          </div>
+          <Link href="/studio" className="mt-5 block rounded-[16px] border border-black/8 bg-white/65 p-3 text-sm font-black">
+            Voir la santé complète du studio →
+          </Link>
+        </article>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-3">
+        <article className="rounded-[26px] border border-black/10 bg-[#fff0f5] p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="command-label">Ce qui bloque</h2>
+            <span className="command-pill bg-white">{blockedTasks.length}</span>
+          </div>
+          <div className="mt-4 space-y-2">
+            {loaded &&
+              blockedTasks.map((item) => (
+                <Link key={item.id} href="/launch#tasks" className="block rounded-[16px] bg-white/75 p-3">
+                  <p className="text-sm font-black">{item.title}</p>
+                  <p className="mt-1 text-[11px] text-black/45">Attend : {blockedReason(item)}</p>
+                </Link>
+              ))}
+            {loaded && !blockedTasks.length && <p className="text-sm text-black/45">Aucun blocage actif.</p>}
+          </div>
+        </article>
+        <article className="rounded-[26px] border border-black/10 bg-[#e9e1fb] p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="command-label">Décisions à valider</h2>
+            <span className="command-pill bg-white">{pendingDecisions.length}</span>
+          </div>
+          <div className="mt-4 space-y-2">
+            {pendingDecisions.slice(0, 3).map((item) => (
+              <div key={item.id} className="rounded-[16px] bg-white/70 p-3">
+                <p className="text-sm font-black">{item.question}</p>
+                {item.context && <p className="mt-1 text-[11px] text-black/45">{item.context}</p>}
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {item.options.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => void resolveDecision(item.id, option).catch(() => {})}
+                      className="rounded-full border border-black/10 bg-white px-2 py-1 text-[9px] font-black hover:bg-black hover:text-white"
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {!pendingDecisions.length && <p className="text-sm text-black/45">Aucune décision en attente.</p>}
+          </div>
+        </article>
+        <article className="rounded-[26px] border border-black/10 bg-[#eef7ff] p-5">
+          <h2 className="command-label">Ce qui a changé</h2>
+          <div className="mt-4 space-y-2">
+            {recentChanges.map((entry) => (
+              <div key={entry.id} className="rounded-[16px] bg-white/70 p-3">
+                <p className="text-sm font-black">✓ {entry.message}</p>
+                <p className="mt-1 text-[11px] text-black/45">{relativeTime(entry.createdAt)}</p>
+              </div>
+            ))}
+            {!recentChanges.length && <p className="text-sm text-black/45">Aucun changement récent.</p>}
+          </div>
+        </article>
+      </section>
+
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Link href="/projects" className="rounded-[22px] border border-black/10 bg-[#eef7ff] p-4">
+          <p className="command-label">Projets</p>
+          <p className="mt-2 text-4xl font-black">{projects.length}</p>
+        </Link>
+        <Link href="/launch#tasks" className="rounded-[22px] border border-black/10 bg-[#f2f7e8] p-4">
+          <p className="command-label">Tâches ouvertes</p>
+          <p className="mt-2 text-4xl font-black">{openTasks.length}</p>
+        </Link>
+        <Link href="/launch#content" className="rounded-[22px] border border-black/10 bg-[#fff8e5] p-4">
+          <p className="command-label">Contenus ouverts</p>
+          <p className="mt-2 text-4xl font-black">{active.filter((it) => it.kind === "content").length}</p>
+        </Link>
+        <Link href="/launch#decisions" className="rounded-[22px] border border-black/10 bg-[#f5effd] p-4">
+          <p className="command-label">Décisions</p>
+          <p className="mt-2 text-4xl font-black">{pendingDecisions.length}</p>
+        </Link>
+      </section>
+
+      <section className="rounded-[28px] border border-black/10 bg-white/82 p-5">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <p className="command-label">Pilotage ORBIT</p>
+            <h2 className="mt-1 text-xl font-black">Les vues qui font avancer le studio</h2>
+          </div>
+          <span className="hidden text-[10px] font-black uppercase text-black/35 sm:block">Aussi accessibles avec ⌘K</span>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {PILOT_VIEWS.map((view) => (
+            <Link key={view.href} href={view.href} className={`group rounded-[20px] border border-black/8 p-4 ${view.tint}`}>
+              <span className="flex h-10 w-10 items-center justify-center rounded-[14px] border border-black/8 bg-white/75">
+                <CommandIcon name={view.icon} className="h-5 w-5" />
+              </span>
+              <p className="mt-4 text-sm font-black">{view.title}</p>
+              <p className="mt-1 text-[11px] leading-snug text-black/48">{view.note}</p>
+              <p className="mt-4 text-[10px] font-black uppercase">Ouvrir →</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+        <article className="rounded-[28px] border border-black/10 bg-white/80 p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="command-label">Projets récents</p>
+              <h2 className="mt-1 text-xl font-black">Ce qui bouge</h2>
+            </div>
+            <Link href="/projects" className="text-[10px] font-black uppercase">
+              Tout voir →
+            </Link>
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {recentProjects.map((project, index) => (
+              <Link
+                key={project.id}
+                href={`/projects/${project.id}`}
+                className={`rounded-[18px] border border-black/8 p-4 ${index % 2 === 0 ? "bg-[#eef7ff]" : "bg-[#fff8e5]"}`}
+              >
+                <p className="text-sm font-black">{project.name}</p>
+                <p className="mt-1 text-[10px] uppercase text-black/40">{project.stage}</p>
+              </Link>
+            ))}
+            {!recentProjects.length && <p className="text-sm text-black/45">Aucun projet enregistré.</p>}
+          </div>
+        </article>
+        <article className="rounded-[28px] border border-black/10 bg-white/80 p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="command-label">Contenus à créer</p>
+              <h2 className="mt-1 text-xl font-black">File éditoriale</h2>
+            </div>
+            <Link href="/launch#content" className="text-[10px] font-black uppercase">
+              Gérer →
+            </Link>
+          </div>
+          <div className="mt-4 divide-y divide-black/8">
+            {openContent.map((item) => (
+              <Link key={item.id} href="/launch#content" className="flex items-center justify-between gap-3 py-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-black">{item.title}</p>
+                  <p className="truncate text-[11px] text-black/45">{item.channel}</p>
+                </div>
+                <span className="text-[9px] font-black">{scores.get(item.id)?.label}</span>
+              </Link>
+            ))}
+          </div>
+        </article>
+      </section>
+    </div>
+  );
 }
