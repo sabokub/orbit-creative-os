@@ -1,0 +1,262 @@
+import { ContentChannel, ItemKind, ItemStatus, STUDIO_LAUNCH_CUTOFF } from "./types";
+
+/**
+ * First-run seed data for Studio Brain. `key` is a local-only reference used
+ * to wire up dependsOn chains before real ids exist — resolved in
+ * lib/studioBrain.ts and never persisted.
+ */
+export interface SeedSpec {
+  key: string;
+  kind: ItemKind;
+  title: string;
+  description: string;
+  category: string;
+  channel?: ContentChannel;
+  estimateMinutes: number;
+  urgency: number;
+  impact: number;
+  launchCritical: boolean;
+  dueDate?: string;
+  dependsOnKeys?: string[];
+  status?: ItemStatus;
+}
+
+// Sanity: keep every seeded due date on or before the hard launch cutoff.
+const D = (day: string) => {
+  if (day > STUDIO_LAUNCH_CUTOFF) {
+    throw new Error(`Seed date ${day} is past the studio launch cutoff ${STUDIO_LAUNCH_CUTOFF}`);
+  }
+  return day;
+};
+
+export const SEED_TASKS: SeedSpec[] = [
+  {
+    key: "brand-brain",
+    kind: "task",
+    title: "Verrouiller le Brand Brain",
+    description: "Fixer la version finale du profil de marque (identité, ton, direction visuelle).",
+    category: "Marque",
+    estimateMinutes: 90,
+    urgency: 4,
+    impact: 5,
+    launchCritical: true,
+    dueDate: D("2026-07-18"),
+    status: "done",
+  },
+  {
+    key: "homepage",
+    kind: "task",
+    title: "Finaliser la homepage",
+    description: "Structure dense + direction visuelle du site vitrine, prête pour intégration.",
+    category: "Site web",
+    estimateMinutes: 240,
+    urgency: 5,
+    impact: 5,
+    launchCritical: true,
+    dueDate: D("2026-07-24"),
+    dependsOnKeys: ["brand-brain"],
+    status: "in_progress",
+  },
+  {
+    key: "about-page",
+    kind: "task",
+    title: "Rédiger la page À propos",
+    description: "Storytelling studio + fondatrice, aligné avec le positionnement.",
+    category: "Site web",
+    estimateMinutes: 120,
+    urgency: 3,
+    impact: 3,
+    launchCritical: false,
+    dueDate: D("2026-07-28"),
+    dependsOnKeys: ["homepage"],
+  },
+  {
+    key: "guide",
+    kind: "task",
+    title: "Valider le guide client",
+    description: "Version finale du guide envoyé aux clients avant lancement (PDF + page web).",
+    category: "Produit",
+    estimateMinutes: 180,
+    urgency: 4,
+    impact: 5,
+    launchCritical: true,
+    dueDate: D("2026-08-01"),
+    dependsOnKeys: ["homepage"],
+  },
+  {
+    key: "waitlist",
+    kind: "task",
+    title: "Construire la waitlist",
+    description: "Formulaire + séquence email de confirmation pour la liste d'attente de lancement.",
+    category: "Growth",
+    estimateMinutes: 150,
+    urgency: 4,
+    impact: 4,
+    launchCritical: true,
+    dueDate: D("2026-08-08"),
+    dependsOnKeys: ["guide"],
+  },
+  {
+    key: "domain",
+    kind: "task",
+    title: "Connexion du domaine",
+    description: "Pointer le domaine 24marchstudio.com vers l'hébergement de production.",
+    category: "Site web",
+    estimateMinutes: 45,
+    urgency: 3,
+    impact: 4,
+    launchCritical: true,
+    dueDate: D("2026-07-30"),
+    dependsOnKeys: ["homepage"],
+  },
+  {
+    key: "visual-review",
+    kind: "task",
+    title: "Validation visuelle finale",
+    description: "Dernière passe de cohérence visuelle sur toutes les pages avant ouverture.",
+    category: "Marque",
+    estimateMinutes: 90,
+    urgency: 3,
+    impact: 3,
+    launchCritical: false,
+    dueDate: D("2026-08-12"),
+    dependsOnKeys: ["about-page", "domain"],
+  },
+  {
+    key: "pricing",
+    kind: "task",
+    title: "Verrouiller la grille tarifaire",
+    description: "Offres, paliers et conditions, prêtes à publier sur le site.",
+    category: "Produit",
+    estimateMinutes: 90,
+    urgency: 3,
+    impact: 4,
+    launchCritical: true,
+    dueDate: D("2026-07-26"),
+  },
+  {
+    key: "payment",
+    kind: "task",
+    title: "Brancher le paiement en ligne",
+    description: "Intégrer la prise de paiement (acompte + solde) sur le site.",
+    category: "Site web",
+    estimateMinutes: 180,
+    urgency: 4,
+    impact: 5,
+    launchCritical: true,
+    dueDate: D("2026-08-10"),
+    dependsOnKeys: ["pricing", "domain"],
+  },
+  {
+    key: "onboarding-flow",
+    kind: "task",
+    title: "Écrire le parcours d'onboarding client",
+    description: "Étapes, emails et documents envoyés dès qu'un client signe.",
+    category: "Produit",
+    estimateMinutes: 120,
+    urgency: 3,
+    impact: 4,
+    launchCritical: false,
+    dueDate: D("2026-08-14"),
+    dependsOnKeys: ["guide"],
+  },
+  {
+    key: "automation-hub",
+    kind: "task",
+    title: "Finaliser ORBIT Automation Hub v2",
+    description: "Automatisations internes du studio (génération, relecture, export).",
+    category: "Système",
+    estimateMinutes: 300,
+    urgency: 3,
+    impact: 4,
+    launchCritical: false,
+    dueDate: D("2026-08-05"),
+    status: "in_progress",
+  },
+  {
+    key: "integrations",
+    kind: "task",
+    title: "Connecter les intégrations studio",
+    description: "GitHub, Vercel, Redis, Drive, Calendar — état de synchronisation visible.",
+    category: "Système",
+    estimateMinutes: 120,
+    urgency: 2,
+    impact: 3,
+    launchCritical: false,
+    dueDate: D("2026-08-15"),
+  },
+  {
+    key: "legal",
+    kind: "task",
+    title: "Rédiger les mentions légales & CGV",
+    description: "Pages légales obligatoires avant ouverture des ventes.",
+    category: "Juridique",
+    estimateMinutes: 90,
+    urgency: 2,
+    impact: 3,
+    launchCritical: true,
+    dueDate: D("2026-08-06"),
+  },
+  {
+    key: "press-kit",
+    kind: "task",
+    title: "Préparer le press kit lancement",
+    description: "Dossier presse, visuels et pitch court pour la sortie publique.",
+    category: "Growth",
+    estimateMinutes: 150,
+    urgency: 2,
+    impact: 3,
+    launchCritical: false,
+    dueDate: D("2026-08-20"),
+    dependsOnKeys: ["waitlist"],
+  },
+  {
+    key: "launch-day",
+    kind: "task",
+    title: "Lancement public 24March Studio",
+    description: "Mise en ligne officielle : site, offre, waitlist convertie, contenu de lancement.",
+    category: "Lancement",
+    estimateMinutes: 240,
+    urgency: 5,
+    impact: 5,
+    launchCritical: true,
+    dueDate: D("2026-08-31"),
+    dependsOnKeys: ["waitlist", "payment", "legal", "visual-review", "press-kit"],
+  },
+];
+
+export const SEED_CONTENT: SeedSpec[] = [
+  { key: "c1", kind: "content", title: "Teasing 24March OS", description: "Annonce du système en préparation.", category: "Reels", channel: "Reels", estimateMinutes: 90, urgency: 4, impact: 4, launchCritical: true, dueDate: D("2026-07-18") },
+  { key: "c2", kind: "content", title: "Studio Life #3", description: "Coulisses d'une journée de production.", category: "Reels", channel: "Reels", estimateMinutes: 60, urgency: 2, impact: 3, launchCritical: false, dueDate: D("2026-07-20"), status: "done" },
+  { key: "c3", kind: "content", title: "Pourquoi 24March", description: "Le pitch fondateur en 30 secondes.", category: "TikTok", channel: "TikTok", estimateMinutes: 60, urgency: 3, impact: 4, launchCritical: true, dueDate: D("2026-07-24") },
+  { key: "c4", kind: "content", title: "Avant / après appartement", description: "Transformation d'un projet client récent.", category: "Reels", channel: "Reels", estimateMinutes: 120, urgency: 3, impact: 5, launchCritical: false, dueDate: D("2026-07-27") },
+  { key: "c5", kind: "content", title: "Story sondage direction artistique", description: "Sondage audience sur deux palettes.", category: "Stories", channel: "Stories", estimateMinutes: 20, urgency: 2, impact: 2, launchCritical: false, dueDate: D("2026-07-19"), status: "done" },
+  { key: "c6", kind: "content", title: "Story compte à rebours lancement", description: "J-45 avant l'ouverture officielle.", category: "Stories", channel: "Stories", estimateMinutes: 15, urgency: 3, impact: 3, launchCritical: true, dueDate: D("2026-07-21") },
+  { key: "c7", kind: "content", title: "Moodboard studio d'été", description: "Épingles d'inspiration matières et lumière.", category: "Pinterest", channel: "Pinterest", estimateMinutes: 45, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-07-25") },
+  { key: "c8", kind: "content", title: "Board palette bleu/vert", description: "Déclinaison de la charte studio en épingles.", category: "Pinterest", channel: "Pinterest", estimateMinutes: 45, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-08-01") },
+  { key: "c9", kind: "content", title: "Journal — Semaine 1", description: "Notes de studio publiques : ce qu'on construit.", category: "Journal", channel: "Journal", estimateMinutes: 90, urgency: 2, impact: 3, launchCritical: false, dueDate: D("2026-07-22") },
+  { key: "c10", kind: "content", title: "Journal — Le goût d'abord", description: "Billet sur la philosophie du studio.", category: "Journal", channel: "Journal", estimateMinutes: 90, urgency: 2, impact: 3, launchCritical: false, dueDate: D("2026-08-05") },
+  { key: "c11", kind: "content", title: "Email teaser waitlist", description: "Premier email d'annonce à la liste d'attente.", category: "Emails", channel: "Emails", estimateMinutes: 60, urgency: 3, impact: 4, launchCritical: true, dueDate: D("2026-08-09"), dependsOnKeys: ["waitlist"] },
+  { key: "c12", kind: "content", title: "Email J-7 lancement", description: "Compte à rebours final avant ouverture.", category: "Emails", channel: "Emails", estimateMinutes: 45, urgency: 4, impact: 4, launchCritical: true, dueDate: D("2026-08-24"), dependsOnKeys: ["waitlist"] },
+  { key: "c13", kind: "content", title: "Email jour J", description: "Annonce d'ouverture envoyée à toute la liste.", category: "Emails", channel: "Emails", estimateMinutes: 45, urgency: 5, impact: 5, launchCritical: true, dueDate: D("2026-08-31"), dependsOnKeys: ["c12"] },
+  { key: "c14", kind: "content", title: "Guide client — version teaser", description: "Extrait public du guide pour donner envie.", category: "Guide", channel: "Guide", estimateMinutes: 60, urgency: 2, impact: 3, launchCritical: false, dueDate: D("2026-08-03"), dependsOnKeys: ["guide"] },
+  { key: "c15", kind: "content", title: "Guide client — carousel Instagram", description: "Carousel qui résume le guide en 6 slides.", category: "Guide", channel: "Guide", estimateMinutes: 90, urgency: 3, impact: 3, launchCritical: false, dueDate: D("2026-08-04"), dependsOnKeys: ["guide"] },
+  { key: "c16", kind: "content", title: "Behind the scenes — shooting", description: "Coulisses d'un shooting client.", category: "Behind the scenes", channel: "Behind the scenes", estimateMinutes: 60, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-07-29") },
+  { key: "c17", kind: "content", title: "Behind the scenes — moodboard live", description: "Construction d'un moodboard en accéléré.", category: "Behind the scenes", channel: "Behind the scenes", estimateMinutes: 60, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-08-11") },
+  { key: "c18", kind: "content", title: "Lifestyle — matin studio", description: "Ambiance lumineuse du matin en studio.", category: "Lifestyle", channel: "Lifestyle", estimateMinutes: 45, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-07-23") },
+  { key: "c19", kind: "content", title: "Lifestyle — détails matière", description: "Gros plans matières, objets, reflets.", category: "Lifestyle", channel: "Lifestyle", estimateMinutes: 45, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-08-07") },
+  { key: "c20", kind: "content", title: "TikTok — méthode en 3 étapes", description: "Explication rapide de la méthode du studio.", category: "TikTok", channel: "TikTok", estimateMinutes: 75, urgency: 3, impact: 4, launchCritical: false, dueDate: D("2026-07-31") },
+  { key: "c21", kind: "content", title: "TikTok — erreurs déco fréquentes", description: "Format éducatif, piège à shares.", category: "TikTok", channel: "TikTok", estimateMinutes: 75, urgency: 2, impact: 3, launchCritical: false, dueDate: D("2026-08-13") },
+  { key: "c22", kind: "content", title: "Reel — visite studio complet", description: "Tour complet de l'espace studio.", category: "Reels", channel: "Reels", estimateMinutes: 120, urgency: 2, impact: 4, launchCritical: false, dueDate: D("2026-08-02") },
+  { key: "c23", kind: "content", title: "Reel — client témoignage", description: "Retour d'expérience filmé d'un client satisfait.", category: "Reels", channel: "Reels", estimateMinutes: 90, urgency: 3, impact: 4, launchCritical: false, dueDate: D("2026-08-17") },
+  { key: "c24", kind: "content", title: "Story sneak peek homepage", description: "Aperçu exclusif de la nouvelle homepage.", category: "Stories", channel: "Stories", estimateMinutes: 15, urgency: 3, impact: 3, launchCritical: true, dueDate: D("2026-07-25"), dependsOnKeys: ["homepage"] },
+  { key: "c25", kind: "content", title: "Story FAQ lancement", description: "Réponses aux questions fréquentes avant ouverture.", category: "Stories", channel: "Stories", estimateMinutes: 20, urgency: 2, impact: 2, launchCritical: false, dueDate: D("2026-08-19") },
+  { key: "c26", kind: "content", title: "Pinterest — inspiration lancement", description: "Board dédié à la campagne de lancement.", category: "Pinterest", channel: "Pinterest", estimateMinutes: 45, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-08-22") },
+  { key: "c27", kind: "content", title: "Journal — coulisses du lancement", description: "Billet racontant la dernière ligne droite.", category: "Journal", channel: "Journal", estimateMinutes: 90, urgency: 2, impact: 3, launchCritical: false, dueDate: D("2026-08-27") },
+  { key: "c28", kind: "content", title: "Email récap semaine", description: "Newsletter récap hebdo pour la liste d'attente.", category: "Emails", channel: "Emails", estimateMinutes: 45, urgency: 2, impact: 2, launchCritical: false, dueDate: D("2026-08-16"), dependsOnKeys: ["waitlist"] },
+  { key: "c29", kind: "content", title: "Behind the scenes — équipe", description: "Présentation des personnes derrière le studio.", category: "Behind the scenes", channel: "Behind the scenes", estimateMinutes: 60, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-08-09") },
+  { key: "c30", kind: "content", title: "Lifestyle — soirée studio", description: "Ambiance en fin de journée, lumière chaude.", category: "Lifestyle", channel: "Lifestyle", estimateMinutes: 45, urgency: 1, impact: 2, launchCritical: false, dueDate: D("2026-08-21") },
+  { key: "c31", kind: "content", title: "Reel — jour J lancement", description: "Annonce vidéo publique de l'ouverture.", category: "Launch", channel: "Launch", estimateMinutes: 150, urgency: 5, impact: 5, launchCritical: true, dueDate: D("2026-08-31"), dependsOnKeys: ["launch-day"] },
+  { key: "c32", kind: "content", title: "Carousel — offre de lancement", description: "Détail de l'offre spéciale premiers clients.", category: "Launch", channel: "Launch", estimateMinutes: 90, urgency: 4, impact: 5, launchCritical: true, dueDate: D("2026-08-30"), dependsOnKeys: ["pricing"] },
+  { key: "c33", kind: "content", title: "TikTok — dernière ligne droite", description: "J-3 avant l'ouverture, énergie de compte à rebours.", category: "Launch", channel: "Launch", estimateMinutes: 60, urgency: 4, impact: 4, launchCritical: true, dueDate: D("2026-08-28") },
+];

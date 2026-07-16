@@ -18,7 +18,13 @@ export type CommandIconName =
   | "menu"
   | "close"
   | "focus"
-  | "strategy";
+  | "strategy"
+  | "bolt"
+  | "bell"
+  | "search"
+  | "target"
+  | "link"
+  | "calendar";
 
 const paths: Record<CommandIconName, React.ReactNode> = {
   home: <><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/></>,
@@ -39,6 +45,12 @@ const paths: Record<CommandIconName, React.ReactNode> = {
   close: <><path d="m6 6 12 12M18 6 6 18"/></>,
   focus: <><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/><circle cx="12" cy="12" r="3"/></>,
   strategy: <><path d="M4 18 9 13l4 3 7-9"/><path d="M15 7h5v5"/></>,
+  bolt: <><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></>,
+  bell: <><path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5Z"/><path d="M9.5 18a2.5 2.5 0 0 0 5 0"/></>,
+  search: <><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></>,
+  target: <><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></>,
+  link: <><path d="M9.5 14.5 14.5 9.5"/><path d="M11 6.5 13 4.6a3.6 3.6 0 0 1 5 5L16.1 11.5M13 17.5 11 19.4a3.6 3.6 0 0 1-5-5L7.9 12.5"/></>,
+  calendar: <><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></>,
 };
 
 export default function CommandIcon({
