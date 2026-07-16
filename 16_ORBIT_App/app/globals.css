@@ -194,6 +194,37 @@ select:focus {
   scrollbar-width: none;
 }
 
+/* Les grandes cartes éditoriales restent lumineuses : le noir est réservé aux boutons et micro-accents. */
+section[class*="bg-[#151515]"],
+aside[class*="bg-[#151515]"],
+div[class*="rounded-[30px]"][class*="bg-[#151515]"],
+div[class*="rounded-[20px]"][class*="bg-[#151515]"] {
+  background: linear-gradient(135deg, #f7f0df 0%, #e7edcf 58%, #dbe7cd 100%) !important;
+  color: var(--ink) !important;
+  box-shadow: 0 22px 55px rgba(89, 96, 66, 0.13) !important;
+}
+
+section[class*="bg-[#151515]"] [class*="text-white"],
+aside[class*="bg-[#151515]"] [class*="text-white"],
+div[class*="rounded-[30px]"][class*="bg-[#151515]"] [class*="text-white"],
+div[class*="rounded-[20px]"][class*="bg-[#151515]"] [class*="text-white"] {
+  color: rgba(21, 21, 21, 0.72) !important;
+}
+
+section[class*="bg-[#151515]"] [class*="border-white"],
+aside[class*="bg-[#151515]"] [class*="border-white"],
+div[class*="rounded-[30px]"][class*="bg-[#151515]"] [class*="border-white"],
+div[class*="rounded-[20px]"][class*="bg-[#151515]"] [class*="border-white"] {
+  border-color: rgba(21, 21, 21, 0.12) !important;
+}
+
+section[class*="bg-[#151515]"] [class*="bg-white/10"],
+aside[class*="bg-[#151515]"] [class*="bg-white/10"],
+div[class*="rounded-[30px]"][class*="bg-[#151515]"] [class*="bg-white/10"],
+div[class*="rounded-[20px]"][class*="bg-[#151515]"] [class*="bg-white/10"] {
+  background: rgba(255, 253, 248, 0.62) !important;
+}
+
 @media (max-width: 1023px) {
   body {
     background:
