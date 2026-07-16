@@ -28,17 +28,22 @@ function normalizePlan(plan: StudioPlan): StudioPlan {
   return {
     ...DEFAULT_STUDIO_PLAN,
     ...plan,
-    priorities: (plan.priorities || []).map((item) => ({
+    priorities: (plan.priorities || []).map((item, index) => ({
       ...item,
       status: normalizeStatus(item.status),
       priority: normalizePriority(item.priority),
+      order: item.order ?? index + 1,
+      durationMinutes: item.durationMinutes ?? 60,
     })),
-    contentQueue: (plan.contentQueue || []).map((item) => ({
+    contentQueue: (plan.contentQueue || []).map((item, index) => ({
       ...item,
       status: normalizeStatus(item.status),
       priority: normalizePriority(item.priority),
       timing: item.timing || "À planifier",
+      order: item.order ?? index + 1,
+      durationMinutes: item.durationMinutes ?? 30,
     })),
+    decisions: plan.decisions || DEFAULT_STUDIO_PLAN.decisions,
     sitePages: plan.sitePages || DEFAULT_STUDIO_PLAN.sitePages,
     tracks: plan.tracks || DEFAULT_STUDIO_PLAN.tracks,
   };
