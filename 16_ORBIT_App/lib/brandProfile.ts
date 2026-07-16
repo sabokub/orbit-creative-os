@@ -1,5 +1,32 @@
 import { BrandProfile } from "./types";
 
+export interface BrandColorSwatch {
+  hex: string;
+  label: string;
+}
+
+/**
+ * Canonical 24March Studio Brand DNA palette — single source of truth.
+ * Sampled directly from the studio's brand-direction moodboard, section
+ * "4. PALETTE" (the 6th swatch there, a corduroy fabric texture sample, is
+ * a material reference, not a flat brand color, and is intentionally
+ * excluded here).
+ *
+ * Every consumer that shows or describes the brand palette (this file's
+ * `DEFAULT_BRAND_PROFILE.colors` text used in generation prompts, and the
+ * swatches rendered on /brand-profile) must import from here rather than
+ * redefine hex values locally.
+ */
+export const BRAND_DNA_PALETTE: BrandColorSwatch[] = [
+  { hex: "#370B0A", label: "Bordeaux" },
+  { hex: "#102F32", label: "Teal profond" },
+  { hex: "#0A0A0A", label: "Noir" },
+  { hex: "#745A45", label: "Taupe" },
+  { hex: "#EBDECB", label: "Crème" },
+  { hex: "#AEC8F1", label: "Bleu clair" },
+  { hex: "#BAD268", label: "Vert lime" },
+];
+
 /**
  * Brand Profile global — identité fixe de 24March Studio.
  * V1 : un seul profil, codé en dur, utilisé par défaut par tous les projets.
@@ -27,8 +54,9 @@ export const DEFAULT_BRAND_PROFILE: BrandProfile = {
     "Lifestyle éditorial à la maison. Cool people live here. Jeunes clients créatifs. Intérieurs vivants, colorés, personnels, assumés. Énergie mode / magazine / culture visuelle. Flash photo, cadrages proches, léger grand angle, reflets, matières fortes, objets qui racontent quelque chose, détails de vie (canapé, cuisine, miroir, food, drink, magazines), styling mode appliqué à l'intérieur.",
   toneOfVoice:
     "Direct, visuel, sensible, un peu mode, accessible mais pas basique. Expert sans être froid. Culture visuelle, intérieur comme extension de soi, goût, identité, lifestyle.",
-  colors:
-    "Bleu profond et vert comme couleurs d'accent. Ne jamais rendre tout le système bleu ou vert : les couleurs soutiennent la direction artistique, elles ne doivent pas devenir un gimmick.",
+  colors: `Palette de marque (source unique : lib/brandProfile.ts BRAND_DNA_PALETTE) : ${BRAND_DNA_PALETTE.map(
+    (c) => `${c.label} (${c.hex})`
+  ).join(", ")}. Le bordeaux, le teal profond et le noir portent la profondeur ; la crème et le taupe apportent l'assise éditoriale ; le bleu clair et le vert lime sont des touches d'accent, jamais dominantes. Ne jamais rendre tout le système bleu ou vert : les couleurs soutiennent la direction artistique, elles ne doivent pas devenir un gimmick.`,
   photographyDirection:
     "Flash photo direct, cadrages proches, léger grand angle, reflets, matières fortes, objets qui racontent une histoire, grain visible, look argentique — jamais un rendu 3D lisse ou générique.",
   contentDirection:

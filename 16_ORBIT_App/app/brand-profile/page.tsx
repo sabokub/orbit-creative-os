@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DEFAULT_BRAND_PROFILE } from "@/lib/brandProfile";
+import { BRAND_DNA_PALETTE, DEFAULT_BRAND_PROFILE } from "@/lib/brandProfile";
 import CommandIcon, { CommandIconName } from "@/components/CommandIcon";
 
 function Section({
@@ -80,9 +80,17 @@ export default function BrandProfilePage() {
         <Section title="Ton de voix" icon="content" accent="bg-[#f1a36f]"><p>{b.toneOfVoice}</p></Section>
         <Section title="Couleurs" icon="image" accent="bg-[#bdd8f8]">
           <p>{b.colors}</p>
-          <div className="mt-4 flex gap-1.5">
-            {["#BDD8F8", "#C3D995", "#F2B8CF", "#F5DF75", "#E6DED0"].map((color) => (
-              <span key={color} className="h-8 flex-1 rounded-[10px] border border-black/10" style={{ backgroundColor: color }} title={color} />
+          <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-7">
+            {BRAND_DNA_PALETTE.map((color) => (
+              <div key={color.hex} className="flex flex-col items-center gap-1.5">
+                <span
+                  className="h-12 w-full rounded-[10px] border border-black/10"
+                  style={{ backgroundColor: color.hex }}
+                  title={`${color.label} — ${color.hex}`}
+                />
+                <p className="text-center text-[9px] font-black leading-tight text-black/55">{color.label}</p>
+                <p className="text-center text-[8px] font-bold uppercase leading-tight text-black/35">{color.hex}</p>
+              </div>
             ))}
           </div>
         </Section>
