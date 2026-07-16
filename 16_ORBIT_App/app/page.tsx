@@ -17,8 +17,10 @@ export default function Dashboard() {
   useEffect(() => { setDays(Math.max(0, Math.ceil((new Date(plan.launchDate).getTime() - Date.now()) / 86_400_000))); }, [plan.launchDate]);
 
   const tasks = useMemo(() => sortByOrder(plan.priorities.filter((item) => item.status !== "done")).slice(0, 6), [plan.priorities]);
+  const recentProjects = useMemo(() => [...projects].sort((a, b) => b.updated_at.localeCompare(a.updated_at)).slice(0, 4), [projects]);
+  const openContent = useMemo(() => sortByOrder(plan.contentQueue.filter((item) => item.status !== "done")).slice(0, 4), [plan.contentQueue]);
   const progress = globalLaunchProgress(plan);
-  const pendingDecisions = plan.decisions.filter((item) => item.status === "pending").length;
+  const pendingDecisions = plan.decisions.filter((item) => item.status === "pending");
   const updated = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(plan.updatedAt));
 
   return (
@@ -52,13 +54,45 @@ export default function Dashboard() {
         </article>
       </section>
 
-      {pendingDecisions > 0 && <Link href="/launch#decisions" className="flex items-center justify-between rounded-[22px] border border-[#8d72bd]/20 bg-[#e9e1fb] p-4"><div><p className="text-[10px] font-black uppercase text-[#7259a4]">Studio Brain</p><p className="mt-1 text-sm font-black">{pendingDecisions} décision{pendingDecisions > 1 ? "s" : ""} à valider</p></div><span>→</span></Link>}
-
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Link href="/projects" className="rounded-[22px] border border-black/10 bg-[#eef7ff] p-4"><p className="command-label">Projets</p><p className="mt-2 text-4xl font-black">{projects.length}</p></Link>
         <Link href="/launch#tasks" className="rounded-[22px] border border-black/10 bg-[#f2f7e8] p-4"><p className="command-label">Tâches ouvertes</p><p className="mt-2 text-4xl font-black">{plan.priorities.filter((item) => item.status !== "done").length}</p></Link>
         <Link href="/launch#content" className="rounded-[22px] border border-black/10 bg-[#fff8e5] p-4"><p className="command-label">Contenus ouverts</p><p className="mt-2 text-4xl font-black">{plan.contentQueue.filter((item) => item.status !== "done").length}</p></Link>
-        <Link href="/launch#decisions" className="rounded-[22px] border border-black/10 bg-[#f5effd] p-4"><p className="command-label">Décisions</p><p className="mt-2 text-4xl font-black">{pendingDecisions}</p></Link>
+        <Link href="/launch#decisions" className="rounded-[22px] border border-black/10 bg-[#f5effd] p-4"><p className="command-label">Décisions</p><p className="mt-2 text-4xl font-black">{pendingDecisions.length}</p></Link>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+        <article className="rounded-[28px] border border-black/10 bg-white/80 p-5">
+          <div className="flex items-center justify-between"><div><p className="command-label">Studio Brain</p><h2 className="mt-1 text-xl font-black">Décisions détectées</h2></div><Link href="/launch#decisions" className="text-[10px] font-black uppercase">Tout voir →</Link></div>
+          <div className="mt-4 space-y-3">
+            {pendingDecisions.slice(0, 3).map((decision) => <Link key={decision.id} href="/launch#decisions" className="block rounded-[18px] border border-[#8d72bd]/15 bg-[#f5effd] p-4"><p className="text-sm font-black">{decision.title}</p><p className="mt-1 text-[11px] text-black/50">{decision.summary}</p><p className="mt-2 text-[9px] font-black uppercase text-[#7259a4]">Source : {decision.source}</p></Link>)}
+            {!pendingDecisions.length && <div className="rounded-[18px] bg-[#f5effd] p-4"><p className="text-sm font-black">Aucune décision en attente</p><p className="mt-1 text-[11px] text-black/45">Les prochaines décisions détectées apparaîtront ici.</p></div>}
+          </div>
+        </article>
+
+        <article className="rounded-[28px] border border-black/10 bg-white/80 p-5">
+          <div className="flex items-center justify-between"><div><p className="command-label">Projets récents</p><h2 className="mt-1 text-xl font-black">Ce qui bouge</h2></div><Link href="/projects" className="text-[10px] font-black uppercase">Tout voir →</Link></div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {recentProjects.map((project, index) => <Link key={project.id} href={`/projects/${project.id}`} className={`rounded-[18px] border border-black/8 p-4 ${index % 2 === 0 ? "bg-[#eef7ff]" : "bg-[#fff8e5]"}`}><p className="text-sm font-black">{project.name}</p><p className="mt-1 text-[10px] uppercase text-black/40">{project.stage}</p></Link>)}
+            {!recentProjects.length && <p className="text-sm text-black/45">Aucun projet enregistré.</p>}
+          </div>
+        </article>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+        <article className="rounded-[28px] border border-black/10 bg-white/80 p-5">
+          <div className="flex items-center justify-between"><div><p className="command-label">Contenus à créer</p><h2 className="mt-1 text-xl font-black">File éditoriale</h2></div><Link href="/launch#content" className="text-[10px] font-black uppercase">Gérer →</Link></div>
+          <div className="mt-4 divide-y divide-black/8">
+            {openContent.map((item, index) => <Link key={item.id} href="/launch#content" className="grid grid-cols-[40px_1fr_auto] items-center gap-3 py-3"><span className={`h-10 rounded-[12px] ${index % 2 === 0 ? "bg-[#f5df75]" : "bg-[#dcecff]"}`} /><div className="min-w-0"><p className="truncate text-sm font-black">{item.title}</p><p className="truncate text-[11px] text-black/45">{item.format}</p></div><div className="text-right"><span className="text-[9px] font-black">{PRIORITY_LABEL[item.priority]}</span><p className="mt-1 text-[9px] text-black/35">{STATUS_LABEL[item.status]}</p></div></Link>)}
+          </div>
+        </article>
+
+        <article className="rounded-[28px] border border-black/10 bg-white/80 p-5">
+          <div className="flex items-center justify-between"><div><p className="command-label">État du site</p><h2 className="mt-1 text-xl font-black">Pages à terminer</h2></div><Link href="/launch#site" className="text-[10px] font-black uppercase">Détails →</Link></div>
+          <div className="mt-4 space-y-4">
+            {plan.sitePages.slice(0, 5).map((page) => <Link key={page.id} href="/launch#site" className="grid grid-cols-[1fr_auto] items-center gap-3"><div><div className="flex justify-between gap-3"><span className="text-sm font-black">{page.title}</span><span className="text-[10px] text-black/40">{page.status}</span></div><div className="mt-2 h-2 overflow-hidden rounded-full bg-black/7"><div className="h-full rounded-full bg-[#9dbd61]" style={{ width: `${page.progress}%` }} /></div></div><span className="text-xs font-black">{page.progress}%</span></Link>)}
+          </div>
+        </article>
       </section>
     </div>
   );
