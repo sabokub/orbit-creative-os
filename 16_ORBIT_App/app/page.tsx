@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Project, Stage, WorkflowStep } from "@/lib/types";
+import { Project, Stage } from "@/lib/types";
 import { listProjects } from "@/lib/storage";
 import {
   CONTENT_QUEUE,
@@ -46,14 +46,7 @@ function PanelTitle({ title, href }: { title: string; href?: string }) {
   );
 }
 
-function MetricCard({
-  label,
-  value,
-  note,
-  icon,
-  tint,
-  href,
-}: {
+function MetricCard({ label, value, note, icon, tint, href }: {
   label: string;
   value: string | number;
   note: string;
@@ -80,13 +73,12 @@ function MetricCard({
 function reviewScore(projects: Project[]): string {
   const reviews = projects.flatMap((project) => project.reviews);
   if (!reviews.length) return "—";
-
   const score = reviews.reduce((sum, review) => {
     if (review.status === "Approved") return sum + 10;
     if (review.status === "Needs revision") return sum + 6;
-    return sum + 2;
+    if (review.status === "Blocked") return sum + 2;
+    return sum;
   }, 0) / reviews.length;
-
   return score.toFixed(1);
 }
 
