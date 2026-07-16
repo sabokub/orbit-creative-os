@@ -254,13 +254,30 @@ export async function archiveItem(id: string): Promise<StudioItem> {
  * After an item is marked done, find active items that depended on it and,
  * for any whose dependencies are now fully satisfied, flip them out of
  * "blocked" and surface a notification + activity entry.
+ *
+ * Root cause of a prior bug: this used to gate on `dependent.status ===
+ * "blocked"`, but `dependent` came from `listItems()`, which runs every item
+ * through `deriveLiveStatuses()` before returning it. That derivation had
+ * *already* normalized the in-memory status to "backlog" the instant
+ * `stillBlocked` became false -- so the persisted/derived "blocked" status
+ * could never actually be observed here, and the notification silently
+ * never fired. "Blocked" is a derived, non-persisted concept; it must never
+ * be used as the trigger condition. The correct signal is structural: every
+ * `dependent` in this list depends on `doneItemId`, which has just
+ * transitioned to "done" for the first time in this call (guarded by the
+ * caller only invoking this on a real done-transition) -- so each one was
+ * necessarily blocked by that edge a moment ago. `!stillBlocked` alone is
+ * therefore both correct and sufficient to detect "just became unblocked",
+ * and because this function only runs once per genuine done-transition
+ * (see `updateItem`'s `statusChanged` guard), it can't double-fire on
+ * unrelated reads or updates.
  */
 async function recomputeUnblocked(doneItemId: string): Promise<void> {
   const all = await listItems();
   const dependents = all.filter((it) => it.dependsOn.includes(doneItemId) && it.status !== "done" && it.status !== "archived");
   for (const dependent of dependents) {
     const stillBlocked = isBlocked(dependent, all);
-    if (!stillBlocked && dependent.status === "blocked") {
+    if (!stillBlocked) {
       const redis = client();
       const unblocked: StudioItem = { ...dependent, status: "backlog", updatedAt: new Date().toISOString() };
       await persistItem(redis, unblocked);
