@@ -154,7 +154,7 @@ export default function StudioHealthPage() {
               blocked.map((item) => {
                 const dep = items.find((it) => item.dependsOn.includes(it.id) && it.status !== "done");
                 return (
-                  <Link key={item.id} href="/studio/timeline" className="block rounded-[18px] bg-white/75 p-4">
+                  <Link key={item.id} href="/timeline" className="block rounded-[18px] bg-white/75 p-4">
                     <p className="text-sm font-black">{item.title}</p>
                     <p className="mt-1 text-[11px] text-black/45">Bloqué par : {dep?.title || "une dépendance"}</p>
                   </Link>

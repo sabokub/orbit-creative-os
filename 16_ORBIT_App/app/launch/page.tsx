@@ -236,8 +236,8 @@ export default function LaunchPage() {
         <h2 className="mt-1 text-xl font-black">Vue chronologique complète</h2>
         <p className="mt-2 text-sm text-black/48">
           La timeline détaillée, semaine par semaine, avec la règle stricte du 31 août, est sur{" "}
-          <Link href="/studio/timeline" className="font-black underline">
-            /studio/timeline
+          <Link href="/timeline" className="font-black underline">
+            /timeline
           </Link>
           .
         </p>

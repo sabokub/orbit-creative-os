@@ -15,9 +15,9 @@ const NAV_ITEMS: Array<{ href: string; label: string; mobileLabel: string; icon:
 const PILOT_ITEMS: Array<{ href: string; label: string; icon: CommandIconName }> = [
   { href: "/studio", label: "Studio Pulse", icon: "home" },
   { href: "/dependencies", label: "Dépendances", icon: "projects" },
-  { href: "/studio/timeline", label: "Timeline", icon: "launch" },
+  { href: "/timeline", label: "Timeline", icon: "launch" },
   { href: "/search", label: "Recherche globale", icon: "sparkles" },
-  { href: "/studio/integrations", label: "Intégrations", icon: "library" },
+  { href: "/integrations", label: "Intégrations", icon: "library" },
   { href: "/studio/archive", label: "Archive", icon: "check" },
 ];
 

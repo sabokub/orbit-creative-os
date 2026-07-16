@@ -6,13 +6,15 @@ import { useStudioBrain } from "@/contexts/StudioBrainContext";
 
 const actions = [
   { label: "Créer un projet", href: "/projects/new", keywords: "nouveau projet client" },
-  { label: "Gérer les tâches et contenus", href: "/studio/content", keywords: "tâches contenu calendrier reel instagram aujourd'hui priorités" },
+  { label: "Gérer les tâches", href: "/launch#tasks", keywords: "tâches aujourd'hui priorités" },
+  { label: "Gérer les contenus", href: "/launch#content", keywords: "contenu calendrier reel instagram" },
+  { label: "Banque de contenu", href: "/studio/content", keywords: "contenu banque catalogue" },
   { label: "Voir les dépendances", href: "/dependencies", keywords: "graphe blocages liens priorité" },
-  { label: "Ouvrir la timeline", href: "/studio/timeline", keywords: "roadmap dates historique" },
+  { label: "Ouvrir la timeline", href: "/timeline", keywords: "roadmap dates historique" },
   { label: "Ouvrir l'archive", href: "/studio/archive", keywords: "historique terminé archivé" },
   { label: "Ouvrir Studio Pulse", href: "/studio", keywords: "santé progression risques" },
   { label: "Recherche universelle", href: "/search", keywords: "chercher trouver" },
-  { label: "Centre des intégrations", href: "/studio/integrations", keywords: "github vercel drive calendar redis synchronisation" },
+  { label: "Centre des intégrations", href: "/integrations", keywords: "github vercel drive calendar redis synchronisation" },
 ];
 
 export default function CommandPalette() {
