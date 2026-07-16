@@ -2,6 +2,7 @@
 
 import { ItemStatus, PriorityResult, StudioItem } from "@/lib/types";
 import { formatShortDate } from "@/lib/format";
+import { tierStyleForPriority } from "@/lib/importanceColor";
 import PriorityBadge from "./PriorityBadge";
 import CommandIcon from "./CommandIcon";
 
@@ -31,8 +32,9 @@ export default function StudioItemCard({
   onArchive?: (id: string) => void;
   readOnly?: boolean;
 }) {
+  const tier = tierStyleForPriority(priority);
   return (
-    <article className="rounded-[20px] border border-black/8 bg-[#fffdf8] p-4">
+    <article className={`rounded-[20px] border border-black/8 ${tier.cardBorder} ${tier.cardTint} bg-[#fffdf8] p-4`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
