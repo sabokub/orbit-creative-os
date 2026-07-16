@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { CreateProjectInput, createProject } from "@/lib/storage";
 import { WorkflowType } from "@/lib/types";
 import { DEFAULT_BRAND_PROFILE, WORKFLOW_TYPE_LABELS } from "@/lib/brandProfile";
+import { loadHomepageExampleBrief } from "@/lib/homepageExample";
 import CommandIcon, { CommandIconName } from "./CommandIcon";
 
 const WORKFLOW_OPTIONS: WorkflowType[] = ["website", "content", "images", "review", "brand-kit"];
@@ -16,21 +17,6 @@ const WORKFLOW_META: Record<WorkflowType, { icon: CommandIconName; accent: strin
   images: { icon: "image", accent: "bg-[#cfc5f4]", description: "Briefs visuels et prompts de production" },
   review: { icon: "critic", accent: "bg-[#c3d995]", description: "Contrôle qualité et corrections prioritaires" },
   "brand-kit": { icon: "brain", accent: "bg-[#f5df75]", description: "Fondations de marque et ADN visuel" },
-};
-
-const SAMPLE: CreateProjectInput = {
-  name: "Homepage 24March Studio",
-  workflowType: "website",
-  projectGoal: "Créer la structure et les textes de la homepage du site.",
-  specificContext:
-    "Le site doit présenter le studio, sa méthode, ses offres, son univers visuel, et donner envie de réserver un audit ou une prestation.",
-  deliverableType: "Homepage complète avec hero, sections, CTA, FAQ et prompts image.",
-  references: "Luxe éditorial chic, collage scrapbook premium, intérieurs habités et désirables.",
-  constraints: "Pas de rendu SaaS, pas de beige archi générique, pas de packs ni d'ambiances.",
-  channels: "Site internet",
-  format: "Markdown",
-  successCriteria:
-    "Le visiteur pense d'abord : ‘Je veux vivre là’, puis : ‘J'ai besoin de ce studio’.",
 };
 
 function emptyInput(): CreateProjectInput {
@@ -76,9 +62,27 @@ export default function IntakeForm() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [brandOpen, setBrandOpen] = useState(false);
+  const [loadingExample, setLoadingExample] = useState(false);
+  const [exampleError, setExampleError] = useState("");
 
   function update<K extends keyof CreateProjectInput>(key: K, value: CreateProjectInput[K]) {
     setInput((previous) => ({ ...previous, [key]: value }));
+  }
+
+  async function loadExample() {
+    // Guard against double-submit: a second click while the first load is
+    // still in flight is a no-op rather than a duplicate/overlapping load.
+    if (loadingExample) return;
+    setExampleError("");
+    setLoadingExample(true);
+    try {
+      const example = await loadHomepageExampleBrief();
+      setInput(example);
+    } catch (err) {
+      setExampleError((err as Error).message || "Impossible de charger l'exemple. Réessaie.");
+    } finally {
+      setLoadingExample(false);
+    }
   }
 
   async function submit() {
@@ -138,9 +142,24 @@ export default function IntakeForm() {
           <span className="command-label">Démarrage rapide</span>
           <h3 className="display-serif mt-3 text-3xl">Évite la page blanche.</h3>
           <p className="mt-2 text-sm font-medium leading-relaxed text-black/55">Charge l’exemple réel de la homepage 24March, puis modifie uniquement ce qui a changé.</p>
-          <button type="button" onClick={() => setInput(SAMPLE)} className="command-button command-button-soft mt-5 w-full bg-white/70">
-            <CommandIcon name="sparkles" className="h-4 w-4" /> Charger l’exemple de homepage
+          <button
+            type="button"
+            onClick={() => void loadExample()}
+            disabled={loadingExample}
+            aria-busy={loadingExample}
+            className="command-button command-button-soft mt-5 w-full bg-white/70 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loadingExample ? (
+              <><CommandIcon name="clock" className="h-4 w-4" /> Chargement…</>
+            ) : (
+              <><CommandIcon name="sparkles" className="h-4 w-4" /> Charger l’exemple de homepage</>
+            )}
           </button>
+          {exampleError && (
+            <p role="alert" className="mt-3 rounded-[14px] border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-800">
+              {exampleError}
+            </p>
+          )}
         </section>
       </aside>
 
