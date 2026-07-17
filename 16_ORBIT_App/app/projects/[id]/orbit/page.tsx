@@ -15,6 +15,8 @@ import {
   runReview,
   setMemoryStatus,
 } from "@/lib/agentsClient";
+import { ProjectionConflict, ProjectionConflictResolution, ProjectionMutation, ProjectionPreview } from "@/lib/projection/contracts";
+import { applyProjection, listProjectionConflicts, previewProjection, resolveProjectionConflict } from "@/lib/projectionClient";
 
 const STATUS_STYLE: Record<string, string> = {
   not_run: "bg-black/[0.06] text-black/50",
@@ -38,6 +40,59 @@ function Badge({ status }: { status: string }) {
   );
 }
 
+function mutationLabel(m: ProjectionMutation): string {
+  const p = m.payload as { title?: string; question?: string };
+  return p.title ?? p.question ?? m.targetType;
+}
+
+function ProjectionPreviewPanel({
+  preview,
+  busy,
+  onApplyAll,
+  onApplySafe,
+}: {
+  preview: ProjectionPreview;
+  busy: string;
+  onApplyAll: () => void;
+  onApplySafe: () => void;
+}) {
+  const conflictCount = preview.mutations.filter((m) => m.status === "conflict").length;
+  const safeCount = preview.mutations.filter((m) => !m.requiresConfirmation && m.status !== "conflict").length;
+  const applyKey = `apply-${preview.sourceMemoryEntryId}`;
+  return (
+    <div className="mt-3 rounded-[16px] border border-black/10 bg-black/[0.02] p-3">
+      <p className="text-[11px] font-black text-black/60">
+        {preview.mutations.length} changement(s) proposé(s) → Studio Brain
+        {conflictCount > 0 && <span className="ml-2 text-red-700">{conflictCount} conflit(s)</span>}
+      </p>
+      <ul className="mt-2 space-y-1.5">
+        {preview.mutations.map((m) => (
+          <li key={m.id} className="flex items-center gap-2 text-xs">
+            <span className="rounded bg-black/[0.06] px-1.5 py-0.5 text-[9px] font-bold uppercase">{m.targetType}</span>
+            <span className="rounded bg-black/[0.06] px-1.5 py-0.5 text-[9px] font-bold uppercase">{m.operation}</span>
+            <span className="flex-1 truncate font-medium text-black/70">{mutationLabel(m)}</span>
+            {m.status === "conflict" ? (
+              <span className="text-[9px] font-bold text-red-700">conflit</span>
+            ) : m.requiresConfirmation ? (
+              <span className="text-[9px] font-bold text-amber-700">confirmation requise</span>
+            ) : (
+              <span className="text-[9px] font-bold text-green-700">sûr</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button onClick={onApplyAll} disabled={Boolean(busy)} className="command-button px-3 py-1.5 text-xs disabled:opacity-40">
+          {busy === applyKey ? "…" : "Appliquer à Studio Brain"}
+        </button>
+        <button onClick={onApplySafe} disabled={Boolean(busy) || safeCount === 0} className="command-button command-button-soft px-3 py-1.5 text-xs disabled:opacity-40">
+          Appliquer les changements sûrs ({safeCount})
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function OrbitConsolePage() {
   const params = useParams<{ id: string }>();
   const projectId = params.id;
@@ -45,16 +100,19 @@ export default function OrbitConsolePage() {
   const [agents, setAgents] = useState<AgentRosterItem[]>([]);
   const [memory, setMemory] = useState<MemoryEntry[]>([]);
   const [runs, setRuns] = useState<OrchestrationRun[]>([]);
+  const [conflicts, setConflicts] = useState<ProjectionConflict[]>([]);
+  const [previews, setPreviews] = useState<Record<string, ProjectionPreview>>({});
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string>("");
   const [error, setError] = useState("");
   const [intent, setIntent] = useState("");
 
   const refresh = useCallback(async () => {
-    const [a, m, r] = await Promise.all([listAgents(projectId), listMemory(projectId), listRuns(projectId)]);
+    const [a, m, r, c] = await Promise.all([listAgents(projectId), listMemory(projectId), listRuns(projectId), listProjectionConflicts(projectId)]);
     setAgents(a);
     setMemory(m);
     setRuns(r);
+    setConflicts(c);
   }, [projectId]);
 
   useEffect(() => {
@@ -78,6 +136,34 @@ export default function OrbitConsolePage() {
   }
 
   const activeMemory = useMemo(() => memory.filter((e) => e.status !== "superseded"), [memory]);
+
+  async function loadPreview(memoryId: string) {
+    await guard(`preview-${memoryId}`, async () => {
+      const preview = await previewProjection(projectId, memoryId);
+      setPreviews((prev) => ({ ...prev, [memoryId]: preview }));
+    });
+  }
+
+  function dismissPreview(memoryId: string) {
+    setPreviews((prev) => {
+      const next = { ...prev };
+      delete next[memoryId];
+      return next;
+    });
+  }
+
+  async function apply(memoryId: string, mode: "confirm" | "auto-safe") {
+    const preview = previews[memoryId];
+    const selectedMutationIds = mode === "confirm" ? preview?.mutations.filter((m) => m.status !== "conflict").map((m) => m.id) : undefined;
+    await guard(`apply-${memoryId}`, async () => {
+      await applyProjection(projectId, memoryId, mode, selectedMutationIds);
+      dismissPreview(memoryId);
+    });
+  }
+
+  async function resolveConflict(conflictId: string, resolution: ProjectionConflictResolution) {
+    await guard(`conflict-${conflictId}`, () => resolveProjectionConflict(projectId, conflictId, resolution));
+  }
 
   function exportMemory() {
     const lines = ["# Orbit — mémoire projet", ""];
@@ -190,7 +276,25 @@ export default function OrbitConsolePage() {
                     </button>
                   </>
                 )}
+                {agent.memoryId && agent.status === "approved" && (
+                  <button
+                    onClick={() => (previews[agent.memoryId!] ? dismissPreview(agent.memoryId!) : loadPreview(agent.memoryId!))}
+                    disabled={Boolean(busy)}
+                    className="command-button command-button-soft px-3 py-1.5 text-xs disabled:opacity-40"
+                  >
+                    {busy === `preview-${agent.memoryId}` ? "…" : previews[agent.memoryId!] ? "Ignorer" : "Voir les changements proposés"}
+                  </button>
+                )}
               </div>
+
+              {agent.memoryId && previews[agent.memoryId] && (
+                <ProjectionPreviewPanel
+                  preview={previews[agent.memoryId]}
+                  busy={busy}
+                  onApplyAll={() => apply(agent.memoryId!, "confirm")}
+                  onApplySafe={() => apply(agent.memoryId!, "auto-safe")}
+                />
+              )}
             </div>
           ))}
         </div>
@@ -238,6 +342,45 @@ export default function OrbitConsolePage() {
           ))}
         </div>
       </section>
+
+      {conflicts.filter((c) => c.status === "open").length > 0 && (
+        <section className="command-card p-5 sm:p-6">
+          <span className="command-label">Résoudre les conflits</span>
+          <h2 className="display-serif mt-2 text-3xl">Contradictions à trancher</h2>
+          <div className="mt-4 space-y-3">
+            {conflicts
+              .filter((c) => c.status === "open")
+              .map((c) => (
+                <div key={c.id} className="rounded-[16px] border border-red-200 bg-red-50 p-4">
+                  <p className="text-xs font-black text-red-900">
+                    {mutationLabel(c.mutation)} · <span className="uppercase">{c.reason}</span>
+                  </p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <div className="rounded-[10px] bg-white/70 p-2">
+                      <p className="text-[9px] font-black uppercase text-black/40">Valeur actuelle (Studio Brain)</p>
+                      <p className="mt-1 text-xs font-medium text-black/70">{c.oldValue}</p>
+                    </div>
+                    <div className="rounded-[10px] bg-white/70 p-2">
+                      <p className="text-[9px] font-black uppercase text-black/40">Nouvelle valeur ({c.mutation.sourceAgent})</p>
+                      <p className="mt-1 text-xs font-medium text-black/70">{c.newValue}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button onClick={() => resolveConflict(c.id, "keep")} disabled={Boolean(busy)} className="command-button command-button-soft px-3 py-1.5 text-xs disabled:opacity-40">
+                      Conserver l&apos;ancienne
+                    </button>
+                    <button onClick={() => resolveConflict(c.id, "replace")} disabled={Boolean(busy)} className="command-button px-3 py-1.5 text-xs disabled:opacity-40">
+                      Remplacer
+                    </button>
+                    <button onClick={() => resolveConflict(c.id, "merge")} disabled={Boolean(busy)} className="command-button command-button-soft px-3 py-1.5 text-xs disabled:opacity-40">
+                      Fusionner
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
