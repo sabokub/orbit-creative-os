@@ -43,3 +43,103 @@ export interface VisualCompilation { intent: CreativeIntent; spec: CanonicalVisu
 export interface GenerationRecord { id: string; promptId: string; projectId: string; generator: VisualGenerator; mode: "external" | "provider"; status: "awaiting-external" | "running" | "complete" | "failed"; assetUrl?: string; createdAt: string }
 export interface VisualReview { id: string; generationId: string; whatWorked: string[]; whatFailed: string[]; visualDrift: string[]; correctionInstructions: string[]; decision: "approved" | "revise" | "rejected"; createdAt: string }
 export interface PromptLearning { id: string; projectId: string; generator: VisualGenerator; scope: "asset" | "generator" | "project"; observation: string; approved: boolean; sourceReviewId: string }
+
+export const PromptIssueSchema = z.object({
+  code: z.string(),
+  severity: z.enum(["error", "warning", "suggestion"]),
+  message: z.string(),
+});
+
+export const PromptPlanSchema = z.object({
+  preserve: z.array(z.string()),
+  reinforce: z.array(z.string()),
+  simplify: z.array(z.string()),
+  ambiguities: z.array(z.string()),
+  adaptations: z.array(z.string()),
+  variationStrategy: z.enum([
+    "conservative",
+    "balanced",
+    "exploratory",
+    "composition-only",
+    "lighting-only",
+    "camera-only",
+    "motion-only",
+  ]),
+});
+
+export const CompiledVisualPromptSchema = z.object({
+  id: z.string().min(1),
+  version: z.number().int().min(1),
+  parentId: z.string().optional(),
+  projectId: z.string().min(1),
+  generator: VisualGeneratorSchema,
+  profileVersion: z.string(),
+  status: z.enum(["draft", "validated", "ready", "generated", "reviewed", "approved", "rejected", "failed"]),
+  body: z.string().min(1),
+  parameters: z.record(z.union([z.string(), z.number(), z.boolean()])),
+  issues: z.array(PromptIssueSchema),
+  score: z.record(z.number()),
+  plan: PromptPlanSchema,
+  explanation: z.array(z.string()),
+  createdAt: z.string(),
+});
+
+export const VisualCompilationSchema = z.object({
+  intent: CreativeIntentSchema,
+  spec: CanonicalVisualSpecSchema,
+  prompts: z.array(CompiledVisualPromptSchema),
+  comparison: z.array(
+    z.object({
+      generator: VisualGeneratorSchema,
+      fit: z.number(),
+      limitations: z.array(z.string()),
+      adaptations: z.array(z.string()),
+    })
+  ),
+});
+
+export const GenerationRecordSchema = z.object({
+  id: z.string().min(1),
+  promptId: z.string().min(1),
+  projectId: z.string().min(1),
+  generator: VisualGeneratorSchema,
+  mode: z.enum(["external", "provider"]),
+  status: z.enum(["awaiting-external", "running", "complete", "failed"]),
+  assetUrl: z.string().optional(),
+  createdAt: z.string(),
+});
+
+export const VisualReviewSchema = z.object({
+  id: z.string().min(1),
+  generationId: z.string().min(1),
+  whatWorked: z.array(z.string()),
+  whatFailed: z.array(z.string()),
+  visualDrift: z.array(z.string()),
+  correctionInstructions: z.array(z.string()),
+  decision: z.enum(["approved", "revise", "rejected"]),
+  createdAt: z.string(),
+});
+
+export const PromptLearningSchema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  generator: VisualGeneratorSchema,
+  scope: z.enum(["asset", "generator", "project"]),
+  observation: z.string().min(1),
+  approved: z.boolean(),
+  sourceReviewId: z.string().min(1),
+});
+
+export const SavePromptRequestSchema = z.object({ prompt: CompiledVisualPromptSchema });
+export const CreateGenerationRequestSchema = z.object({ promptId: z.string().min(1) });
+export const AttachAssetRequestSchema = z.object({ assetUrl: z.string().min(1) });
+export const CreateReviewRequestSchema = z.object({
+  generationId: z.string().min(1),
+  whatWorked: z.array(z.string()).default([]),
+  whatFailed: z.array(z.string()).default([]),
+  visualDrift: z.array(z.string()).default([]),
+  correctionInstructions: z.array(z.string()).default([]),
+  decision: z.enum(["approved", "revise", "rejected"]),
+  learningObservation: z.string().optional(),
+  learningScope: z.enum(["asset", "generator", "project"]).default("asset"),
+});
