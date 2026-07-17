@@ -9,7 +9,8 @@ import { relativeTime } from "@/lib/format";
 import { useStudioBrain } from "@/contexts/StudioBrainContext";
 import { importanceTier, tierStyleForPriority } from "@/lib/importanceColor";
 import CommandIcon from "@/components/CommandIcon";
-import WorkModeBanner from "@/components/WorkModeBanner";
+import ModePilotCard from "@/components/ModePilotCard";
+import { useWorkMode } from "@/contexts/WorkModeContext";
 import CriticalTaskCard from "@/components/CriticalTaskCard";
 import ImportanceMark from "@/components/ImportanceMark";
 
@@ -23,6 +24,7 @@ const PILOT_VIEWS = [
 ];
 
 export default function Dashboard() {
+  const { focusMode } = useWorkMode();
   const { items, decisions, activity, loaded, error, refresh, updateItem, resolveDecision } = useStudioBrain();
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectError, setProjectError] = useState("");
@@ -96,7 +98,9 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto max-w-[1320px] space-y-4 pb-36 lg:pb-8">
-      <WorkModeBanner />
+      <ModePilotCard />
+      {!focusMode && (
+      <>
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-black">👋 Bonjour Sab</h1>
@@ -371,6 +375,8 @@ export default function Dashboard() {
           </div>
         </article>
       </section>
+      </>
+      )}
     </div>
   );
 }
