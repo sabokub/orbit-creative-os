@@ -91,7 +91,7 @@ export async function runAgent(
     };
   }
 
-  const ctx = resolveProjectContext(input.projectId, def, entries);
+  const ctx = resolveProjectContext(input.projectId, def, entries, { boostTypes: input.boostTypes });
   const prompt = buildPrompt(def, runtime, ctx.rendered, input.userIntent);
 
   let lastError = "";

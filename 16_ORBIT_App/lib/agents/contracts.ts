@@ -199,6 +199,8 @@ export const AgentExecutionInputSchema = z.object({
   role: AgentRoleSchema,
   runId: z.string().optional(),
   userIntent: z.string().max(4000).optional(),
+  /** Memory types to prioritise in context resolution (e.g. from the active work mode). */
+  boostTypes: z.array(MemoryTypeSchema).optional(),
 });
 export type AgentExecutionInput = z.infer<typeof AgentExecutionInputSchema>;
 

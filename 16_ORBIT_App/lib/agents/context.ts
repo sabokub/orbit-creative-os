@@ -2,6 +2,7 @@ import {
   AnyAgentDefinition,
   ContextTraceEntry,
   MemoryEntry,
+  MemoryType,
   ProjectContext,
 } from "./contracts";
 
@@ -26,8 +27,9 @@ function estimateTokens(text: string): number {
   return Math.ceil(text.length / CHARS_PER_TOKEN);
 }
 
-function priorityOf(entry: MemoryEntry, dependencyRoles: Set<string>): number {
+function priorityOf(entry: MemoryEntry, dependencyRoles: Set<string>, boostTypes: Set<MemoryType>): number {
   let score = 0;
+  if (boostTypes.has(entry.type)) score += 40;
   if (entry.status === "approved") score += 100;
   if (entry.type === "constraint") score += 60;
   if (entry.type === "brief" || entry.type === "intake") score += 55;
@@ -55,6 +57,8 @@ function reasonFor(entry: MemoryEntry, dependencyRoles: Set<string>): string {
 
 export interface ResolveOptions {
   tokenCap?: number;
+  /** Memory types to prioritise (from the active work mode). */
+  boostTypes?: MemoryType[];
 }
 
 export function resolveProjectContext(
@@ -65,12 +69,13 @@ export function resolveProjectContext(
 ): ProjectContext {
   const tokenCap = options.tokenCap ?? DEFAULT_TOKEN_CAP;
   const dependencyRoles = new Set(definition.dependencies.map((d) => d.role));
+  const boostTypes = new Set(options.boostTypes ?? []);
 
   // Active truth only: drop superseded and rejected entries entirely.
   const active = entries.filter((e) => e.status !== "superseded" && e.status !== "rejected");
 
   const ranked = active
-    .map((entry) => ({ entry, priority: priorityOf(entry, dependencyRoles) }))
+    .map((entry) => ({ entry, priority: priorityOf(entry, dependencyRoles, boostTypes) }))
     .sort((a, b) => {
       if (b.priority !== a.priority) return b.priority - a.priority;
       return b.entry.createdAt.localeCompare(a.entry.createdAt);

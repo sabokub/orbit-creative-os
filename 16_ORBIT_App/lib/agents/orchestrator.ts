@@ -1,5 +1,6 @@
 import {
   AgentRole,
+  MemoryType,
   OrchestrationMode,
   OrchestrationRun,
   OrchestrationStep,
@@ -27,6 +28,8 @@ export interface OrchestrateInput {
   /** Explicit roles for mode "single" (first element) or "sequence". */
   roles?: AgentRole[];
   userIntent?: string;
+  /** Memory types to prioritise for every step (from the active work mode). */
+  boostTypes?: MemoryType[];
 }
 
 export interface OrchestrateDeps {
@@ -74,7 +77,7 @@ export async function orchestrate(
     await deps.runStore.save(run);
 
     const result = await runAgent(
-      { projectId: input.projectId, role: run.steps[i].role, runId: run.id, userIntent: input.userIntent },
+      { projectId: input.projectId, role: run.steps[i].role, runId: run.id, userIntent: input.userIntent, boostTypes: input.boostTypes },
       deps.runtime
     );
 
