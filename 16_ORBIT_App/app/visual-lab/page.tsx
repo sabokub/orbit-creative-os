@@ -1,52 +1,26 @@
+Exit code: 0
+Wall time: 1.5 seconds
+Output:
 "use client";
-
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { Project } from "@/lib/types";
-import { listProjects } from "@/lib/storage";
+import { useMemo, useState } from "react";
 import CommandIcon from "@/components/CommandIcon";
+import { VISUAL_FIXTURES } from "@/lib/promptIntelligence/visual/fixtures";
+import { CreativeIntent, VisualCompilation, VisualGenerator } from "@/lib/promptIntelligence/visual/contracts";
 
-export default function VisualLabPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => { listProjects().then(setProjects).finally(() => setLoading(false)); }, []);
-
-  const visualItems = useMemo(() => projects.flatMap((project) => Object.entries(project.outputs)
-    .filter(([step]) => step === "images" || step === "creative")
-    .map(([step, output]) => ({ project, step, output }))), [projects]);
-
-  return (
-    <div className="space-y-4 pb-8">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div><span className="command-label"><CommandIcon name="sparkles" className="h-3.5 w-3.5" /> Production visuelle</span><h1 className="mt-2 text-3xl font-black tracking-[-0.04em] sm:text-4xl">Laboratoire visuel</h1><p className="mt-1 text-sm font-medium text-black/48">Prompts, directions créatives et générations liées à tes projets.</p></div>
-        <Link href="/projects/new" className="command-button self-start"><CommandIcon name="plus" className="h-4 w-4" /> Nouveau brief visuel</Link>
-      </header>
-
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {[
-          ["Directions", visualItems.filter((item) => item.step === "creative").length, "bg-[#f9e9f0]"],
-          ["Prompts image", visualItems.filter((item) => item.step === "images").length, "bg-[#efeafd]"],
-          ["Projets sources", new Set(visualItems.map((item) => item.project.id)).size, "bg-[#eef7ff]"],
-          ["À relire", projects.reduce((sum, p) => sum + p.reviews.filter((r) => r.status !== "Approved").length, 0), "bg-[#f2f7e8]"],
-        ].map(([label, value, color]) => <article key={String(label)} className={`rounded-[20px] border border-black/10 p-4 ${color}`}><p className="text-[9px] font-black uppercase tracking-[0.1em] text-black/48">{label}</p><p className="mt-2 text-3xl font-black tracking-[-0.05em]">{value}</p></article>)}
-      </section>
-
-      <section className="command-card p-4 sm:p-5">
-        <div className="flex items-center justify-between gap-3"><div><p className="command-label">Mémoire visuelle</p><h2 className="mt-1 text-xl font-black">Derniers éléments</h2></div><span className="command-pill bg-[#cfc5f4]/55">{visualItems.length} éléments</span></div>
-        <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {loading && [0,1,2].map((item) => <div key={item} className="h-44 animate-pulse rounded-[22px] bg-black/5" />)}
-          {!loading && visualItems.map(({ project, step, output }) => (
-            <Link key={`${project.id}-${step}`} href={`/projects/${project.id}`} className="min-w-0 rounded-[22px] border border-black/10 bg-white/70 p-4 transition hover:-translate-y-0.5 hover:bg-white">
-              <div className="flex items-center justify-between gap-3"><span className={`flex h-9 w-9 items-center justify-center rounded-[13px] ${step === 'images' ? 'bg-[#cfc5f4]' : 'bg-[#f2b8cf]'}`}><CommandIcon name={step === 'images' ? 'image' : 'sparkles'} className="h-4 w-4" /></span><span className="command-pill">{step === 'images' ? 'Prompt image' : 'Direction créative'}</span></div>
-              <h3 className="mt-4 truncate text-base font-black">{project.name}</h3>
-              <p className="mt-2 line-clamp-4 text-xs font-medium leading-relaxed text-black/48">{output?.content || "Contenu indisponible"}</p>
-              <p className="mt-4 text-[10px] font-black uppercase tracking-[0.1em] text-black/38">Ouvrir le projet →</p>
-            </Link>
-          ))}
-        </div>
-        {!loading && visualItems.length === 0 && <div className="mt-4 rounded-[20px] border border-dashed border-black/15 p-8 text-center"><CommandIcon name="image" className="mx-auto h-6 w-6" /><p className="mt-3 text-lg font-black">Le lab est encore vide.</p><p className="mt-1 text-sm text-black/45">Lance un moteur Direction créative ou Images depuis un projet.</p></div>}
-      </section>
-    </div>
-  );
+const LABELS:Record<VisualGenerator,string>={"gpt-image":"GPT Image","nano-banana":"Nano Banana",midjourney:"Midjourney",sora:"Sora"};
+export default function VisualLabPage(){
+ const [intent,setIntent]=useState<CreativeIntent>(VISUAL_FIXTURES[0]); const [result,setResult]=useState<VisualCompilation|null>(null); const [loading,setLoading]=useState(false); const [error,setError]=useState("");
+ const errors=useMemo(()=>result?.prompts.flatMap(p=>p.issues.filter(i=>i.severity==="error"))??[],[result]);
+ async function compile(){setLoading(true);setError("");try{const response=await fetch("/api/prompt-intelligence/visual/compile",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(intent)});const data=await response.json();if(!response.ok)throw new Error(typeof data.error==="string"?data.error:"Intention incomplÃ¨te");setResult(data);}catch(e){setError(e instanceof Error?e.message:"Compilation impossible");}finally{setLoading(false);}}
+ function toggle(g:VisualGenerator){setIntent(v=>({...v,generators:v.generators.includes(g)?v.generators.filter(x=>x!==g):[...v.generators,g]}));}
+ return <div className="space-y-5 pb-12">
+  <header><span className="command-label"><CommandIcon name="sparkles" className="h-3.5 w-3.5"/> Prompt Intelligence</span><h1 className="mt-2 text-3xl font-black tracking-[-0.04em] sm:text-4xl">Visual Lab multi-gÃ©nÃ©rateurs</h1><p className="mt-1 max-w-3xl text-sm font-medium text-black/48">Une intention commune, une spÃ©cification canonique et quatre adaptations traÃ§ables.</p></header>
+  <section className="command-card p-4 sm:p-6"><div className="grid gap-4 lg:grid-cols-[1fr_.8fr]">
+   <div><label className="command-label">Intention crÃ©ative</label><textarea aria-label="Intention crÃ©ative" className="mt-2 min-h-28 w-full rounded-[18px] border border-black/10 bg-white/70 p-4 text-sm font-medium outline-none focus:border-black/30" value={intent.rawRequest} onChange={e=>setIntent(v=>({...v,rawRequest:e.target.value,objective:e.target.value}))}/><div className="mt-3 grid gap-3 sm:grid-cols-2"><input aria-label="Sujet" className="rounded-xl border border-black/10 bg-white p-3 text-sm" value={intent.subject} onChange={e=>setIntent(v=>({...v,subject:e.target.value}))}/><input aria-label="Environnement" className="rounded-xl border border-black/10 bg-white p-3 text-sm" value={intent.environment} onChange={e=>setIntent(v=>({...v,environment:e.target.value}))}/></div></div>
+   <div><p className="command-label">Profil de dÃ©part</p><div className="mt-2 flex flex-wrap gap-2">{VISUAL_FIXTURES.map(f=><button key={f.id} onClick={()=>{setIntent(f);setResult(null);}} className="command-pill hover:bg-black hover:text-white">{f.objective}</button>)}</div><p className="mt-5 command-label">GÃ©nÃ©rateurs</p><div className="mt-2 grid grid-cols-2 gap-2">{(Object.keys(LABELS) as VisualGenerator[]).map(g=><button key={g} onClick={()=>toggle(g)} className={`rounded-xl border p-3 text-left text-xs font-black ${intent.generators.includes(g)?"border-black bg-black text-white":"border-black/10 bg-white"}`}>{LABELS[g]}</button>)}</div></div>
+  </div><div className="mt-4 flex items-center gap-3"><button disabled={loading||intent.generators.length===0} onClick={compile} className="command-button">{loading?"Compilationâ€¦":"Compiler et comparer"}</button><span className="text-xs text-black/45">{intent.assetType} Â· {intent.aspectRatio}</span></div>{error&&<p className="mt-3 text-sm font-bold text-red-700">{error}</p>}</section>
+  {result&&<><section className="grid gap-4 lg:grid-cols-[.8fr_1.2fr]"><article className="command-card p-5"><p className="command-label">SpÃ©cification canonique</p><h2 className="mt-2 text-xl font-black">{result.spec.direction.concept}</h2><dl className="mt-4 space-y-3 text-sm"><div><dt className="font-black">Sujet</dt><dd className="text-black/55">{result.spec.subject.description}</dd></div><div><dt className="font-black">Composition</dt><dd className="text-black/55">{result.spec.composition.hierarchy}</dd></div><div><dt className="font-black">LumiÃ¨re</dt><dd className="text-black/55">{result.spec.lighting.quality}</dd></div><div><dt className="font-black">Invariants</dt><dd className="text-black/55">{result.spec.invariants.join(", ")||"Aucun"}</dd></div></dl></article><article className="command-card p-5"><div className="flex justify-between"><div><p className="command-label">Validation</p><h2 className="mt-2 text-xl font-black">QualitÃ© de spÃ©cification</h2></div><span className={`command-pill ${errors.length?"bg-red-100":"bg-[#d9f2df]"}`}>{errors.length?`${errors.length} blocage(s)`:"PrÃªte"}</span></div><div className="mt-4 space-y-2">{result.prompts[0]?.issues.map(i=><p key={i.code} className="rounded-xl bg-black/[.04] p-3 text-xs font-semibold"><b>{i.severity}</b> â€” {i.message}</p>)}{!result.prompts[0]?.issues.length&&<p className="text-sm text-black/50">Aucune contradiction dÃ©tectÃ©e.</p>}</div></article></section>
+  <section><div className="mb-3 flex items-end justify-between"><div><p className="command-label">Comparaison</p><h2 className="mt-1 text-2xl font-black">Prompts compilÃ©s</h2></div><span className="text-xs font-bold text-black/40">VersionnÃ©s Â· export manuel</span></div><div className="grid gap-4 xl:grid-cols-2">{result.prompts.map(p=><article key={p.id} className="command-card min-w-0 p-5"><div className="flex items-center justify-between"><h3 className="text-lg font-black">{LABELS[p.generator]}</h3><span className="command-pill bg-[#cfc5f4]/55">Fit {p.score.generatorFit}%</span></div><pre className="mt-4 max-h-72 overflow-auto whitespace-pre-wrap rounded-[16px] bg-black/[.035] p-4 text-xs leading-relaxed">{p.body}</pre><div className="mt-3 flex flex-wrap gap-2">{Object.entries(p.parameters).map(([k,v])=><span key={k} className="command-pill">{k}: {String(v)}</span>)}</div><div className="mt-4 flex gap-2"><button onClick={()=>navigator.clipboard.writeText(p.body)} className="command-button">Copier</button><button onClick={()=>{const records=JSON.parse(localStorage.getItem("orbit-visual-prompts")||"[]");localStorage.setItem("orbit-visual-prompts",JSON.stringify([...records,p]));}} className="command-button bg-white text-black">Versionner</button></div><p className="mt-3 text-[11px] font-semibold text-black/45">{p.explanation.join(" Â· ")}</p></article>)}</div></section></>}
+ </div>;
 }
+

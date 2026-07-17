@@ -1,0 +1,26 @@
+Exit code: 0
+Wall time: 1.5 seconds
+Output:
+import { CanonicalVisualSpec, CompiledVisualPrompt, CreativeIntent, GeneratorCapabilities, PromptIssue, PromptPlan, VisualGenerator } from "./contracts";
+
+const RATIOS = ["1:1", "4:5", "3:2", "16:9", "9:16"];
+export const CAPABILITY_MATRIX: Record<VisualGenerator, GeneratorCapabilities> = {
+  "gpt-image": { image:true, edit:true, video:false, multiReference:true, identityPreservation:true, textRendering:true, seed:false, negativePrompt:false, cameraMotion:false, maxReferences:10, supportedRatios:RATIOS },
+  "nano-banana": { image:true, edit:true, video:false, multiReference:true, identityPreservation:true, textRendering:true, seed:false, negativePrompt:false, cameraMotion:false, maxReferences:8, supportedRatios:RATIOS },
+  midjourney: { image:true, edit:false, video:false, multiReference:true, identityPreservation:false, textRendering:false, seed:true, negativePrompt:true, cameraMotion:false, maxReferences:5, supportedRatios:RATIOS },
+  sora: { image:false, edit:false, video:true, multiReference:true, identityPreservation:true, textRendering:false, seed:false, negativePrompt:false, cameraMotion:true, maxReferences:4, supportedRatios:RATIOS, maxDuration:20 },
+};
+
+export interface GeneratorAdapter { id: VisualGenerator; compile(intent: CreativeIntent, spec: CanonicalVisualSpec, plan: PromptPlan, issues: PromptIssue[], version?: number): CompiledVisualPrompt }
+const sections = (s: CanonicalVisualSpec) => [`Subject: ${s.subject.description}; ${s.subject.action}.`,`Environment: ${s.environment.description}.`,`Art direction: ${s.direction.concept}; ${s.direction.style}; ${s.direction.realism}.`,`Composition: ${s.composition.hierarchy}; ${s.composition.negativeSpace}.`,`Camera: ${s.camera.shot}, ${s.camera.angle}, ${s.camera.lens}.`,`Lighting: ${s.lighting.source}, ${s.lighting.direction}, ${s.lighting.quality}.`,`Finish: ${s.rendering.finish}; ${s.rendering.texture}; ${s.rendering.color}.`];
+function record(generator: VisualGenerator, intent: CreativeIntent, plan: PromptPlan, issues: PromptIssue[], body: string, parameters: CompiledVisualPrompt["parameters"], explanation: string[], version=1): CompiledVisualPrompt {
+  const errorCount=issues.filter(i=>i.severity==="error").length; const warningCount=issues.filter(i=>i.severity==="warning").length;
+  const completeness=Math.max(0,100-errorCount*35-warningCount*8); const fit=errorCount ? 35 : Math.max(55,95-warningCount*8);
+  return { id:`${intent.id}-${generator}-v${version}`,version,projectId:intent.projectId,generator,profileVersion:"2026-07",status:errorCount?"draft":"ready",body,parameters,issues,score:{clarity:90,completeness,generatorFit:fit,brandAlignment:intent.mandatoryElements.length?90:72},plan,explanation,createdAt:new Date().toISOString() };
+}
+const gpt:GeneratorAdapter={id:"gpt-image",compile:(i,s,p,x,v)=>record("gpt-image",i,p,x,[i.assetType==="image-edit"?`Edit the supplied source image. Preserve exactly: ${s.invariants.join(", ")||"all unspecified elements"}.`:`Create a new image for: ${i.objective}.`,...sections(s),`Do not include: ${s.forbidden.join(", ")||"unrequested objects"}.`].join("\n"),{size:i.aspectRatio,quality:i.qualityTarget},["Natural-language spatial brief","Preservation instructions kept explicit"],v)};
+const nano:GeneratorAdapter={id:"nano-banana",compile:(i,s,p,x,v)=>record("nano-banana",i,p,x,[`PRIMARY SOURCE: ${i.references[0]?.role||"none"}.`,`SECONDARY REFERENCES: ${i.references.slice(1).map(r=>r.role).join(", ")||"none"}.`,`PRESERVE: ${s.invariants.join(", ")||"subject identity and unaffected areas"}.`,`CHANGE: ${i.rawRequest}.`,...sections(s),`FINAL RENDER: ${s.rendering.finish}.`].join("\n"),{aspectRatio:i.aspectRatio},["Reference roles separated","Identity and edit boundaries prioritized"],v)};
+const mid:GeneratorAdapter={id:"midjourney",compile:(i,s,p,x,v)=>record("midjourney",i,p,x,[s.subject.description,s.subject.action,s.environment.description,s.direction.style,s.composition.hierarchy,`${s.camera.shot}, ${s.camera.angle}`,`${s.lighting.quality} light`,s.rendering.finish].filter(Boolean).join(", "),{ar:i.aspectRatio,style:"raw",stylize:150,seed:0},["Canonical spec compressed","Parameters kept separate"],v)};
+const sora:GeneratorAdapter={id:"sora",compile:(i,s,p,x,v)=>record("sora",i,p,x,[`Opening: ${s.temporal?.opening||s.environment.description}.`,`Action: ${s.temporal?.action||s.subject.action}.`,`Camera: ${s.camera.movement||"stable observational shot"}.`,`Evolution: ${i.narrative||"the action develops naturally in one coherent shot"}.`,`Visual language: ${s.direction.style}; ${s.lighting.quality}.`,`Physical continuity: preserve ${s.invariants.join(", ")||"subject, space and lighting continuity"}.`,`Final frame: ${s.temporal?.ending||"settle on the main subject"}.`].join("\n"),{aspectRatio:i.aspectRatio,duration:i.duration||8},["Chronology made explicit","Single-shot continuity prioritized"],v)};
+export const ADAPTERS:Record<VisualGenerator,GeneratorAdapter>={"gpt-image":gpt,"nano-banana":nano,midjourney:mid,sora};
+

@@ -1,0 +1,21 @@
+Exit code: 0
+Wall time: 1.5 seconds
+Output:
+import { describe,expect,it } from "vitest";
+import { VISUAL_FIXTURES } from "./fixtures";
+import { compileVisualPrompts,createControlledVariant,validateVisualIntent } from "./engine";
+import { CAPABILITY_MATRIX } from "./adapters";
+import { appendPromptVersion, attachExternalAsset, captureReview, createExternalGeneration, proposeLearning } from "./workflow";
+describe("visual prompt intelligence",()=>{
+ it("compiles one canonical intent through three image adapters",()=>{const r=compileVisualPrompts(VISUAL_FIXTURES[0]);expect(r.prompts).toHaveLength(3);expect(new Set(r.prompts.map(p=>p.generator)).size).toBe(3);expect(r.prompts.find(p=>p.generator==="midjourney")?.parameters).toHaveProperty("ar","16:9");});
+ it("structures source and preservation for image editing",()=>{const r=compileVisualPrompts(VISUAL_FIXTURES[1]);expect(r.prompts[0].body).toContain("Preserve exactly");expect(r.prompts[1].body).toContain("PRIMARY SOURCE");});
+ it("compiles chronological Sora prompts",()=>{const r=compileVisualPrompts(VISUAL_FIXTURES[2]);expect(r.prompts[0].body).toContain("Opening:");expect(r.prompts[0].body).toContain("Final frame:");expect(r.prompts[0].parameters.duration).toBe(8);});
+ it("reports unsupported capabilities instead of silently dropping them",()=>{const bad={...VISUAL_FIXTURES[2],generators:["midjourney"] as const};expect(validateVisualIntent(bad).some(i=>i.code==="midjourney_no_video")).toBe(true);});
+ it("detects required/forbidden contradictions",()=>{const bad={...VISUAL_FIXTURES[0],mandatoryElements:["logo"],forbiddenElements:["logo"]};expect(validateVisualIntent(bad).some(i=>i.code==="contradiction"&&i.severity==="error")).toBe(true);});
+ it("creates traceable controlled variants and preserves the original",()=>{const r=compileVisualPrompts(VISUAL_FIXTURES[0]);const v=createControlledVariant(r,"gpt-image","lighting-only");expect(v.parentId).toBe(r.prompts[0].id);expect(v.version).toBe(2);expect(v.plan.variationStrategy).toBe("lighting-only");expect(r.spec.lighting.quality).not.toContain("hard directional");});
+ it("keeps capability profiles explicit and versionable",()=>{expect(CAPABILITY_MATRIX.sora.video).toBe(true);expect(CAPABILITY_MATRIX.midjourney.seed).toBe(true);expect(CAPABILITY_MATRIX["gpt-image"].edit).toBe(true);});
+ it("provides deterministic scores and comparison explanations",()=>{const a=compileVisualPrompts(VISUAL_FIXTURES[0]);const b=compileVisualPrompts(VISUAL_FIXTURES[0]);expect(a.prompts.map(p=>p.score)).toEqual(b.prompts.map(p=>p.score));expect(a.comparison.every(c=>c.adaptations.length>0)).toBe(true);});
+ it("supports external generation, review and approval-gated learning",()=>{const p=compileVisualPrompts(VISUAL_FIXTURES[0]).prompts[0];const pending=createExternalGeneration(p);expect(pending.status).toBe("awaiting-external");const complete=attachExternalAsset(pending,"asset://hero-1");const review=captureReview(complete.id,{whatWorked:["composition"],whatFailed:["skin texture"],visualDrift:[],correctionInstructions:["retain natural texture"],decision:"revise"});const learning=proposeLearning(p.projectId,p.generator,review,"Avoid excessive smoothing","generator");expect(complete.status).toBe("complete");expect(learning.approved).toBe(false);});
+ it("versions append-only and idempotently",()=>{const r=compileVisualPrompts(VISUAL_FIXTURES[0]);const v=createControlledVariant(r,"gpt-image","camera-only");expect(appendPromptVersion(appendPromptVersion([],v),v)).toHaveLength(1);});
+});
+
