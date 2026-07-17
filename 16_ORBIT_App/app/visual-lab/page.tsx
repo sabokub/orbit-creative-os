@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.5 seconds
-Output:
 "use client";
 import { useMemo, useState } from "react";
 import CommandIcon from "@/components/CommandIcon";
@@ -23,4 +20,3 @@ export default function VisualLabPage(){
   <section><div className="mb-3 flex items-end justify-between"><div><p className="command-label">Comparaison</p><h2 className="mt-1 text-2xl font-black">Prompts compilÃ©s</h2></div><span className="text-xs font-bold text-black/40">VersionnÃ©s Â· export manuel</span></div><div className="grid gap-4 xl:grid-cols-2">{result.prompts.map(p=><article key={p.id} className="command-card min-w-0 p-5"><div className="flex items-center justify-between"><h3 className="text-lg font-black">{LABELS[p.generator]}</h3><span className="command-pill bg-[#cfc5f4]/55">Fit {p.score.generatorFit}%</span></div><pre className="mt-4 max-h-72 overflow-auto whitespace-pre-wrap rounded-[16px] bg-black/[.035] p-4 text-xs leading-relaxed">{p.body}</pre><div className="mt-3 flex flex-wrap gap-2">{Object.entries(p.parameters).map(([k,v])=><span key={k} className="command-pill">{k}: {String(v)}</span>)}</div><div className="mt-4 flex gap-2"><button onClick={()=>navigator.clipboard.writeText(p.body)} className="command-button">Copier</button><button onClick={()=>{const records=JSON.parse(localStorage.getItem("orbit-visual-prompts")||"[]");localStorage.setItem("orbit-visual-prompts",JSON.stringify([...records,p]));}} className="command-button bg-white text-black">Versionner</button></div><p className="mt-3 text-[11px] font-semibold text-black/45">{p.explanation.join(" Â· ")}</p></article>)}</div></section></>}
  </div>;
 }
-

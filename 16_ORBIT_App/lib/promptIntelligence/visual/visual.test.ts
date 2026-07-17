@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.5 seconds
-Output:
 import { describe,expect,it } from "vitest";
 import { VISUAL_FIXTURES } from "./fixtures";
 import { compileVisualPrompts,createControlledVariant,validateVisualIntent } from "./engine";
@@ -18,4 +15,3 @@ describe("visual prompt intelligence",()=>{
  it("supports external generation, review and approval-gated learning",()=>{const p=compileVisualPrompts(VISUAL_FIXTURES[0]).prompts[0];const pending=createExternalGeneration(p);expect(pending.status).toBe("awaiting-external");const complete=attachExternalAsset(pending,"asset://hero-1");const review=captureReview(complete.id,{whatWorked:["composition"],whatFailed:["skin texture"],visualDrift:[],correctionInstructions:["retain natural texture"],decision:"revise"});const learning=proposeLearning(p.projectId,p.generator,review,"Avoid excessive smoothing","generator");expect(complete.status).toBe("complete");expect(learning.approved).toBe(false);});
  it("versions append-only and idempotently",()=>{const r=compileVisualPrompts(VISUAL_FIXTURES[0]);const v=createControlledVariant(r,"gpt-image","camera-only");expect(appendPromptVersion(appendPromptVersion([],v),v)).toHaveLength(1);});
 });
-

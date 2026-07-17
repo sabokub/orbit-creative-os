@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.5 seconds
-Output:
 import { ADAPTERS, CAPABILITY_MATRIX } from "./adapters";
 import { CanonicalVisualSpec, CreativeIntent, CreativeIntentSchema, PromptIssue, PromptPlan, VariationStrategy, VisualCompilation } from "./contracts";
 
@@ -19,4 +16,3 @@ export function validateVisualIntent(intent: CreativeIntent): PromptIssue[] {
 function plan(intent:CreativeIntent,strategy:VariationStrategy="balanced"):PromptPlan{return{preserve:intent.preservationConstraints,reinforce:[intent.subject,intent.objective],simplify:intent.references.filter(r=>r.importance<0.4).map(r=>r.role),ambiguities:intent.environment?[]:["environment"],adaptations:[],variationStrategy:strategy};}
 export function compileVisualPrompts(raw:unknown,strategy:VariationStrategy="balanced"):VisualCompilation { const intent=CreativeIntentSchema.parse(raw); const spec=buildCanonicalVisualSpec(intent); const issues=validateVisualIntent(intent); const promptPlan=plan(intent,strategy); const prompts=intent.generators.map(g=>ADAPTERS[g].compile(intent,spec,promptPlan,issues.filter(x=>x.code.startsWith(g)||!x.code.includes("_no_")&&!x.code.includes("_ratio")))); return {intent,spec,prompts,comparison:prompts.map(p=>({generator:p.generator,fit:p.score.generatorFit,limitations:p.issues.filter(i=>i.severity==="error").map(i=>i.message),adaptations:p.explanation}))}; }
 export function createControlledVariant(compilation:VisualCompilation,generator:typeof compilation.prompts[number]["generator"],strategy:VariationStrategy){const original=compilation.prompts.find(p=>p.generator===generator);if(!original)throw new Error("Generator was not compiled");const nextSpec=structuredClone(compilation.spec);if(strategy==="lighting-only")nextSpec.lighting.quality="hard directional light with graphic shadows";if(strategy==="camera-only")nextSpec.camera.angle="low three-quarter angle";if(strategy==="composition-only")nextSpec.composition.hierarchy="asymmetric editorial composition";if(strategy==="motion-only"&&nextSpec.temporal)nextSpec.camera.movement="slow arc around the subject";const nextPlan={...original.plan,variationStrategy:strategy};return {...ADAPTERS[generator].compile(compilation.intent,nextSpec,nextPlan,original.issues,original.version+1),parentId:original.id};}
-

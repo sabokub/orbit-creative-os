@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.5 seconds
-Output:
 import { CanonicalVisualSpec, CompiledVisualPrompt, CreativeIntent, GeneratorCapabilities, PromptIssue, PromptPlan, VisualGenerator } from "./contracts";
 
 const RATIOS = ["1:1", "4:5", "3:2", "16:9", "9:16"];
@@ -23,4 +20,3 @@ const nano:GeneratorAdapter={id:"nano-banana",compile:(i,s,p,x,v)=>record("nano-
 const mid:GeneratorAdapter={id:"midjourney",compile:(i,s,p,x,v)=>record("midjourney",i,p,x,[s.subject.description,s.subject.action,s.environment.description,s.direction.style,s.composition.hierarchy,`${s.camera.shot}, ${s.camera.angle}`,`${s.lighting.quality} light`,s.rendering.finish].filter(Boolean).join(", "),{ar:i.aspectRatio,style:"raw",stylize:150,seed:0},["Canonical spec compressed","Parameters kept separate"],v)};
 const sora:GeneratorAdapter={id:"sora",compile:(i,s,p,x,v)=>record("sora",i,p,x,[`Opening: ${s.temporal?.opening||s.environment.description}.`,`Action: ${s.temporal?.action||s.subject.action}.`,`Camera: ${s.camera.movement||"stable observational shot"}.`,`Evolution: ${i.narrative||"the action develops naturally in one coherent shot"}.`,`Visual language: ${s.direction.style}; ${s.lighting.quality}.`,`Physical continuity: preserve ${s.invariants.join(", ")||"subject, space and lighting continuity"}.`,`Final frame: ${s.temporal?.ending||"settle on the main subject"}.`].join("\n"),{aspectRatio:i.aspectRatio,duration:i.duration||8},["Chronology made explicit","Single-shot continuity prioritized"],v)};
 export const ADAPTERS:Record<VisualGenerator,GeneratorAdapter>={"gpt-image":gpt,"nano-banana":nano,midjourney:mid,sora};
-

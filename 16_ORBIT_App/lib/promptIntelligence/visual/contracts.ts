@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.6 seconds
-Output:
 import { z } from "zod";
 
 export const VisualGeneratorSchema = z.enum(["gpt-image", "nano-banana", "midjourney", "sora"]);
@@ -46,4 +43,3 @@ export interface VisualCompilation { intent: CreativeIntent; spec: CanonicalVisu
 export interface GenerationRecord { id: string; promptId: string; projectId: string; generator: VisualGenerator; mode: "external" | "provider"; status: "awaiting-external" | "running" | "complete" | "failed"; assetUrl?: string; createdAt: string }
 export interface VisualReview { id: string; generationId: string; whatWorked: string[]; whatFailed: string[]; visualDrift: string[]; correctionInstructions: string[]; decision: "approved" | "revise" | "rejected"; createdAt: string }
 export interface PromptLearning { id: string; projectId: string; generator: VisualGenerator; scope: "asset" | "generator" | "project"; observation: string; approved: boolean; sourceReviewId: string }
-

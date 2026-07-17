@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.5 seconds
-Output:
 # Visual Prompt Intelligence
 
 This is the visual vertical of the existing `lib/promptIntelligence` engine. It does not replace the Website prompt chain.
@@ -15,4 +12,3 @@ This is the visual vertical of the existing `lib/promptIntelligence` engine. It 
 - Provider calls are deliberately separate from compilation. The MVP supports external export/import without exposing a key.
 - Learnings remain unapproved proposals until a person validates them.
 - Approved agent prompt outputs continue to use the existing projection rule in `lib/projection/rules/promptIntelligence.ts`.
-

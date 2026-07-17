@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.5 seconds
-Output:
 import { CompiledVisualPrompt, GenerationRecord, PromptLearning, VisualReview } from "./contracts";
 
 /** Provider-neutral fallback: the prompt can be copied out and its result imported later. */
@@ -12,4 +9,3 @@ export function captureReview(generationId:string,input:Omit<VisualReview,"id"|"
 /** Learning is always proposed, never silently promoted to an active project rule. */
 export function proposeLearning(projectId:string,generator:CompiledVisualPrompt["generator"],review:VisualReview,observation:string,scope:PromptLearning["scope"]="asset"):PromptLearning{return{id:`learning-${review.id}`,projectId,generator,scope,observation,approved:false,sourceReviewId:review.id};}
 export function appendPromptVersion(history:CompiledVisualPrompt[],next:CompiledVisualPrompt):CompiledVisualPrompt[]{return history.some(p=>p.id===next.id)?history:[...history,next];}
-
