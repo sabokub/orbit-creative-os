@@ -113,6 +113,9 @@ export default function ProjectWorkspace() {
               <Link href={`/projects/${project.id}/library`} className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-white/75 px-4 py-2.5 text-xs font-black text-black backdrop-blur hover:bg-black hover:text-white">
                 <CommandIcon name="library" className="h-4 w-4" /> Bibliothèque des livrables
               </Link>
+              <Link href={`/projects/${project.id}/orbit`} className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-black px-4 py-2.5 text-xs font-black text-white backdrop-blur hover:opacity-90">
+                <CommandIcon name="sparkles" className="h-4 w-4" /> Console Orbit
+              </Link>
             </div>
           </div>
 
