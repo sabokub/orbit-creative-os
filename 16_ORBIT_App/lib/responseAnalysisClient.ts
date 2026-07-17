@@ -12,6 +12,8 @@ export interface AnalyzeRequest {
   rawResponse: string;
   source: AnalysisSource;
   skipSemanticAnalysis?: boolean;
+  /** Website prompt chain (Prompt Intelligence Engine) — scopes the presented deliverable list to a single chain step; the underlying analysis pipeline itself is unchanged. */
+  expectedDeliverables?: string[];
 }
 
 export interface AnalyzeResponse {
@@ -43,6 +45,20 @@ export async function analyzeResponse(req: AnalyzeRequest): Promise<AnalyzeRespo
 export type ApplyMode = "draft" | "validate" | "raw_only";
 export type VersionAction = "replace" | "merge" | "new_version" | "cancel";
 
+export interface PromptMetaPayload {
+  promptVersion: string;
+  builderVersion: string;
+  targetModel: string;
+  selectedKnowledgeIds: string[];
+  contextSnapshotKeys: string[];
+  budgetStatus: string;
+  estimatedPromptChars: number;
+  qualityScore: number;
+  userEdited: boolean;
+  editedPrompt?: string;
+  finalPrompt: string;
+}
+
 export interface ApplyRequest {
   projectId: string;
   workflowStep: WorkflowStep;
@@ -51,6 +67,9 @@ export interface ApplyRequest {
   mode: ApplyMode;
   versionAction?: VersionAction;
   ifMatch?: string;
+  /** Website prompt chain — records validated deliverable content + a prompt-version history entry. Optional, additive. */
+  chainStepId?: string;
+  promptMeta?: PromptMetaPayload;
 }
 
 export interface ApplyResponse {
