@@ -12,10 +12,14 @@ export default function ConversationUpdateBootstrap() {
   useEffect(() => {
     if (requested) return;
     requested = true;
-    void fetch("/api/studio/conversation-updates", { method: "POST" }).catch(() => {
-      // Orbit remains usable when Redis or the update endpoint is temporarily unavailable.
-      requested = false;
-    });
+    void fetch("/api/studio/conversation-updates", { method: "POST" })
+      .then((response) => {
+        if (!response.ok) requested = false;
+      })
+      .catch(() => {
+        // Orbit remains usable when Redis or the update endpoint is temporarily unavailable.
+        requested = false;
+      });
   }, []);
 
   return null;
