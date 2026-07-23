@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import NavBar from "@/components/NavBar";
 import CommandPalette from "@/components/CommandPalette";
+import ConversationUpdateBootstrap from "@/components/ConversationUpdateBootstrap";
 import { StudioBrainProvider } from "@/contexts/StudioBrainContext";
 import { WorkModeProvider } from "@/contexts/WorkModeContext";
 import "./globals.css";
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <WorkModeProvider>
           <StudioBrainProvider>
+            <ConversationUpdateBootstrap />
             <NavBar />
             <main className="min-h-screen px-4 pb-28 pt-20 sm:px-5 lg:ml-[224px] lg:px-6 lg:pb-10 lg:pt-6">
               <div className="mx-auto w-full max-w-[1320px]">{children}</div>
