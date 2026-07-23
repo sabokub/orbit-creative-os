@@ -13,8 +13,13 @@ export default function ConversationUpdateBootstrap() {
     if (requested) return;
     requested = true;
     void fetch("/api/studio/conversation-updates", { method: "POST" })
-      .then((response) => {
-        if (!response.ok) requested = false;
+      .then(async (response) => {
+        if (!response.ok) {
+          requested = false;
+          return;
+        }
+        const result = (await response.json()) as { applied?: boolean };
+        if (result.applied) window.location.reload();
       })
       .catch(() => {
         // Orbit remains usable when Redis or the update endpoint is temporarily unavailable.
