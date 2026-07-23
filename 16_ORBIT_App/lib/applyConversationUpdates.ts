@@ -15,7 +15,7 @@ import {
   CONVERSATION_TASKS_2026_07_23,
   CONVERSATION_UPDATE_2026_07_23,
 } from "./conversationUpdates";
-import { StudioItem } from "./types";
+import type { StudioItem } from "./types";
 
 function hasRedisEnv(): boolean {
   return Boolean(
@@ -67,7 +67,7 @@ export async function applyLatestConversationUpdates(): Promise<{
       urgency: 5,
       impact: 5,
       launchCritical: true,
-      status: clientWorkflow.status === "done" ? "in_progress" : clientWorkflow.status,
+      status: "in_progress",
       dependsOn: [],
     });
     keyToId.set("client-workflow", updated.id);
