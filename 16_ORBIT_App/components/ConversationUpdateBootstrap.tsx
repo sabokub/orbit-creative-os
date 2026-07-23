@@ -4,25 +4,32 @@ import { useEffect } from "react";
 
 let requested = false;
 
+const UPDATE_ENDPOINTS = [
+  "/api/studio/conversation-updates",
+  "/api/studio/conversation-updates/2026-07-24",
+] as const;
+
 /**
- * Applies the fixed, idempotent conversation update pack after deployment.
- * The endpoint accepts no payload and a Redis marker prevents repeated writes.
+ * Applies fixed, idempotent conversation update packs after deployment.
+ * Endpoints accept no payload and Redis markers prevent repeated writes.
  */
 export default function ConversationUpdateBootstrap() {
   useEffect(() => {
     if (requested) return;
     requested = true;
-    void fetch("/api/studio/conversation-updates", { method: "POST" })
-      .then(async (response) => {
-        if (!response.ok) {
-          requested = false;
-          return;
-        }
-        const result = (await response.json()) as { applied?: boolean };
-        if (result.applied) window.location.reload();
+
+    void Promise.all(
+      UPDATE_ENDPOINTS.map(async (endpoint) => {
+        const response = await fetch(endpoint, { method: "POST" });
+        if (!response.ok) throw new Error(`Conversation sync failed: ${endpoint}`);
+        return (await response.json()) as { applied?: boolean };
+      })
+    )
+      .then((results) => {
+        if (results.some((result) => result.applied)) window.location.reload();
       })
       .catch(() => {
-        // Orbit remains usable when Redis or the update endpoint is temporarily unavailable.
+        // Orbit remains usable when Redis or an update endpoint is temporarily unavailable.
         requested = false;
       });
   }, []);
