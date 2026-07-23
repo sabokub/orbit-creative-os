@@ -1,4 +1,4 @@
-import { ContentChannel, ItemKind, ItemStatus } from "./types";
+import type { ContentChannel, ItemKind, ItemStatus } from "./types";
 
 export const CONVERSATION_UPDATE_2026_07_23 = "orbit-hub:migrations:conversation-update-2026-07-23";
 
@@ -158,7 +158,6 @@ export const CONVERSATION_TASKS_2026_07_23: ConversationTaskSpec[] = [
     impact: 4,
     launchCritical: true,
     status: "backlog",
-    dependsOnKeys: ["domain-resolution"],
   },
 ];
 
