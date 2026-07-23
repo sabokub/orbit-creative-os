@@ -36,7 +36,7 @@ export interface ResponseAnalysisReviewProps {
   onValidate: () => void;
   onKeepRawOnly: () => void;
   onReanalyze: () => void;
-  onRetryAnalysis: () => void;
+  onRetryAnalysis?: () => void;
   saving: boolean;
   versionActionRequired: boolean;
   onVersionAction: (action: "replace" | "merge" | "new_version" | "cancel") => void;
@@ -63,7 +63,6 @@ export default function ResponseAnalysisReview({
     not_usable: { label: "Pas exploitable", className: "bg-red-200 text-red-900" },
   };
   const expMeta = exploitabilityMeta[analysis.exploitability];
-  const visiblePlaceholders = semanticUnavailable ? analysis.placeholders : [];
 
   return (
     <section className="command-card space-y-6 p-5 sm:p-7" data-testid="analysis-review">
@@ -114,8 +113,8 @@ export default function ResponseAnalysisReview({
           <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-[0.08em] text-black/55">
             <span className="command-pill bg-white">Réponse brute conservée</span>
             <span className="command-pill bg-white">{analysis.extractedSections.length} section(s) détectée(s)</span>
-            {visiblePlaceholders.length > 0 && (
-              <span className="command-pill bg-white">{visiblePlaceholders.length} placeholder(s) explicite(s)</span>
+            {analysis.placeholders.length > 0 && (
+              <span className="command-pill bg-white">{analysis.placeholders.length} placeholder(s) explicite(s)</span>
             )}
           </div>
         </div>
@@ -150,8 +149,7 @@ export default function ResponseAnalysisReview({
       {!semanticUnavailable && (
         <div>
           <p className="mb-3 text-xs font-black uppercase tracking-[0.1em] text-black/50">
-            Livrables ({analysis.detectedDeliverables.filter((d) => d.status === "complete").length}/{analysis.detectedDeliverables.length}{" "}
-            complets)
+            Livrables ({analysis.detectedDeliverables.filter((d) => d.status === "complete").length}/{analysis.detectedDeliverables.length} complets)
           </p>
           <ul className="space-y-2">
             {analysis.detectedDeliverables.map((d) => (
@@ -164,9 +162,7 @@ export default function ResponseAnalysisReview({
                 </div>
                 {d.reasons.length > 0 && (
                   <ul className="mt-1.5 space-y-0.5 text-xs font-semibold text-black/50">
-                    {d.reasons.map((r, i) => (
-                      <li key={i}>· {r}</li>
-                    ))}
+                    {d.reasons.map((reason, index) => <li key={index}>· {reason}</li>)}
                   </ul>
                 )}
               </li>
@@ -177,20 +173,16 @@ export default function ResponseAnalysisReview({
 
       {!semanticUnavailable && (analysis.warnings.length > 0 || analysis.placeholders.length > 0 || analysis.contradictions.length > 0) && (
         <div className="space-y-2">
-          {analysis.warnings.map((w, i) => (
-            <p key={`w-${i}`} className="rounded-[14px] border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900">
-              {w}
-            </p>
+          {analysis.warnings.map((warning, index) => (
+            <p key={`w-${index}`} className="rounded-[14px] border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900">{warning}</p>
           ))}
           {analysis.placeholders.length > 0 && (
             <p className="rounded-[14px] border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-800">
               Placeholders détectés : {analysis.placeholders.join(", ")}
             </p>
           )}
-          {analysis.contradictions.map((c, i) => (
-            <p key={`c-${i}`} className="rounded-[14px] border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-800">
-              {c}
-            </p>
+          {analysis.contradictions.map((contradiction, index) => (
+            <p key={`c-${index}`} className="rounded-[14px] border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-800">{contradiction}</p>
           ))}
         </div>
       )}
@@ -219,9 +211,7 @@ export default function ResponseAnalysisReview({
         <div>
           <p className="mb-2 text-xs font-black uppercase tracking-[0.1em] text-black/50">Prochaines actions recommandées</p>
           <ul className="space-y-1 text-xs font-semibold text-black/60">
-            {analysis.recommendedNextActions.map((a, i) => (
-              <li key={i}>· {a}</li>
-            ))}
+            {analysis.recommendedNextActions.map((action, index) => <li key={index}>· {action}</li>)}
           </ul>
         </div>
       )}
@@ -238,9 +228,8 @@ export default function ResponseAnalysisReview({
             Enregistrer comme brouillon
           </button>
           {semanticUnavailable ? (
-            <button onClick={onRetryAnalysis} disabled={saving} className="command-button min-w-[200px] disabled:cursor-not-allowed disabled:opacity-40">
-              <CommandIcon name={saving ? "clock" : "sparkles"} className="h-4 w-4" />
-              Réessayer l’analyse
+            <button onClick={onRetryAnalysis || onReanalyze} disabled={saving} className="command-button min-w-[200px] disabled:cursor-not-allowed disabled:opacity-40">
+              <CommandIcon name="sparkles" className="h-4 w-4" /> Réessayer l’analyse
             </button>
           ) : (
             <button onClick={onValidate} disabled={saving} className="command-button min-w-[200px] disabled:cursor-not-allowed disabled:opacity-40">
