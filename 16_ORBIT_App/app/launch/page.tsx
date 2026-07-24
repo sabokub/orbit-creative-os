@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import CommandIcon from "@/components/CommandIcon";
 import StudioItemCard from "@/components/StudioItemCard";
 import { useStudioBrain } from "@/contexts/StudioBrainContext";
+import { getLaunchProgress } from "@/lib/launchProgress";
 import { scoreAll } from "@/lib/priority";
 import { ItemStatus, StudioItem } from "@/lib/types";
 
@@ -18,8 +19,7 @@ export default function LaunchPage() {
   const launchItems = items.filter((it) => it.launchCritical && it.status !== "archived");
   const tasks = bySortOrder(launchItems.filter((it) => it.kind === "task" && it.status !== "done"));
   const contents = bySortOrder(launchItems.filter((it) => it.kind === "content" && it.status !== "done"));
-  const doneCount = launchItems.filter((it) => it.status === "done").length;
-  const progress = launchItems.length ? Math.round((doneCount / launchItems.length) * 100) : 0;
+  const { progress } = useMemo(() => getLaunchProgress(items), [items]);
   const nextTask = tasks.find((it) => it.status !== "blocked") || tasks[0];
   const pendingDecisions = decisions.filter((d) => d.status === "pending");
 
