@@ -149,10 +149,57 @@ export interface ConversationDecisionSeed20260725 {
   relatedItemKey?: "homepage" | "nfinite" | "pricing";
 }
 
+const landing = VALIDATED_LANDING_PAGE_2026_07_25;
+const structureResolution = landing.sections.join(" → ");
+const heroResolution = landing.hero.join(" / ");
+const coolPeopleResolution = [
+  ...landing.coolPeople.intro,
+  ...landing.coolPeople.profiles.map(
+    (profile) => `${profile.name} — ${profile.archetype} — ${profile.copy}`
+  ),
+].join(" ");
 const pricingResolution =
   "Prix fixes par pièce : 249 € / 299 € / 349 €, pièce de vie 379 €, suite parentale 399 €";
 
 export const CONVERSATION_DECISIONS_2026_07_25: ConversationDecisionSeed20260725[] = [
+  {
+    question: "Quelle structure doit suivre la homepage 24March Studio ?",
+    context: `Ordre final validé : ${structureResolution}. L’encart « Présenter mon projet » est supprimé.`,
+    options: [structureResolution, "Revoir la structure"],
+    resolution: structureResolution,
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "Quel texte doit être utilisé dans le hero de la homepage ?",
+    context:
+      "Le hero conserve un seul parcours vers les pièces. Les anciens boutons « Choisir ma pièce » et « Présenter mon projet » sont remplacés.",
+    options: [heroResolution, "Revoir le hero"],
+    resolution: heroResolution,
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "Quel titre conserver pour la transformation du projet ?",
+    context: "Le titre est définitivement conservé dans la landing page finale.",
+    options: ["Quand tout s’aligne", "Revoir le titre"],
+    resolution: "Quand tout s’aligne",
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "Quelle modification appliquer à la section Méthode du studio ?",
+    context:
+      "La méthode reste en trois étapes. Seule la phrase « pas un chantier sans fin » doit rester supprimée.",
+    options: ["Retirer uniquement « pas un chantier sans fin »", "Réécrire toute la section"],
+    resolution: "Retirer uniquement « pas un chantier sans fin »",
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "Quel texte conserver pour Les Cool People ?",
+    context:
+      "La homepage présente cinq profils en quelques mots. Les développements détaillés pourront vivre sur une page séparée.",
+    options: [coolPeopleResolution, "Revoir la section"],
+    resolution: coolPeopleResolution,
+    relatedItemKey: "homepage",
+  },
   {
     question: "La landing page 24March Studio est-elle définitivement validée ?",
     context:
