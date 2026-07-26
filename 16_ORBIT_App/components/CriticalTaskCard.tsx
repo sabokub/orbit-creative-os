@@ -43,7 +43,7 @@ export default function CriticalTaskCard({
 }) {
   const [open, setOpen] = useState(false);
   const tier = tierStyleForPriority(priority);
-  const href = item.kind === "task" ? "/launch#tasks" : "/launch#content";
+  const href = `/studio/items/${encodeURIComponent(item.id)}`;
 
   return (
     <article className={`rounded-[20px] border border-black/8 ${tier.cardBorder} ${tier.cardTint} bg-[#fffdf8] p-4`}>
@@ -103,7 +103,7 @@ export default function CriticalTaskCard({
         href={href}
         className="mt-3 flex items-center justify-between rounded-[14px] border border-black/10 bg-black px-3 py-2 text-[11px] font-black uppercase tracking-[0.06em] text-white"
       >
-        Ouvrir la tâche <CommandIcon name="arrow" className="h-3.5 w-3.5" />
+        Ouvrir {item.kind === "task" ? "la tâche" : "le contenu"} <CommandIcon name="arrow" className="h-3.5 w-3.5" />
       </Link>
     </article>
   );
