@@ -116,7 +116,7 @@ export default function Dashboard() {
                   return (
                     <Link
                       key={item.id}
-                      href="/launch#tasks"
+                      href={`/studio/items/${encodeURIComponent(item.id)}`}
                       className={`grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-[18px] border border-black/8 ${tier?.cardBorder ?? ""} ${tier?.cardTint ?? ""} bg-[#fffdf8] p-3`}
                     >
                       <span className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#f5df75] text-sm font-black">{index + 1}</span>
@@ -228,7 +228,7 @@ export default function Dashboard() {
               <div className="mt-4 space-y-2">
                 {loaded &&
                   blockedTasks.map((item) => (
-                    <Link key={item.id} href="/launch#tasks" className="block rounded-[16px] bg-white/75 p-3">
+                    <Link key={item.id} href={`/studio/items/${encodeURIComponent(item.id)}`} className="block rounded-[16px] bg-white/75 p-3">
                       <p className="text-sm font-black">{item.title}</p>
                       <p className="mt-1 text-[11px] text-black/45">Attend : {blockedReason(item)}</p>
                     </Link>
