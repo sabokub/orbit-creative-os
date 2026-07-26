@@ -65,16 +65,22 @@ export default function DependenciesPage() {
                     }`}
                   >
                     <div className="mb-3 flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.08em] text-black/42">
-                      {blockers.map((b) => (
-                        <span key={b.id} className="rounded-full bg-white px-2 py-1">
-                          {b.title}
-                        </span>
+                      {blockers.map((blocker) => (
+                        <Link
+                          key={blocker.id}
+                          href={`/studio/items/${blocker.id}`}
+                          className="rounded-full bg-white px-2 py-1 transition hover:bg-black hover:text-white"
+                        >
+                          {blocker.title}
+                        </Link>
                       ))}
                       <span>→ débloque →</span>
                     </div>
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-black">{item.title}</p>
+                        <Link href={`/studio/items/${item.id}`} className="text-sm font-black underline-offset-4 hover:underline">
+                          {item.title}
+                        </Link>
                         <p className="mt-1 text-[11px] text-black/45">{item.description}</p>
                       </div>
                       <span className="rounded-full border border-black/8 bg-white px-2.5 py-1 text-[9px] font-black">
@@ -107,9 +113,9 @@ export default function DependenciesPage() {
                 const tier = tierStyleForPriority(result);
                 return (
                   <Link
-                    href={item.kind === "task" ? "/studio/content" : "/studio/content"}
+                    href={`/studio/items/${item.id}`}
                     key={item.id}
-                    className={`block rounded-[20px] border border-black/8 ${tier.cardBorder} ${tier.cardTint} bg-white/75 p-4`}
+                    className={`block rounded-[20px] border border-black/8 ${tier.cardBorder} ${tier.cardTint} bg-white/75 p-4 transition hover:-translate-y-0.5 hover:shadow-sm`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="flex h-11 w-11 items-center justify-center rounded-[15px] bg-[#f5df75] text-lg font-black">
