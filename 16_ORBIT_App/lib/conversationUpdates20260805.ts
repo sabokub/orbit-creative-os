@@ -72,6 +72,62 @@ export interface ConversationDecisionSeed20260805 {
 
 export const CONVERSATION_DECISIONS_2026_08_05: ConversationDecisionSeed20260805[] = [
   {
+    question: "Quelle direction artistique finale doit suivre la landing page ?",
+    aliases: ["Quelle direction artistique doit suivre la landing page ?"],
+    context:
+      "La direction la plus récente remplace les anciennes palettes figées : plateforme éditoriale playful maîtrisée, intérieurs sophistiqués et audacieux, capsules verticales et photographie adaptée au jour ou à la nuit.",
+    options: [
+      "Éditoriale, interactive, audacieuse mais maîtrisée; couleurs par touches; photo jour/nuit adaptée",
+      "Palette bordeaux/teal imposée à toutes les scènes",
+      "Site d’agence beige classique",
+    ],
+    resolution:
+      "Éditoriale, interactive, audacieuse mais maîtrisée; couleurs par touches; photo jour/nuit adaptée",
+    relatedItemKey: "artDirection",
+  },
+  {
+    question: "Quel format doit utiliser le hero actuel ?",
+    aliases: ["Quel format doit utiliser le hero de la landing page ?"],
+    context:
+      "La homepage a été reconstruite sur la maquette la plus récente. Le hero horizontal en collage de juillet n’est plus la spécification active.",
+    options: [
+      "Hero plein cadre, immersif et responsive",
+      "Hero en collage horizontal texte/image/lifestyle",
+      "Hero vertical type mobile",
+    ],
+    resolution: "Hero plein cadre, immersif et responsive",
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "Quelle structure finale doit suivre la homepage ?",
+    aliases: [
+      "Quel système de page est validé pour la landing page ?",
+      "Quelle structure doit suivre la homepage 24March Studio ?",
+    ],
+    context:
+      "La version intégrée comprend six capsules et une méthode en six étapes. Elle remplace la structure antérieure à cinq pièces et cinq étapes.",
+    options: [
+      "Hero plein cadre, 6 capsules, bandeau, ce que tu reçois, méthode 6 étapes, 5 Cool People, CTA final",
+      "10 sections, 5 pièces et méthode 5 étapes",
+    ],
+    resolution:
+      "Hero plein cadre, 6 capsules, bandeau, ce que tu reçois, méthode 6 étapes, 5 Cool People, CTA final",
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "La landing page est-elle désormais implémentée ?",
+    aliases: ["La maquette visuelle finale de la landing page est-elle validée ?"],
+    context:
+      "La structure et les composants ont été intégrés et le build a réussi. Le travail restant porte surtout sur la génération, le remplacement et la validation des visuels finaux 2K.",
+    options: [
+      "Oui — structure implémentée; visuels finaux encore en cours",
+      "Non — aucune intégration commencée",
+      "Oui — tout est terminé, visuels compris",
+    ],
+    resolution: "Oui — structure implémentée; visuels finaux encore en cours",
+    relatedItemKey: "homepage",
+  },
+  {
     question: "Quelle forme doit utiliser le sélecteur de pièces ?",
     context:
       "Les arches ont été jugées datées. Les capsules verticales ont été comparées aux superellipses puis explicitement validées.",
