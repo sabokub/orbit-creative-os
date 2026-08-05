@@ -60,7 +60,7 @@ export const STUDIO_DIRECTION_2026_08_06 = {
     "12 Cool People 3",
     "13 Cool People 4",
     "14 Cool People 5",
-    "15 Témoignage ou lifestyle final : remplacer par un lifestyle final sans témoignage",
+    "15 Lifestyle final sans témoignage",
   ],
   deployment: [
     "Domaine principal choisi : 24marchstudio.fr.",
@@ -96,14 +96,55 @@ export interface ConversationDecisionSeed20260806 {
 export const CONVERSATION_DECISIONS_2026_08_06: ConversationDecisionSeed20260806[] = [
   {
     question: "Le teal appartient-il à la palette finale validée ?",
-    aliases: ["Quelle est la palette principale de la landing page ?"],
+    aliases: [
+      "Quelle est la palette principale de la landing page ?",
+      "Quelle direction artistique doit suivre la landing page ?",
+    ],
     context:
       "Une ancienne synthèse présentait le teal comme validé. Cette information a été explicitement corrigée ensuite.",
     options: [
-      "Non — le teal n’a jamais été validé",
+      "Non — le teal n’a jamais été validé ; suivre les références récentes",
       "Oui — conserver le teal comme couleur principale",
     ],
-    resolution: "Non — le teal n’a jamais été validé",
+    resolution: "Non — le teal n’a jamais été validé ; suivre les références récentes",
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "Quel hero doit utiliser la homepage actuelle ?",
+    aliases: ["Quel format doit utiliser le hero de la landing page ?"],
+    context:
+      "La homepage a depuis été reconstruite autour d’un hero plein cadre. Cette validation remplace le précédent montage horizontal en trois zones.",
+    options: [
+      "Hero plein cadre, immédiatement identifiable à 24March Studio",
+      "Montage horizontal texte / intérieur / lifestyle",
+    ],
+    resolution: "Hero plein cadre, immédiatement identifiable à 24March Studio",
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "Quelle structure doit suivre la homepage 24March Studio ?",
+    aliases: ["Quel système de page est validé pour la landing page ?"],
+    context:
+      "La version actuelle a été recentrée sur le hero, le positionnement, les pièces, les livrables, la méthode, les Cool People et le CTA final.",
+    options: [
+      "Hero, Pas une déco Pinterest, six capsules, Ta pièce mais en mieux, Ce que tu reçois, méthode 6 étapes, cinq Cool People, CTA final",
+      "Ancienne structure 10 sections avec méthode 5 étapes",
+    ],
+    resolution:
+      "Hero, Pas une déco Pinterest, six capsules, Ta pièce mais en mieux, Ce que tu reçois, méthode 6 étapes, cinq Cool People, CTA final",
+    relatedItemKey: "homepage",
+  },
+  {
+    question: "Quel est l’état actuel de la homepage ?",
+    aliases: ["La maquette visuelle finale de la landing page est-elle validée ?"],
+    context:
+      "La structure a été refaite sur la maquette retenue. Le chantier restant concerne surtout les images finales, le responsive et la revue pré-production.",
+    options: [
+      "Structure validée et implémentée ; visuels finaux encore en production",
+      "Aucune structure validée",
+      "Page totalement terminée et prête à lancer",
+    ],
+    resolution: "Structure validée et implémentée ; visuels finaux encore en production",
     relatedItemKey: "homepage",
   },
   {
