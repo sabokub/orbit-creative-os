@@ -9,6 +9,7 @@ const UPDATE_ENDPOINTS = [
   "/api/studio/conversation-updates/2026-07-24",
   "/api/studio/conversation-updates/2026-07-25",
   "/api/studio/conversation-updates/2026-07-26",
+  "/api/studio/conversation-updates/2026-08-06",
 ] as const;
 
 /**
