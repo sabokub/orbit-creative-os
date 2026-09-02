@@ -53,10 +53,10 @@ export default function LaunchPage() {
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <span className="command-label">
-            <CommandIcon name="launch" className="h-3.5 w-3.5" /> Opération lancement
+            <CommandIcon name="launch" className="h-3.5 w-3.5" /> Sprint de rattrapage
           </span>
           <h1 className="mt-2 text-3xl font-black sm:text-4xl">Lancement 24March Studio</h1>
-          <p className="mt-1 text-sm text-black/48">Éléments critiques pour le lancement, synchronisés avec Studio Brain.</p>
+          <p className="mt-1 text-sm text-black/48">Scope réduit au MVP vendable. Le reste passe après lancement.</p>
         </div>
         <Link href="/projects/new" className="command-button">
           <CommandIcon name="plus" className="h-4 w-4" /> Ajouter un projet
@@ -75,7 +75,7 @@ export default function LaunchPage() {
               terminé
             </span>
           </div>
-          <p className="mt-2 text-sm font-black uppercase text-[#7d9f4c]">Tout doit être prêt avant le 1er septembre</p>
+          <p className="mt-2 text-sm font-black uppercase text-[#7d9f4c]">Nouvelle deadline : jeudi 10 septembre · 18 h</p>
           <div className="mt-5 h-3 overflow-hidden rounded-full bg-black/7">
             <div className="h-full rounded-full bg-[#98b85f]" style={{ width: `${progress}%` }} />
           </div>
@@ -98,7 +98,7 @@ export default function LaunchPage() {
           </div>
           <span className="command-pill bg-[#f9d9e6]">{tasks.length} ouvertes</span>
         </div>
-        <p className="mt-2 text-xs text-black/45">Réordonne avec les flèches — l&apos;ordre est conservé (champ `order`).</p>
+        <p className="mt-2 text-xs text-black/45">Ordre optimisé par chemin critique. Évite tout travail hors P0.</p>
         <div className="mt-4 space-y-3">
           {loaded &&
             tasks.map((item, index) => (
@@ -187,11 +187,7 @@ export default function LaunchPage() {
             ))}
           {loaded && !contents.length && (
             <div className="flex min-h-[70px] items-center justify-center rounded-[16px] border border-dashed border-black/15 text-xs font-semibold text-black/40">
-              Aucun contenu critique ouvert — retrouve le reste sur{" "}
-              <Link href="/studio/content" className="underline">
-                la banque de contenu
-              </Link>
-              .
+              Contenus fusionnés dans le kit lancement minimum viable.
             </div>
           )}
         </div>
@@ -235,7 +231,7 @@ export default function LaunchPage() {
         <p className="command-label">Roadmap</p>
         <h2 className="mt-1 text-xl font-black">Vue chronologique complète</h2>
         <p className="mt-2 text-sm text-black/48">
-          La timeline détaillée, semaine par semaine, avec la règle stricte du 31 août, est sur{" "}
+          La timeline détaillée suit désormais le sprint de rattrapage jusqu’au 10 septembre sur{" "}
           <Link href="/timeline" className="font-black underline">
             /timeline
           </Link>
