@@ -135,10 +135,10 @@ export const emptyProjectBrief = (brandProfileId: string): ProjectBrief => ({
  * dependency model: both are "StudioItem"s distinguished by `kind`.
  * ------------------------------------------------------------------------ */
 
-/** The one hard date constraint of the studio right now: nothing lands after this. */
-export const STUDIO_LAUNCH_CUTOFF = "2026-08-31";
-/** Moment the countdown clock targets (morning after the cutoff day). */
-export const STUDIO_LAUNCH_MOMENT = "2026-09-01T09:00:00+02:00";
+/** Recovery cutoff after the missed August 31 target. */
+export const STUDIO_LAUNCH_CUTOFF = "2026-09-10";
+/** Public launch target for the recovery sprint. */
+export const STUDIO_LAUNCH_MOMENT = "2026-09-10T18:00:00+02:00";
 
 export type ItemKind = "task" | "content";
 
