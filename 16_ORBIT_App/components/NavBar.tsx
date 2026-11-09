@@ -7,6 +7,7 @@ import WorkModeSelector from "./WorkModeSelector";
 import { useWorkMode } from "@/contexts/WorkModeContext";
 
 const PILOT_ITEMS: Array<{ href: string; label: string; icon: CommandIconName }> = [
+  { href: "/execution", label: "Exécution SMART", icon: "check" },
   { href: "/studio", label: "Studio Pulse", icon: "home" },
   { href: "/dependencies", label: "Dépendances", icon: "projects" },
   { href: "/timeline", label: "Timeline", icon: "launch" },
