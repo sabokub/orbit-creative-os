@@ -85,17 +85,17 @@ export default function Dashboard() {
     <div className="mx-auto max-w-[1320px] space-y-4 pb-36 lg:pb-8">
       {!focusMode && (
         <section className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
-          <Link href="/execution" className="block rounded-[30px] border border-black/10 bg-[#171c28] p-6 text-white sm:p-7">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c3e8a0]">ORBIT V4 / Action first</span>
-            <h2 className="mt-3 text-3xl font-black">Une priorité. Trois actions. Une preuve.</h2>
-            <p className="mt-3 max-w-[600px] text-sm text-white/65">Passe du plan de septembre à la validation réelle de 24March : parcours client, offre vendable, preuve de valeur. SMART + TAPP, connecté à Studio Brain.</p>
-            <span className="mt-6 inline-flex rounded-full bg-[#c3e8a0] px-4 py-2.5 text-xs font-black text-[#171c28]">Ouvrir mon plan d&apos;exécution →</span>
+          <Link href="/execution" className="glass group block rounded-xl p-6 sm:p-8">
+            <span className="folio">ORBIT / Direction et exécution</span>
+            <h2 className="font-display mt-4 max-w-[720px] text-[clamp(2rem,3vw,2.7rem)] leading-tight">Une priorité. Trois actions. Une preuve.</h2>
+            <p className="mt-3 max-w-[650px] text-sm leading-6 text-[#4c4e53]">Validation réelle de 24March : parcours client, offre vendable et preuve de valeur. Le cockpit relie SMART et TAPP à Studio Brain.</p>
+            <span className="mt-6 inline-flex min-h-10 items-center rounded-lg bg-[#15161a] px-4 text-sm font-medium text-white group-hover:bg-[#33353a]">Ouvrir mon plan d&apos;exécution →</span>
           </Link>
-          <article className="rounded-[30px] border border-black/10 bg-[#e6edcd] p-6 sm:p-7">
-            <p className="command-label">Phase actuelle</p>
-            <h2 className="mt-3 text-2xl font-black">Activer, tester, vendre.</h2>
-            <p className="mt-3 text-sm text-black/55">Waitlist déjà publiée. Le déploiement technique ne prouve pas que le parcours commercial fonctionne.</p>
-            <Link href="/launch" className="mt-5 inline-block text-xs font-black underline">Voir les points de validation</Link>
+          <article className="glass rounded-xl p-6 sm:p-8">
+            <p className="folio">Phase actuelle / 2026</p>
+            <h2 className="font-display mt-4 text-2xl">Activer. Tester. Vendre.</h2>
+            <p className="mt-4 text-sm leading-6 text-[#4c4e53]">Waitlist publiée. Les ventes et la conformité du parcours commercial doivent encore être vérifiées.</p>
+            <Link href="/launch" className="mt-6 inline-block text-sm font-medium underline underline-offset-4">Voir les points de validation</Link>
           </article>
         </section>
       )}
