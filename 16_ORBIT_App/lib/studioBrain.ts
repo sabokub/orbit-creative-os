@@ -88,7 +88,7 @@ function normalizeItem(raw: unknown): StudioItem | null {
 
 /** Legacy launch dates are historical, never a global ceiling on new work. */
 export function validateDueDate(dueDate?: string): void {
-  if (dueDate && !/^\\d{4}-\\d{2}-\\d{2}$/.test(dueDate)) {
+  if (dueDate && !/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
     throw new Error("La date doit être au format AAAA-MM-JJ.");
   }
 }
