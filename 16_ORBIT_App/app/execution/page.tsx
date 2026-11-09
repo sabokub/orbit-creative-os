@@ -163,17 +163,33 @@ export default function ExecutionPage() {
 
   return (
     <div className="mx-auto max-w-[1320px] space-y-5 pb-36 lg:pb-10">
-      <header className="rounded-[28px] border border-black/10 bg-[#171c28] p-6 text-white sm:p-8">
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c3e8a0]">ORBIT / Exécution</span>
-        <h1 className="mt-3 max-w-[820px] text-3xl font-black leading-tight sm:text-5xl">Moins de listes. Plus de choses terminées.</h1>
-        <p className="mt-3 max-w-[720px] text-sm text-white/65">24March Studio est en phase d&apos;activation commerciale : la waitlist existe, mais le parcours client, l&apos;offre et la preuve doivent être vérifiés avant de considérer le lancement comme prêt.</p>
-        <div className="mt-5 flex flex-wrap gap-2 text-[11px] font-bold">
-          <span className="rounded-full bg-white/10 px-3 py-2">✓ Waitlist en ligne</span>
-          <span className="rounded-full bg-white/10 px-3 py-2">? Parcours complet à tester</span>
-          <span className="rounded-full bg-white/10 px-3 py-2">? Vente réelle à confirmer</span>
+      <header className="flex flex-wrap items-end justify-between gap-6 px-1 py-4">
+        <div>
+          <p className="folio mb-3">Orbit / Exécution / Novembre 2026</p>
+          <h1 className="font-display max-w-[880px] text-[clamp(2.3rem,4.3vw,3.5rem)] leading-[1.04]">Moins de listes. Plus de choses terminées.</h1>
+          <p className="mt-4 max-w-[800px] text-[15px] leading-6 text-[#4c4e53]">
+            24March Studio entre dans une phase d&apos;activation commerciale. La waitlist existe, mais le parcours client, l&apos;offre et les preuves restent à vérifier.
+          </p>
         </div>
-        <p className="mt-3 text-[10px] text-white/40">État de référence au 9 novembre 2026 · aucun indicateur de vente n&apos;est déduit d&apos;un déploiement technique.</p>
+        <Link href="/studio" className="inline-flex h-10 items-center rounded-lg border border-black/10 bg-white/55 px-4 text-sm font-medium text-[#15161a] hover:bg-white/85">
+          Voir Studio Pulse
+        </Link>
       </header>
+      <dl className="glass grid grid-cols-3 rounded-xl px-4 sm:px-6" aria-label="État du studio">
+        <div className="py-5">
+          <dt className="text-xs text-[#66686d] sm:text-sm">Acquisition</dt>
+          <dd className="mt-2 font-display text-base leading-tight sm:text-xl">Waitlist en ligne</dd>
+        </div>
+        <div className="border-l border-black/10 py-5 pl-3 sm:pl-6">
+          <dt className="text-xs text-[#66686d] sm:text-sm">Expérience client</dt>
+          <dd className="mt-2 font-display text-base leading-tight sm:text-xl">À tester</dd>
+        </div>
+        <div className="border-l border-black/10 py-5 pl-3 sm:pl-6">
+          <dt className="text-xs text-[#66686d] sm:text-sm">Ventes réelles</dt>
+          <dd className="mt-2 font-display text-base leading-tight sm:text-xl">À confirmer</dd>
+        </div>
+      </dl>
+      <p className="folio px-1">État de référence : 9 novembre 2026 · aucune vente déduite d&apos;un déploiement technique.</p>
 
       {(error || focusError || message) && <div role="status" className="rounded-[16px] border border-black/10 bg-white p-4 text-sm font-semibold">{error || focusError || message}</div>}
 
