@@ -613,7 +613,7 @@ async function migrateLegacyStudioPlan(redis: Redis): Promise<boolean> {
       urgency: LEGACY_PRIORITY_TO_SCORE[task.priority || "medium"] || 3,
       impact: LEGACY_PRIORITY_TO_SCORE[task.priority || "medium"] || 3,
       launchCritical: task.priority === "high",
-      dueDate: task.scheduledFor && task.scheduledFor <= STUDIO_LAUNCH_CUTOFF ? task.scheduledFor : undefined,
+      dueDate: task.scheduledFor || undefined,
       dependsOn: [],
       createdAt: now,
       updatedAt: now,
