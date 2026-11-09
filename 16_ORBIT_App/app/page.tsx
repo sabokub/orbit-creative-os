@@ -60,7 +60,11 @@ export default function Dashboard() {
   async function handleSync() {
     setSyncing(true);
     try {
-      await refresh();
+      const [nextProjects] = await Promise.all([listProjects(), refresh()]);
+      setProjects(nextProjects);
+      setProjectError("");
+    } catch (err) {
+      setProjectError(explainOrbitError(err));
     } finally {
       setSyncing(false);
     }
