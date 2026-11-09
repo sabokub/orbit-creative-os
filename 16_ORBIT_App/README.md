@@ -47,9 +47,22 @@ npm run dev
 
 Sans `.env.local`, l'app démarre mais toutes les routes `/api/projects` renvoient une erreur explicite — utile pour développer l'UI sans dépendre d'une base tout de suite.
 
+## ORBIT V4 — exécution 24March (novembre 2026)
+
+La vue `/execution` s’appuie sur le **Studio Brain existant** (aucune seconde base de tâches) :
+
+- **Focus SMART** : un résultat, une preuve vérifiable et une date choisie par l’utilisatrice ; le focus est enregistré dans le mode `build`, sans écraser silencieusement celui déjà actif.
+- **TAPP opérationnel** : trois tâches de 5 à 30 min maximum selon un budget de temps choisi, micro-actions ≤ 5 min regroupées, blocs de plus de 30 min à découper, dépendances traitées à part.
+- **Dates périmées** : les échéances dépassées de plus de 14 jours restent en base et sont proposées à la requalification, pas injectées comme fausses priorités du jour.
+- **Sprint recommandé** : vérification du parcours client, de l’offre, d’un cas démonstrateur et de la prochaine communication waitlist ; ajout manuel seulement, avec contrôle des titres déjà présents.
+- **Fiabilité** : pas de pourcentage de confiance inventé, pas de compte à rebours vers septembre 2026, pas de déduction de ventes depuis une build Vercel READY.
+
+Le constat éditorial « waitlist en ligne, parcours/vente à confirmer » est daté du 9 novembre 2026. Il ne remplace pas une mesure en temps réel. Le reste d’ORBIT (agents, briefs, workflows, création, review) est préservé.
+
 ## Pages
 
-- `/` — Dashboard, liste des projets.
+- `/` — Tableau de bord de pilotage et entrée prioritaire vers l’exécution.
+- `/execution` — Focus SMART, TAPP, tâches réelles du Studio Brain et sprint de validation proposé.
 - `/projects/new` — Nouveau projet (brief).
 - `/projects/[id]` — Workspace : brief, sorties générées, reviews, exports.
 - `/projects/[id]/run?step=...` — Workflow Runner : prompt rempli + zone pour coller la réponse.

@@ -1,12 +1,13 @@
 "use client";
 
 import { WorkMode } from "./workModes/contracts";
+import { explainOrbitError } from "./userErrors";
 import { ActiveFocus, FocusHistoryEntry, FocusInput } from "./workModes/focus/contracts";
 import { ModePilotData } from "./workModes/pilot/types";
 
 async function parse<T>(res: Response): Promise<T> {
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error((body as { error?: string }).error || `Requête échouée (${res.status})`);
+  if (!res.ok) throw new Error(explainOrbitError((body as { error?: string }).error || `Requête échouée (${res.status})`));
   return body as T;
 }
 

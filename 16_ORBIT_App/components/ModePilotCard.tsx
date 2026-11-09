@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { explainOrbitError } from "@/lib/userErrors";
 import { useWorkMode } from "@/contexts/WorkModeContext";
 import { getPilot, setFocus, completeFocus } from "@/lib/workModesClient";
 import { ChartSpec, ModePilotData } from "@/lib/workModes/pilot/types";
@@ -108,7 +109,7 @@ export default function ModePilotCard() {
     try {
       setData(await getPilot(mode));
     } catch (e) {
-      setError((e as Error).message);
+      setError(explainOrbitError(e));
     } finally {
       setLoading(false);
     }
@@ -125,7 +126,7 @@ export default function ModePilotCard() {
       await fn();
       await load();
     } catch (e) {
-      setError((e as Error).message);
+      setError(explainOrbitError(e));
     } finally {
       setBusy(false);
     }
