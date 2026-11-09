@@ -15,23 +15,26 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f4f1e9",
+  themeColor: "#e5e4e1",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
       <body>
+        <div className="orbit-shell">
+        <div className="app-backdrop" aria-hidden="true" />
         <WorkModeProvider>
           <StudioBrainProvider>
             <ConversationUpdateBootstrap />
             <NavBar />
-            <main className="min-h-screen px-4 pb-28 pt-20 sm:px-5 lg:ml-[224px] lg:px-6 lg:pb-10 lg:pt-6">
-              <div className="mx-auto w-full max-w-[1320px]">{children}</div>
+            <main className="orbit-main min-h-screen px-4 pb-16 pt-6 sm:px-6 md:ml-64 md:px-8 md:py-10 lg:px-10">
+              <div className="mx-auto w-full max-w-[1440px]">{children}</div>
             </main>
             <CommandPalette />
           </StudioBrainProvider>
         </WorkModeProvider>
+        </div>
       </body>
     </html>
   );
