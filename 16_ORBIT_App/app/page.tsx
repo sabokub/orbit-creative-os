@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { explainOrbitError } from "@/lib/userErrors";
 import Link from "next/link";
 import { listProjects } from "@/lib/storage";
 import { Project } from "@/lib/types";
@@ -31,7 +32,7 @@ export default function Dashboard() {
   useEffect(() => {
     listProjects()
       .then(setProjects)
-      .catch((err) => setProjectError((err as Error).message));
+      .catch((err) => setProjectError(explainOrbitError(err)));
   }, []);
 
   const scores = useMemo(() => scoreAll(items), [items]);
@@ -117,7 +118,7 @@ export default function Dashboard() {
             </div>
           </header>
 
-          {(error || projectError) && <div className="rounded-[18px] border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-800">{error || projectError}</div>}
+          {(error || projectError) && <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-800"><span>{error || projectError}</span><button onClick={() => void handleSync()} disabled={syncing} className="rounded-md border border-red-200 bg-white px-3 py-2 text-xs font-medium">Réessayer</button></div>}
 
           {loaded && criticalTasks.length > 0 && (
             <section className="rounded-[28px] border border-black/10 bg-white/82 p-5">
