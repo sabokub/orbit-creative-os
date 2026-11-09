@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { explainOrbitError } from "@/lib/userErrors";
 import { ActivityEntry, Decision, StudioItem, StudioItemInput, StudioNotification, UpdateItemPatch } from "@/lib/types";
 import {
   archiveStudioItem,
@@ -64,7 +65,7 @@ export function StudioBrainProvider({ children }: { children: ReactNode }) {
       setNotifications(n);
       setError("");
     } catch (err) {
-      setError((err as Error).message);
+      setError(explainOrbitError(err));
     } finally {
       setLoaded(true);
     }
@@ -96,7 +97,7 @@ export function StudioBrainProvider({ children }: { children: ReactNode }) {
       try {
         await updateStudioItem(id, patch, current?.updatedAt);
       } catch (err) {
-        setError((err as Error).message);
+        setError(explainOrbitError(err));
         throw err;
       } finally {
         await refresh();
@@ -110,7 +111,7 @@ export function StudioBrainProvider({ children }: { children: ReactNode }) {
       try {
         await archiveStudioItem(id);
       } catch (err) {
-        setError((err as Error).message);
+        setError(explainOrbitError(err));
         throw err;
       } finally {
         await refresh();
@@ -124,7 +125,7 @@ export function StudioBrainProvider({ children }: { children: ReactNode }) {
       try {
         await createStudioItem(input);
       } catch (err) {
-        setError((err as Error).message);
+        setError(explainOrbitError(err));
         throw err;
       } finally {
         await refresh();
@@ -138,7 +139,7 @@ export function StudioBrainProvider({ children }: { children: ReactNode }) {
       try {
         await resolveDecisionApi(id, resolution);
       } catch (err) {
-        setError((err as Error).message);
+        setError(explainOrbitError(err));
         throw err;
       } finally {
         await refresh();
