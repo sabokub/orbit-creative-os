@@ -17,7 +17,10 @@ export default function LaunchPage() {
   const { items, decisions, loaded, error, updateItem, archiveItem, resolveDecision } = useStudioBrain();
 
   const launchItems = items.filter((it) => it.launchCritical && it.status !== "archived");
-  const tasks = bySortOrder(launchItems.filter((it) => it.kind === "task" && it.status !== "done"));
+  const allOpenTasks = bySortOrder(launchItems.filter((it) => it.kind === "task" && it.status !== "done"));
+  const isHistorical = (item: StudioItem) => (daysUntil(item.dueDate) ?? 0) < -14;
+  const historicalTasks = allOpenTasks.filter(isHistorical);
+  const tasks = allOpenTasks.filter((item) => !isHistorical(item));
   const contents = bySortOrder(launchItems.filter((it) => it.kind === "content" && it.status !== "done"));
   const { progress } = useMemo(() => getLaunchProgress(items), [items]);
   const nextTask = tasks.find((it) => it.status !== "blocked" && (daysUntil(it.dueDate) === null || (daysUntil(it.dueDate) ?? -99) >= -14));
@@ -141,6 +144,21 @@ export default function LaunchPage() {
           )}
         </div>
       </section>
+
+      {historicalTasks.length > 0 && (
+        <section className="rounded-[24px] border border-[#e5c88f] bg-[#fff8e5] p-5">
+          <p className="command-label">Ancien sprint · à requalifier</p>
+          <h2 className="mt-1 text-xl font-black">{historicalTasks.length} tâches historiques hors de la file active</h2>
+          <p className="mt-2 text-xs text-black/55">Aucune tâche n'est supprimée. Vérifie si elle reste nécessaire, définis une nouvelle date ou archive-la après contrôle.</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {historicalTasks.map((item) => (
+              <Link key={item.id} href={"/studio/items/" + encodeURIComponent(item.id)} className="rounded-[14px] border border-black/10 bg-white/80 p-3 text-xs font-black">
+                {item.title} · {item.dueDate}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section id="content" className="command-card scroll-mt-24 p-4 sm:p-5">
         <div className="flex items-center justify-between">
