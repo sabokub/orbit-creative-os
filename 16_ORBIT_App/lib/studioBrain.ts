@@ -10,7 +10,6 @@ import {
   StudioItem,
   StudioItemInput,
   StudioNotification,
-  STUDIO_LAUNCH_CUTOFF,
   UpdateItemPatch,
 } from "./types";
 import { SEED_CONTENT, SEED_TASKS, SeedSpec } from "./seedData";
@@ -87,11 +86,10 @@ function normalizeItem(raw: unknown): StudioItem | null {
   };
 }
 
+/** Legacy launch dates are historical, never a global ceiling on new work. */
 export function validateDueDate(dueDate?: string): void {
-  if (dueDate && dueDate > STUDIO_LAUNCH_CUTOFF) {
-    throw new Error(
-      `La date "${dueDate}" dépasse la limite du studio (${STUDIO_LAUNCH_CUTOFF}). Rien ne doit être planifié après cette date.`
-    );
+  if (dueDate && !/^\\d{4}-\\d{2}-\\d{2}$/.test(dueDate)) {
+    throw new Error("La date doit être au format AAAA-MM-JJ.");
   }
 }
 
