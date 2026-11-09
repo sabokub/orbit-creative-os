@@ -166,13 +166,13 @@ export default function ExecutionPage() {
       <header className="rounded-[28px] border border-black/10 bg-[#171c28] p-6 text-white sm:p-8">
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c3e8a0]">ORBIT / Exécution</span>
         <h1 className="mt-3 max-w-[820px] text-3xl font-black leading-tight sm:text-5xl">Moins de listes. Plus de choses terminées.</h1>
-        <p className="mt-3 max-w-[720px] text-sm text-white/65">24March Studio est en phase d'activation commerciale : la waitlist existe, mais le parcours client, l'offre et la preuve doivent être vérifiés avant de considérer le lancement comme prêt.</p>
+        <p className="mt-3 max-w-[720px] text-sm text-white/65">24March Studio est en phase d&apos;activation commerciale : la waitlist existe, mais le parcours client, l&apos;offre et la preuve doivent être vérifiés avant de considérer le lancement comme prêt.</p>
         <div className="mt-5 flex flex-wrap gap-2 text-[11px] font-bold">
           <span className="rounded-full bg-white/10 px-3 py-2">✓ Waitlist en ligne</span>
           <span className="rounded-full bg-white/10 px-3 py-2">? Parcours complet à tester</span>
           <span className="rounded-full bg-white/10 px-3 py-2">? Vente réelle à confirmer</span>
         </div>
-        <p className="mt-3 text-[10px] text-white/40">État de référence au 9 novembre 2026 · aucun indicateur de vente n'est déduit d'un déploiement technique.</p>
+        <p className="mt-3 text-[10px] text-white/40">État de référence au 9 novembre 2026 · aucun indicateur de vente n&apos;est déduit d&apos;un déploiement technique.</p>
       </header>
 
       {(error || focusError || message) && <div role="status" className="rounded-[16px] border border-black/10 bg-white p-4 text-sm font-semibold">{error || focusError || message}</div>}
@@ -193,13 +193,13 @@ export default function ExecutionPage() {
             <label className="text-xs font-black">Résultat à atteindre
               <input value={goalTitle} onChange={(event) => setGoalTitle(event.target.value)} maxLength={300} className="mt-1 block w-full rounded-[12px] border border-black/15 bg-white px-3 py-2.5 text-sm font-medium" />
             </label>
-            <label className="text-xs font-black">Comment prouver qu'il est atteint ?
+            <label className="text-xs font-black">Comment prouver qu&apos;il est atteint ?
               <textarea value={criteria} onChange={(event) => setCriteria(event.target.value)} maxLength={2000} rows={3} className="mt-1 block w-full rounded-[12px] border border-black/15 bg-white px-3 py-2.5 text-sm font-medium" />
             </label>
             <label className="text-xs font-black">Date cible à choisir, sans la confondre avec une date publique de lancement
               <input type="date" value={goalDate} onChange={(event) => setGoalDate(event.target.value)} className="mt-1 block w-full rounded-[12px] border border-black/15 bg-white px-3 py-2.5 text-sm font-medium" />
             </label>
-            {focus && <p className="text-xs text-black/55">Enregistrer un nouveau focus remplacera le focus Build actif et conservera l'ancien dans l'historique.</p>}
+            {focus && <p className="text-xs text-black/55">Enregistrer un nouveau focus remplacera le focus Build actif et conservera l&apos;ancien dans l&apos;historique.</p>}
             <button type="button" onClick={() => void saveGoal()} disabled={saving || !goalTitle.trim() || !criteria.trim() || !goalDate} className="command-button disabled:opacity-40">Enregistrer le focus SMART</button>
           </div>
         </article>
@@ -208,7 +208,7 @@ export default function ExecutionPage() {
           <h2 className="mt-2 text-xl font-black">Ne pas confondre activité et résultat.</h2>
           <div className="mt-4 space-y-3 text-sm">
             <div className="rounded-[14px] bg-[#edf2e5] p-3"><p className="font-black">Acquisition</p><p className="text-black/55">Waitlist publique existante. Prochaine preuve : capacité à convertir une inscription en échange utile.</p></div>
-            <div className="rounded-[14px] bg-[#fff8e5] p-3"><p className="font-black">Offre</p><p className="text-black/55">Vérifier prix, périmètre et livrables avant d'annoncer une vente prête.</p></div>
+            <div className="rounded-[14px] bg-[#fff8e5] p-3"><p className="font-black">Offre</p><p className="text-black/55">Vérifier prix, périmètre et livrables avant d&apos;annoncer une vente prête.</p></div>
             <div className="rounded-[14px] bg-[#eef7ff] p-3"><p className="font-black">Expérience client</p><p className="text-black/55">Un build technique READY ne valide pas le brief, le paiement ou la livraison.</p></div>
           </div>
           <Link href="/launch" className="mt-4 inline-block text-xs font-black underline underline-offset-4">Ouvrir la vue Lancement</Link>
@@ -217,7 +217,7 @@ export default function ExecutionPage() {
 
       <section className="command-card p-5 sm:p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <div><span className="command-label">3 / TAPP : tâches, actions, projets, priorités</span><h2 className="mt-1 text-2xl font-black">Ton vrai plan d'aujourd'hui</h2></div>
+          <div><span className="command-label">3 / TAPP : tâches, actions, projets, priorités</span><h2 className="mt-1 text-2xl font-black">Ton vrai plan d&apos;aujourd&apos;hui</h2></div>
           <label className="text-xs font-bold">Temps disponible
             <select value={budget} onChange={(event) => setBudget(Number(event.target.value))} className="ml-2 rounded-full border border-black/15 bg-white px-3 py-2 text-xs font-black">
               <option value={30}>30 min</option><option value={60}>1 h</option><option value={90}>1 h 30</option><option value={120}>2 h</option>
@@ -251,7 +251,7 @@ export default function ExecutionPage() {
         <article className="command-card p-5">
           <span className="command-label">À clarifier</span>
           <h2 className="mt-1 text-xl font-black">Les projets ne sont pas des tâches.</h2>
-          <p className="mt-2 text-xs text-black/50">Tout bloc de plus de 30 minutes mérite d'être découpé en étapes avec un verbe, un livrable et une fin.</p>
+          <p className="mt-2 text-xs text-black/50">Tout bloc de plus de 30 minutes mérite d&apos;être découpé en étapes avec un verbe, un livrable et une fin.</p>
           <div className="mt-4 space-y-2">{view.long.slice(0, 5).map((item) => <Link key={item.id} href={"/studio/items/" + encodeURIComponent(item.id)} className="flex justify-between gap-3 rounded-[14px] bg-[#fff8e5] p-3 text-xs font-black"><span>{item.title}</span><span>{minutesLabel(item.estimateMinutes)}</span></Link>)}</div>
           {!view.long.length && <p className="mt-3 text-sm text-black/45">Aucun bloc long actuellement enregistré.</p>}
         </article>
@@ -271,7 +271,7 @@ export default function ExecutionPage() {
 
       {(view.historic.length > 0 || view.blocked.length > 0) && <section className="grid gap-4 md:grid-cols-2">
         <article className="rounded-[22px] border border-[#e5c88f] bg-[#fff8e5] p-5"><p className="command-label">Historique à requalifier</p><h2 className="mt-2 text-xl font-black">{view.historic.length} échéance(s) dépassée(s) de plus de 14 jours</h2><p className="mt-2 text-xs text-black/55">Elles ne sont pas effacées et ne polluent plus le plan du jour. Mets-les à jour ou archive-les après vérification.</p><div className="mt-3 space-y-2">{view.historic.slice(0, 4).map((item) => <Link className="block text-xs font-black underline" key={item.id} href={"/studio/items/" + encodeURIComponent(item.id)}>{item.title} · {item.dueDate}</Link>)}</div></article>
-        <article className="rounded-[22px] border border-[#f2b8cf] bg-[#fff0f5] p-5"><p className="command-label">Dépendances</p><h2 className="mt-2 text-xl font-black">{view.blocked.length} tâche(s) bloquée(s)</h2><p className="mt-2 text-xs text-black/55">Résous la dépendance plutôt que de faire semblant d'avancer sur une tâche impossible.</p><Link href="/dependencies" className="mt-4 inline-block text-xs font-black underline">Voir les blocages</Link></article>
+        <article className="rounded-[22px] border border-[#f2b8cf] bg-[#fff0f5] p-5"><p className="command-label">Dépendances</p><h2 className="mt-2 text-xl font-black">{view.blocked.length} tâche(s) bloquée(s)</h2><p className="mt-2 text-xs text-black/55">Résous la dépendance plutôt que de faire semblant d&apos;avancer sur une tâche impossible.</p><Link href="/dependencies" className="mt-4 inline-block text-xs font-black underline">Voir les blocages</Link></article>
       </section>}
     </div>
   );
