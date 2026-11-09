@@ -88,7 +88,7 @@ export default function Dashboard() {
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c3e8a0]">ORBIT V4 / Action first</span>
             <h2 className="mt-3 text-3xl font-black">Une priorité. Trois actions. Une preuve.</h2>
             <p className="mt-3 max-w-[600px] text-sm text-white/65">Passe du plan de septembre à la validation réelle de 24March : parcours client, offre vendable, preuve de valeur. SMART + TAPP, connecté à Studio Brain.</p>
-            <span className="mt-6 inline-flex rounded-full bg-[#c3e8a0] px-4 py-2.5 text-xs font-black text-[#171c28]">Ouvrir mon plan d'exécution →</span>
+            <span className="mt-6 inline-flex rounded-full bg-[#c3e8a0] px-4 py-2.5 text-xs font-black text-[#171c28]">Ouvrir mon plan d&apos;exécution →</span>
           </Link>
           <article className="rounded-[30px] border border-black/10 bg-[#e6edcd] p-6 sm:p-7">
             <p className="command-label">Phase actuelle</p>
