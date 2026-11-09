@@ -6,7 +6,7 @@ import CommandIcon from "@/components/CommandIcon";
 import StudioItemCard from "@/components/StudioItemCard";
 import { useStudioBrain } from "@/contexts/StudioBrainContext";
 import { getLaunchProgress } from "@/lib/launchProgress";
-import { scoreAll } from "@/lib/priority";
+import { daysUntil, scoreAll } from "@/lib/priority";
 import { ItemStatus, StudioItem } from "@/lib/types";
 
 function bySortOrder(items: StudioItem[]): StudioItem[] {
@@ -20,7 +20,7 @@ export default function LaunchPage() {
   const tasks = bySortOrder(launchItems.filter((it) => it.kind === "task" && it.status !== "done"));
   const contents = bySortOrder(launchItems.filter((it) => it.kind === "content" && it.status !== "done"));
   const { progress } = useMemo(() => getLaunchProgress(items), [items]);
-  const nextTask = tasks.find((it) => it.status !== "blocked") || tasks[0];
+  const nextTask = tasks.find((it) => it.status !== "blocked" && (daysUntil(it.dueDate) === null || (daysUntil(it.dueDate) ?? -99) >= -14));
   const pendingDecisions = decisions.filter((d) => d.status === "pending");
 
   const scores = useMemo(() => scoreAll(items), [items]);
@@ -53,10 +53,10 @@ export default function LaunchPage() {
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <span className="command-label">
-            <CommandIcon name="launch" className="h-3.5 w-3.5" /> Sprint de rattrapage
+            <CommandIcon name="launch" className="h-3.5 w-3.5" /> Validation commerciale
           </span>
           <h1 className="mt-2 text-3xl font-black sm:text-4xl">Lancement 24March Studio</h1>
-          <p className="mt-1 text-sm text-black/48">Scope réduit au MVP vendable. Le reste passe après lancement.</p>
+          <p className="mt-1 text-sm text-black/48">Priorité : valider le parcours client, l’offre et les premières preuves. Les tâches historiques restent à requalifier.</p>
         </div>
         <Link href="/projects/new" className="command-button">
           <CommandIcon name="plus" className="h-4 w-4" /> Ajouter un projet
@@ -66,7 +66,7 @@ export default function LaunchPage() {
 
       <section className="grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
         <article className="rounded-[24px] border border-black/10 bg-[linear-gradient(135deg,#fbf6e8,#edf2e5)] p-5">
-          <p className="command-label">Progression du lancement</p>
+          <p className="command-label">Progression des tâches critiques enregistrées</p>
           <div className="mt-3 flex items-end gap-3">
             <span className="text-6xl font-black sm:text-8xl">{progress}</span>
             <span className="mb-2 text-sm font-black uppercase leading-tight">
@@ -75,15 +75,15 @@ export default function LaunchPage() {
               terminé
             </span>
           </div>
-          <p className="mt-2 text-sm font-black uppercase text-[#7d9f4c]">Nouvelle deadline : jeudi 10 septembre · 18 h</p>
+          <p className="mt-2 text-sm font-black uppercase text-[#7d9f4c]">Pas de date de lancement public tant que le parcours n’est pas validé</p>
           <div className="mt-5 h-3 overflow-hidden rounded-full bg-black/7">
             <div className="h-full rounded-full bg-[#98b85f]" style={{ width: `${progress}%` }} />
           </div>
         </article>
         <article className="command-card p-5">
           <p className="command-label">Prochaine meilleure action</p>
-          <h2 className="mt-2 text-2xl font-black">{nextTask?.title || "Tout est terminé"}</h2>
-          <p className="mt-2 text-sm text-black/48">{nextTask?.description || "Aucune tâche critique ouverte."}</p>
+          <h2 className="mt-2 text-2xl font-black">{nextTask?.title || "Plan à requalifier"}</h2>
+          <p className="mt-2 text-sm text-black/48">{nextTask?.description || "Aucune tâche critique récente et réalisable. Vérifie les anciennes échéances avant de recréer un sprint."}</p>
           <a href="#tasks" className="mt-4 block rounded-[18px] bg-[#f5df75]/70 p-4 text-sm font-black">
             Voir la file active
           </a>
@@ -98,7 +98,7 @@ export default function LaunchPage() {
           </div>
           <span className="command-pill bg-[#f9d9e6]">{tasks.length} ouvertes</span>
         </div>
-        <p className="mt-2 text-xs text-black/45">Ordre optimisé par chemin critique. Évite tout travail hors P0.</p>
+        <p className="mt-2 text-xs text-black/45">Ordre optimisé par chemin critique. Réévalue les anciennes dates et garde seulement ce qui débloque une vente testée.</p>
         <div className="mt-4 space-y-3">
           {loaded &&
             tasks.map((item, index) => (
