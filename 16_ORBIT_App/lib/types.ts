@@ -135,9 +135,9 @@ export const emptyProjectBrief = (brandProfileId: string): ProjectBrief => ({
  * dependency model: both are "StudioItem"s distinguished by `kind`.
  * ------------------------------------------------------------------------ */
 
-/** Recovery cutoff after the missed August 31 target. */
+/** Historical September 2026 recovery cutoff: retained for compatibility, NOT a limit on newly scheduled tasks. */
 export const STUDIO_LAUNCH_CUTOFF = "2026-09-10";
-/** Public launch target for the recovery sprint. */
+/** Historical recovery milestone only: UI must not treat this as a future launch date. */
 export const STUDIO_LAUNCH_MOMENT = "2026-09-10T18:00:00+02:00";
 
 export type ItemKind = "task" | "content";
@@ -197,7 +197,7 @@ export interface StudioItem {
   /** 1 (low) – 5 (high) */
   impact: number;
   launchCritical: boolean;
-  /** ISO date, must never be after STUDIO_LAUNCH_CUTOFF. */
+  /** Optional ISO date; not constrained by the historical September launch cutoff. */
   dueDate?: string;
   /** IDs of StudioItems that must be `done` before this one can start. */
   dependsOn: string[];
