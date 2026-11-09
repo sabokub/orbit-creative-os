@@ -3,10 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { listProjects } from "@/lib/storage";
-import { Project, STUDIO_LAUNCH_MOMENT } from "@/lib/types";
+import { Project } from "@/lib/types";
 import { scoreAll, sortByPriority } from "@/lib/priority";
 import { relativeTime } from "@/lib/format";
-import { getLaunchProgress } from "@/lib/launchProgress";
 import { useStudioBrain } from "@/contexts/StudioBrainContext";
 import { importanceTier, tierStyleForPriority } from "@/lib/importanceColor";
 import CommandIcon from "@/components/CommandIcon";
@@ -14,8 +13,6 @@ import ModePilotCard from "@/components/ModePilotCard";
 import { useWorkMode } from "@/contexts/WorkModeContext";
 import CriticalTaskCard from "@/components/CriticalTaskCard";
 import ImportanceMark from "@/components/ImportanceMark";
-
-const LAUNCH_DATE = new Date(STUDIO_LAUNCH_MOMENT);
 
 const PILOT_VIEWS = [
   { href: "/studio", title: "Studio", note: "Santé globale, charge et risques", icon: "home" as const, tint: "bg-[#eef7ff]" },
@@ -29,16 +26,12 @@ export default function Dashboard() {
   const { items, decisions, activity, loaded, error, refresh, updateItem, resolveDecision } = useStudioBrain();
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectError, setProjectError] = useState("");
-  const [days, setDays] = useState(0);
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     listProjects()
       .then(setProjects)
       .catch((err) => setProjectError((err as Error).message));
-  }, []);
-  useEffect(() => {
-    setDays(Math.max(0, Math.ceil((LAUNCH_DATE.getTime() - Date.now()) / 86_400_000)));
   }, []);
 
   const scores = useMemo(() => scoreAll(items), [items]);
@@ -49,12 +42,6 @@ export default function Dashboard() {
     active.filter((it) => it.kind === "content" && it.status !== "blocked"),
     scores
   ).slice(0, 4);
-
-  const todayTasks = sortByPriority(
-    openTasks.filter((it) => it.status !== "blocked"),
-    scores
-  ).slice(0, 5);
-  const totalMinutes = todayTasks.reduce((sum, item) => sum + item.estimateMinutes, 0);
 
   const criticalTasks = useMemo(
     () =>
@@ -68,7 +55,6 @@ export default function Dashboard() {
   const recentProjects = useMemo(() => [...projects].sort((a, b) => b.updated_at.localeCompare(a.updated_at)).slice(0, 4), [projects]);
   const pendingDecisions = decisions.filter((d) => d.status === "pending");
   const recentChanges = activity.slice(0, 3);
-  const { progress } = useMemo(() => getLaunchProgress(items), [items]);
 
   async function handleSync() {
     setSyncing(true);
@@ -97,81 +83,18 @@ export default function Dashboard() {
   return (
     <div className="mx-auto max-w-[1320px] space-y-4 pb-36 lg:pb-8">
       {!focusMode && (
-        <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-          <article className="rounded-[30px] border border-black/10 bg-white/85 p-5 sm:p-6">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="command-label">Studio Pulse</p>
-                <h2 className="mt-1 text-2xl font-black">Aujourd&rsquo;hui, concentre-toi là-dessus.</h2>
-              </div>
-              <span className="command-pill bg-[#f5df75]">
-                {Math.floor(totalMinutes / 60)}h{String(totalMinutes % 60).padStart(2, "0")}
-              </span>
-            </div>
-            <div className="mt-5 space-y-2.5">
-              {loaded &&
-                todayTasks.map((item, index) => {
-                  const priority = scores.get(item.id);
-                  const tier = priority ? tierStyleForPriority(priority) : null;
-                  return (
-                    <Link
-                      key={item.id}
-                      href={`/studio/items/${encodeURIComponent(item.id)}`}
-                      className={`grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-[18px] border border-black/8 ${tier?.cardBorder ?? ""} ${tier?.cardTint ?? ""} bg-[#fffdf8] p-3`}
-                    >
-                      <span className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#f5df75] text-sm font-black">{index + 1}</span>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-black">{item.title}</p>
-                        <p className="truncate text-[11px] text-black/45">
-                          {item.estimateMinutes} min · {item.category}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-black">{priority?.score ?? 0}</p>
-                        <p className="text-[9px] uppercase text-black/35">{tier?.tag ?? "score"}</p>
-                      </div>
-                    </Link>
-                  );
-                })}
-              {loaded && !todayTasks.length && (
-                <div className="rounded-[18px] bg-[#edf2e5] p-4 text-sm font-bold text-black/55">Aucune tâche ouverte. Le studio est à jour.</div>
-              )}
-            </div>
-            <div className="mt-4 flex items-center justify-between border-t border-black/8 pt-4">
-              <span className="text-[10px] font-black uppercase text-black/45">
-                Confiance du plan : {todayTasks.length ? "91 %" : "100 %"}
-              </span>
-              <Link href="/launch#tasks" className="text-[10px] font-black uppercase">
-                Ajuster le plan →
-              </Link>
-            </div>
-          </article>
-
-          <article className="rounded-[30px] border border-black/10 bg-[linear-gradient(135deg,#fbf6e8,#edf2e5)] p-5 sm:p-6">
-            <div className="flex items-start justify-between">
-              <span className="command-label">Lancement 24March</span>
-              <Link href="/launch" className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-black/10 bg-white/80">
-                <CommandIcon name="launch" className="h-5 w-5" />
-              </Link>
-            </div>
-            <div className="mt-10 flex items-end gap-3">
-              <span className="text-[72px] font-black leading-[0.85]">{days}</span>
-              <span className="mb-2 text-sm font-black uppercase">
-                jours
-                <br />
-                restants
-              </span>
-            </div>
-            <div className="mt-7 flex justify-between text-[10px] font-black uppercase">
-              <span>Progression du lancement</span>
-              <span>{progress}%</span>
-            </div>
-            <div className="mt-2 h-3 overflow-hidden rounded-full bg-black/7">
-              <div className="h-full rounded-full bg-[#98b85f]" style={{ width: `${progress}%` }} />
-            </div>
-            <Link href="/launch" className="mt-5 block rounded-[16px] border border-black/8 bg-white/65 p-3 text-sm font-black">
-              Voir le lancement complet →
-            </Link>
+        <section className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
+          <Link href="/execution" className="block rounded-[30px] border border-black/10 bg-[#171c28] p-6 text-white sm:p-7">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c3e8a0]">ORBIT V4 / Action first</span>
+            <h2 className="mt-3 text-3xl font-black">Une priorité. Trois actions. Une preuve.</h2>
+            <p className="mt-3 max-w-[600px] text-sm text-white/65">Passe du plan de septembre à la validation réelle de 24March : parcours client, offre vendable, preuve de valeur. SMART + TAPP, connecté à Studio Brain.</p>
+            <span className="mt-6 inline-flex rounded-full bg-[#c3e8a0] px-4 py-2.5 text-xs font-black text-[#171c28]">Ouvrir mon plan d'exécution →</span>
+          </Link>
+          <article className="rounded-[30px] border border-black/10 bg-[#e6edcd] p-6 sm:p-7">
+            <p className="command-label">Phase actuelle</p>
+            <h2 className="mt-3 text-2xl font-black">Activer, tester, vendre.</h2>
+            <p className="mt-3 text-sm text-black/55">Waitlist déjà publiée. Le déploiement technique ne prouve pas que le parcours commercial fonctionne.</p>
+            <Link href="/launch" className="mt-5 inline-block text-xs font-black underline">Voir les points de validation</Link>
           </article>
         </section>
       )}
