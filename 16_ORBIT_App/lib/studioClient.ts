@@ -1,5 +1,7 @@
 "use client";
 
+import { explainOrbitError } from "./userErrors";
+
 import {
   ActivityEntry,
   Decision,
@@ -24,7 +26,7 @@ async function parse<T>(res: Response): Promise<T> {
     const body = await res.json().catch(() => ({}));
     const message = body.error || `La requête a échoué (${res.status})`;
     if (res.status === 409) throw new StudioConflictError(message);
-    throw new Error(message);
+    throw new Error(explainOrbitError(message));
   }
   return res.json();
 }
